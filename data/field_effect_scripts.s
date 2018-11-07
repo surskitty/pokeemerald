@@ -106,7 +106,7 @@ gFieldEffectScript_Ash:: @ 82DBB12
 	field_eff_end
 
 gFieldEffectScript_SurfBlob:: @ 82DBB1C
-	field_eff_callnative FldEff_SurfBlob
+	field_eff_callnative CreateSurfablePokemonSprite
 	field_eff_end
 
 gFieldEffectScript_UseSurf:: @ 82DBB22
