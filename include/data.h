@@ -19,38 +19,6 @@ struct MonCoords
     u8 y_offset;
 };
 
-struct TrainerMonNoItemDefaultMoves
-{
-    u16 iv;
-    u8 lvl;
-    u16 species;
-};
-
-struct TrainerMonItemDefaultMoves
-{
-    u16 iv;
-    u8 lvl;
-    u16 species;
-    u16 heldItem;
-};
-
-struct TrainerMonNoItemCustomMoves
-{
-    u16 iv;
-    u8 lvl;
-    u16 species;
-    u16 moves[MAX_MON_MOVES];
-};
-
-struct TrainerMonItemCustomMoves
-{
-    u16 iv;
-    u8 lvl;
-    u16 species;
-    u16 heldItem;
-    u16 moves[MAX_MON_MOVES];
-};
-
 struct TrainerMon
 {
     u16 iv;
@@ -71,25 +39,21 @@ struct TrainerMon
 
 union TrainerMonPtr
 {
-    const struct TrainerMonNoItemDefaultMoves *NoItemDefaultMoves;
-    const struct TrainerMonNoItemCustomMoves *NoItemCustomMoves;
-    const struct TrainerMonItemDefaultMoves *ItemDefaultMoves;
-    const struct TrainerMonItemCustomMoves *ItemCustomMoves;
     const struct TrainerMon *TrainerMon;
 };
 
+
 struct Trainer
 {
-    /*0x00*/ u8 partyFlags;
-    /*0x01*/ u8 trainerClass;
-    /*0x02*/ u8 encounterMusic_gender; // last bit is gender
-    /*0x03*/ u8 trainerPic;
-    /*0x04*/ u8 trainerName[12];
-    /*0x10*/ u16 items[4];
-    /*0x18*/ bool8 doubleBattle;
-    /*0x1C*/ u32 aiFlags;
-    /*0x20*/ u8 partySize;
-    /*0x24*/ union TrainerMonPtr party;
+    u8 trainerClass;
+    u8 encounterMusic_gender; // last bit is gender
+    u8 trainerPic;
+    u8 trainerName[12];
+    u16 items[4];
+    bool8 doubleBattle;
+    u32 aiFlags;
+    u8 partySize;
+    union TrainerMonPtr party;
 };
 
 #define TRAINER_ENCOUNTER_MUSIC(trainer)((gTrainers[trainer].encounterMusic_gender & 0x7F))
