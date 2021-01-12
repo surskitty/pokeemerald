@@ -111,10 +111,10 @@
 
 #define BEST_IV_SPREAD BEST_IV_SPREAD_HIDDEN_POWER_DARK
 
-#define BEST_EV_SPREAD                       {252, 252, 252, 252, 252, 252}
-#define BEST_EV_SPREAD_SPECIAL               {252,   0, 252, 252, 252, 252}
-#define BEST_EV_SPREAD_TRICK_ROOM            {252, 252, 252,   0, 252, 252} 
-#define BEST_EV_SPREAD_SPECIAL_TRICK_ROOM    {252,   0, 252,   0, 252, 252} 
+#define MAX_EV_SPREAD                     {252, 252, 252, 252, 252, 252}
+#define MAX_EV_SPREAD_SPECIAL             {252,   0, 252, 252, 252, 252}
+#define MAX_EV_SPREAD_TRICK_ROOM          {252, 252, 252,   0, 252, 252}
+#define MAX_EV_SPREAD_SPECIAL_TRICK_ROOM  {252,   0, 252,   0, 252, 252}
 
 #define FRIENDSHIP_FRUSTRATION   1
 #define FRIENDSHIP_RETURN      255
