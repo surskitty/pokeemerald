@@ -732,17 +732,18 @@ static u16 GetSumOfPlayerPartyLevel(u8 numMons)
 
 static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
 {
+    const struct TrainerMon *party;
     u8 i;
     u8 sum;
     u32 count = numMons;
+
+    party = gTrainers[opponentId].party.TrainerMon;
 
     if (gTrainers[opponentId].partySize < count)
         count = gTrainers[opponentId].partySize;
 
     sum = 0;
 
-    const struct TrainerMon *party;
-    party = gTrainers[opponentId].party;
     for (i = 0; i < count; i++)
         sum += party[i].lvl;
     
