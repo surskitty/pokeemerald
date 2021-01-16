@@ -2184,12 +2184,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     {
         case OT_ID_SHINY:
         {
-            u32 shinyValue = 0;
-            do
-            {
-                value = Random32();
-                shinyValue = HIHALF(value) ^ LOHALF(value) ^ HIHALF(personality) ^ LOHALF(personality);
-            } while (shinyValue >= SHINY_ODDS);
+            value = HIHALF(personality) ^ LOHALF(personality);
         }
         break;
 
