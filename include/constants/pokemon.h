@@ -348,4 +348,13 @@
 
 #define MON_PIC_SIZE (64 * 64 / 2)
 
+// Types of Move Reminder + other tutors. Set to VAR_MOVE_MANAGER
+#define MOVE_REMINDER                 0 // Normal behavior; attempts to learn level up moves prior to current level.
+#define MOVE_REMINDER_LEARN_ALL_MOVES 1 // Gen 7 behavior.
+#define MOVE_TUTOR_EGG_MOVES          2 // Move Tutor returns egg moves
+#define MOVE_DELETER                  255
+
+#define MAX_RELEARNER_MOVES (MAX_LEVEL_UP_MOVES > 25 ? MAX_LEVEL_UP_MOVES : 25)
+
+
 #endif // GUARD_CONSTANTS_POKEMON_H

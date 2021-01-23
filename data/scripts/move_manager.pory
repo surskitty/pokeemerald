@@ -1,0 +1,186 @@
+script Common_EventScript_MoveManager {
+    lockall
+    faceplayer
+    if (!flag(FLAG_TEMP_1)) {
+        goto(MoveManager_Introduction)
+    }
+
+    switch (var(VAR_MOVE_MANAGER)) {
+    case MOVE_DELETER:
+        msgbox("Would you like to forget a move?", MSGBOX_YESNO)
+    default:
+        msgbox("Would you like to learn a move?", MSGBOX_YESNO)
+    }
+    if (var(VAR_RESULT) == NO) {
+        msgbox(MoveManager_ComeBack)
+        goto(MoveManager_Exit)
+    }
+    goto(MoveManager_CheckItem)
+}
+
+# NPC introduces themselves upon entering map
+script MoveManager_Introduction {
+    switch (var(VAR_MOVE_MANAGER)) {
+    case MOVE_REMINDER:
+    default:
+        msgbox("I'm the Move Reminder.\pI know how to remind Pokémon\nof moves they have forgotten.")
+    case MOVE_REMINDER_LEARN_ALL_MOVES:
+        msgbox("I'm the Move Tutor.\pI know all the moves that Pokémon\nlearn, and I can teach yours, too.")
+    case MOVE_TUTOR_EGG_MOVES:
+        msgbox("I'm the Egg Move Tutor.\pI specialise in teaching moves\nPokémon learn from their parents.") 
+    case MOVE_DELETER:
+        msgbox("Uh…\nOh, yes, I'm the Move Deleter.\pI can make Pokémon forget their moves.")
+    }
+    setflag(FLAG_TEMP_1)
+    msgbox("Would you like me to do that?", MSGBOX_YESNO)
+    if (var(VAR_RESULT) == NO) {
+        msgbox(MoveManager_ComeBack)
+        goto(MoveManager_Exit)
+    }
+    goto(MoveManager_CheckItem)
+}
+
+# Handles if the player is carrying the right item to trade.
+script MoveManager_CheckItem
+{
+    switch (var(VAR_MOVE_MANAGER))
+    {
+        case MOVE_REMINDER_LEARN_ALL_MOVES:
+            msgbox("In that case, I would like\na Heart Scale.")
+            waitmessage
+            checkitem(ITEM_HEART_SCALE, 1)
+            if (!var(VAR_RESULT))
+            {
+                msgbox(MoveManager_ComeBackWithItem)
+                goto(MoveManager_Exit)
+            }
+        case MOVE_TUTOR_EGG_MOVES:
+            msgbox("In that case, I would like\na Tiny Mushroom.")
+            waitmessage
+            checkitem(ITEM_TINY_MUSHROOM, 1)
+            if (!var(VAR_RESULT))
+            {
+                msgbox(MoveManager_ComeBackWithItem)
+                goto(MoveManager_Exit)
+            }
+        default:
+            goto(MoveManager_ChooseMon)
+    }
+}
+
+script MoveManager_ChooseMon {
+# Select a pokemon.
+    switch (var(VAR_MOVE_MANAGER)) 
+    {
+        case MOVE_DELETER:
+            special(ChoosePartyMon)
+        default:
+            special(ChooseMonForMoveRelearner)
+    }
+    waitstate
+    if (var(VAR_0x8004) == 255) {
+        msgbox(MoveManager_ComeBack)
+        goto(MoveManager_Exit)
+    }
+    special(IsSelectedMonEgg)
+    if(var(VAR_RESULT))
+    {
+        msgbox("Eggs don't know moves yet.")
+        goto(MoveManager_ChooseMon)
+    }
+
+# now that it's looking at a pokemon, see if there's anything the pokemon can do
+    switch (var(VAR_MOVE_MANAGER)) 
+    {
+        case MOVE_DELETER:
+            special(GetNumMovesSelectedMonHas)
+            if (var(VAR_RESULT) == 1) 
+            {
+                special(BufferMoveDeleterNicknameAndMove)
+	        msgbox("{STR_VAR_1} knows only one move\nso it can't be forgotten…")
+                goto(MoveManager_Exit)
+	    }
+        default:
+            if (var(VAR_0x8005) == 0) 
+            {
+                msgbox("Sorry…\pIt doesn't appear as if I have any move\nI can teach that Pokémon.")
+                goto(MoveManager_Exit)
+            }
+    }
+
+# proceed to manage moves.
+    if (var(VAR_MOVE_MANAGER) == MOVE_DELETER)
+    {
+        msgbox("Which move should be forgotten?")
+        fadescreen(FADE_TO_BLACK)
+	special(MoveDeleterChooseMoveToForget)
+	fadescreen(FADE_FROM_BLACK)
+	if (var(VAR_0x8005) == MAX_MON_MOVES)
+	{
+	    goto(MoveManager_ChooseMon)
+	}
+	special(BufferMoveDeleterNicknameAndMove)
+	msgbox("Hm! {STR_VAR_1}'s {STR_VAR_2}?\nThat move should be forgotten?", MSGBOX_YESNO)
+	if (var(VAR_RESULT) == YES)
+	{
+	    special(IsLastMonThatKnowsSurf)
+	    if (var(VAR_RESULT))
+	    {
+	        special(BufferMoveDeleterNicknameAndMove)
+	        msgbox("Hm!\p Your {STR_VAR_1} doesn't seem willing\n to forget {STR_VAR_2}.")
+                goto(MoveManager_Exit)
+            }
+	    special(MoveDeleterForgetMove)
+	    playfanfare(MUS_MOVE_DELETED)
+	    waitfanfare
+	    msgbox("It worked to perfection!\p{STR_VAR_1} has forgotten\n{STR_VAR_2} completely.")
+            goto(MoveManager_Exit)
+	} else
+	{
+            msgbox(MoveManager_ComeBack)
+            goto(MoveManager_Exit)
+        }
+    } else
+    {
+        msgbox("Which move should I teach?")
+        special(TeachMoveRelearnerMove)
+        waitstate
+        if (var(VAR_0x8004) == 0)
+        {
+            goto(MoveManager_ChooseMon)
+        }
+        goto(MoveManager_SpendItem)
+    }
+}
+
+script MoveManager_SpendItem
+{
+    switch (var(VAR_MOVE_MANAGER))
+    {
+        case MOVE_REMINDER_LEARN_ALL_MOVES:
+            msgbox("{PLAYER} handed over one Heart Scale\nin exchange.$")
+            removeitem(ITEM_HEART_SCALE)
+        case MOVE_TUTOR_EGG_MOVES:
+            msgbox("{PLAYER} handed over a single\nTiny Mushroom$")
+            removeitem(ITEM_TINY_MUSHROOM)
+    }
+    msgbox(MoveManager_ComeBack)
+    goto(MoveManager_Exit)    
+}
+
+script MoveManager_Exit
+{
+    setvar(VAR_MOVE_MANAGER, 0)
+    releaseall
+    return
+}
+
+text MoveManager_ComeBack
+{
+    "Come back soon."
+}
+
+text MoveManager_ComeBackWithItem
+{
+    "You don't have any?\nCome back another time."
+}
