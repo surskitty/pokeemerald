@@ -105,7 +105,7 @@
 #define BEST_IV_SPREAD_HIDDEN_POWER_STEEL    {31, 31, 31, 31, 31, 30}
 #define BEST_IV_SPREAD_HIDDEN_POWER_WATER    {31, 31, 31, 30, 30, 31}
 
-#define BEST_IV_SPREAD_SPECIAL               {31,  0, 31,  0, 31, 31}
+#define BEST_IV_SPREAD_SPECIAL               {31,  0, 31, 31, 31, 31}
 #define BEST_IV_SPREAD_TRICK_ROOM            {31, 31, 31,  0, 31, 31}
 #define BEST_IV_SPREAD_SPECIAL_TRICK_ROOM    {31,  0, 31,  0, 31, 31}
 
