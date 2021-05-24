@@ -45,6 +45,7 @@ union TrainerMonPtr
 
 struct Trainer
 {
+    u8 partyFlags; // Unread
     u8 trainerClass;
     u8 encounterMusic_gender; // last bit is gender
     u8 trainerPic;
