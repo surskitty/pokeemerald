@@ -1977,7 +1977,19 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             for (j = 0; gTrainers[trainerNum].trainerName[j] != EOS; j++)
                 nameHash += gTrainers[trainerNum].trainerName[j];
 
-            CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY, 0);
+            if ((partyData[i].nature > 0) || (partyData[i].gender > 0))
+                CreateMonWithGenderNatureLetter(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, partyData[i].gender, partyData[i].nature, 0, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY);
+            else
+            {
+                if (gTrainers[trainerNum].doubleBattle == TRUE)
+                    personalityValue = 0x80;
+                else if (gTrainers[trainerNum].encounterMusic_gender & 0x80)
+                    personalityValue = 0x78;
+                else
+                    personalityValue = 0x88;
+
+                CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY, 0);
+            }
 
             if (partyData[i].friendship == FRIENDSHIP_FRUSTRATION)
             {
