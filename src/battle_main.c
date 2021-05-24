@@ -1935,10 +1935,9 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     s32 i, j;
     u16 ev;
     u8 monsCount;
-    u8 ability;
-    u8 friendship;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 trainerName[(PLAYER_NAME_LENGTH * 3) + 1];
+    u8 ability, gender, friendship;
 
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
@@ -1977,27 +1976,42 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             for (j = 0; gTrainers[trainerNum].trainerName[j] != EOS; j++)
                 nameHash += gTrainers[trainerNum].trainerName[j];
 
-            if ((partyData[i].nature > 0) || (partyData[i].gender > 0))
-                CreateMonWithGenderNatureLetter(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, partyData[i].gender, partyData[i].nature, 0, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY);
+            if (gTrainers[trainerNum].doubleBattle == TRUE)
+                personalityValue = 0x80;
+            else if (gTrainers[trainerNum].encounterMusic_gender & 0x80)
+            {
+                personalityValue = 0x78;
+                gender = MON_MALE;
+            }
             else
             {
-                if (gTrainers[trainerNum].doubleBattle == TRUE)
-                    personalityValue = 0x80;
-                else if (gTrainers[trainerNum].encounterMusic_gender & 0x80)
-                    personalityValue = 0x78;
-                else
-                    personalityValue = 0x88;
+                 personalityValue = 0x88;
+                 gender = MON_FEMALE;
+            }
 
+            if (partyData[i].gender == TRAINER_MON_MALE)
+                gender = MON_MALE;
+            else if (partyData[i].gender == TRAINER_MON_FEMALE)
+                gender = MON_FEMALE;
+
+
+// MON_MALE and NATURE_HARDY share the default values. If one is set, assume the other is also meant to be set.
+// Enforced male pokemon cannot be Hardy. All pokemon with set natures will be male unless otherwise stated.
+            if (partyData[i].nature > 0)
+                CreateMonWithGenderNatureLetter(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, gender, partyData[i].nature, 0, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY);
+            else
+            {
                 CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY, 0);
             }
 
-            if (partyData[i].friendship == FRIENDSHIP_FRUSTRATION)
+            if (partyData[i].friendship > 0)
             {
-                friendship = 0;
+                if (partyData[i].friendship == TRAINER_MON_UNFRIENDLY)
+                    friendship = 0;
+                else if (partyData[i].friendship == TRAINER_MON_FRIENDLY)
+                    friendship = MAX_FRIENDSHIP;
                 SetMonData(&party[i], MON_DATA_FRIENDSHIP, &friendship);
             }
-            else if (partyData[i].friendship > 0)
-                SetMonData(&party[i], MON_DATA_FRIENDSHIP, &partyData[i].friendship);
 
             if (partyData[i].nickname[0] != '\0')
                 SetMonData(&party[i], MON_DATA_NICKNAME, &partyData[i].nickname);
