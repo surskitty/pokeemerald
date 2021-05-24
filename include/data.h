@@ -23,20 +23,20 @@ struct TrainerMon
 {
     u16 iv;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
-    u8 ivs[NUM_STATS];
-    u8 evs[NUM_STATS];
     u8 lvl;
     u16 species;
     u16 heldItem;
     u16 moves[MAX_MON_MOVES];
-    u8 ball;
+    u8 hiddenPower:5;
+    u8 difficulty:3;
+    u8 build:3;
+    u8 ball:5;
     u16 ability:2;
     u16 friendship:2;
     u16 gender:2;
-    u16 build:3;
     u16 shiny:1;
     u16 nature:5;
-    u16 unused:1;
+    u16 unused:4;
 };
 
 union TrainerMonPtr

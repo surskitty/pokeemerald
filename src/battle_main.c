@@ -34,6 +34,7 @@
 #include "pokeball.h"
 #include "pokedex.h"
 #include "pokemon.h"
+#include "pokemon_iv_spreads.h"
 #include "random.h"
 #include "recorded_battle.h"
 #include "roamer.h"
@@ -1933,11 +1934,12 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     u8 fixedIV;
     u8 level;
     s32 i, j;
-    u16 ev;
     u8 monsCount;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 trainerName[(PLAYER_NAME_LENGTH * 3) + 1];
-    u8 ability, gender, friendship;
+    u8 ability, gender, friendship, ball;
+    u8 difficulty, amount, build;
+    u8 ivs[NUM_STATS];
 
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
@@ -1964,7 +1966,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
         for (i = 0; i < monsCount; i++)
         {
             const struct TrainerMon *partyData = gTrainers[trainerNum].party.TrainerMon;
-            u8 fixedIV = partyData[i].iv + TRAINER_IV_MODIFIER;
+            u8 fixedIV = partyData[i].iv * MAX_PER_STAT_IVS / 255;
 
             if (gTrainers[trainerNum].doubleBattle == TRUE)
                 personalityValue = 0x80;
@@ -1978,25 +1980,18 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
             if (gTrainers[trainerNum].doubleBattle == TRUE)
                 personalityValue = 0x80;
-            else if (gTrainers[trainerNum].encounterMusic_gender & 0x80)
+
+            if ((gTrainers[trainerNum].encounterMusic_gender & 0x80) || (partyData[i].gender == TRAINER_MON_MALE))
             {
                 personalityValue = 0x78;
                 gender = MON_MALE;
             }
-            else
+            else if ((gTrainers[trainerNum].doubleBattle == FALSE) || (partyData[i].gender == TRAINER_MON_FEMALE))
             {
-                 personalityValue = 0x88;
-                 gender = MON_FEMALE;
+                personalityValue = 0x88;
+                gender = MON_FEMALE;
             }
 
-            if (partyData[i].gender == TRAINER_MON_MALE)
-                gender = MON_MALE;
-            else if (partyData[i].gender == TRAINER_MON_FEMALE)
-                gender = MON_FEMALE;
-
-
-// MON_MALE and NATURE_HARDY share the default values. If one is set, assume the other is also meant to be set.
-// Enforced male pokemon cannot be Hardy. All pokemon with set natures will be male unless otherwise stated.
             if (partyData[i].nature > 0)
                 CreateMonWithGenderNatureLetter(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, gender, partyData[i].nature, 0, partyData[i].shiny ? OT_ID_SHINY : OT_ID_RANDOM_NO_SHINY);
             else
@@ -2027,7 +2022,8 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
 
             if (partyData[i].ball > 0)
-                SetMonData(&party[i], MON_DATA_POKEBALL, &partyData[i].ball);
+                ball = partyData[i].ball;
+                SetMonData(&party[i], MON_DATA_POKEBALL, &ball);
 
             if (partyData[i].heldItem > 0)
                 SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
@@ -2043,38 +2039,73 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
                 }
             }
 
-            if (partyData[i].iv > 0)
-            {
-                for (j = 0; j < NUM_STATS; j++)
-                {
-                    SetMonData(&party[i], MON_DATA_HP_IV + j, &partyData[i].iv);
-                }
-            }
-            else if (partyData[i].iv == WORST_IVS)
-            {
-                fixedIV = 0;
+// Difficulty modifiers
+            difficulty = partyData[i].difficulty;
+            build = partyData[i].build;
 
-                for (j = 0; j < NUM_STATS; j++)
-                {
-                    SetMonData(&party[i], MON_DATA_HP_IV + j, &fixedIV);
-                }
+            if (difficulty == 0)
+            {
+               if (fixedIV == 0)
+                   difficulty = TRAINER_EASIEST;
+               else if (fixedIV < 12)
+                   difficulty = TRAINER_EASY;
+               else if (fixedIV < 24)
+                   difficulty = TRAINER_MEDIUM;
+               else
+                   difficulty = TRAINER_HARD;
+            }
+
+            if ((difficulty == TRAINER_EASIEST) && (partyData[i].hiddenPower > 0))
+            {
+               for (j = 0; j < NUM_STATS; j++)
+                   ivs[j] = WORST_IV_SPREAD[partyData[i].hiddenPower][j];
+            }
+            else if (difficulty == TRAINER_EASY)
+            {
+               for (j = 0; j < NUM_STATS; j++)
+                   ivs[j] = PASSABLE_IV_SPREAD[partyData[i].hiddenPower][j];
             }
             else
             {
-                for (j = 0; j < NUM_STATS; j++)
-                {
-                    SetMonData(&party[i], MON_DATA_HP_IV + j, &partyData[i].ivs[j]);
-                }
+               for (j = 0; j < NUM_STATS; j++)
+                   ivs[j] = BEST_IV_SPREAD[partyData[i].hiddenPower][j];
+
+// Now to start assigning effort points.
+               if (difficulty >= TRAINER_HARD)
+               {
+                  if ((build > 0) || (difficulty == TRAINER_MAX))
+                     amount = MAX_PER_STAT_EVS;
+                  else
+                     amount = MAX_TOTAL_EVS / NUM_STATS;
+
+                  if (difficulty == TRAINER_HARD)
+                     amount = amount / 4;
+                  else if (difficulty == TRAINER_HARDER)
+                     amount = amount / 2;
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_HP_DEF) || (build == TRAINER_MON_HP_SPDEF))
+                      SetMonData(&party[i], MON_DATA_HP_EV, &amount);
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_SPEED_PHYS) || (build == TRAINER_MON_PHYS))
+                      SetMonData(&party[i], MON_DATA_ATK_EV, &amount);
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_HP_DEF) || (build == TRAINER_MON_DEFENSES) || (build == TRAINER_MON_PHYS))
+                      SetMonData(&party[i], MON_DATA_DEF_EV, &amount);
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_SPEED_PHYS) || (build == TRAINER_MON_SPEED_SPEC))
+                      SetMonData(&party[i], MON_DATA_SPEED_EV, &amount);
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_SPEED_SPEC) || (build == TRAINER_MON_SPEC))
+                      SetMonData(&party[i], MON_DATA_SPATK_EV, &amount);
+
+                  if ((difficulty == TRAINER_MAX) || (build == TRAINER_MON_HP_SPDEF) || (build == TRAINER_MON_SPEC))
+                      SetMonData(&party[i], MON_DATA_SPDEF_EV, &amount);
+               }
+
+               for (j = 0; j < NUM_STATS; j++)
+                   SetMonData(&party[i + 3], MON_DATA_HP_IV + j, &ivs[j]);
             }
 
-            for (j = 0; j < NUM_STATS; j++)
-            {
-                SetMonData(&party[i], MON_DATA_HP_EV + j, &partyData[i].evs[j]);
-            }
-
-            StringCopy(trainerName, gTrainers[trainerNum].trainerName);
-            SetMonData(&party[i], MON_DATA_OT_NAME, trainerName);
-            CalculateMonStats(&party[i]);
         }
 
         gBattleTypeFlags |= gTrainers[trainerNum].doubleBattle;

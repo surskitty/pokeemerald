@@ -49,6 +49,9 @@ extern u16 gFrontierTempParty[];
 
 extern const struct BattleFrontierTrainer *gFacilityTrainers;
 extern const struct FacilityMon *gFacilityTrainerMons;
+extern const u8 WORST_IV_SPREAD[NUMBER_OF_MON_TYPES][NUM_STATS];
+extern const u8 PASSABLE_IV_SPREAD[NUMBER_OF_MON_TYPES][NUM_STATS];
+extern const u8 BEST_IV_SPREAD[NUMBER_OF_MON_TYPES][NUM_STATS];
 
 void CallBattleTowerFunc(void);
 u16 GetRandomScaledFrontierTrainerId(u8 challengeNum, u8 battleNum);

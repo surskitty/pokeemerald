@@ -389,5 +389,12 @@
 #define TRAINER_MON_FRIENDLY     1
 #define TRAINER_MON_UNFRIENDLY   2
 
+#define TRAINER_EASIEST 1
+#define TRAINER_EASY    2
+#define TRAINER_MEDIUM  3
+#define TRAINER_HARD    4
+#define TRAINER_HARDER  5
+#define TRAINER_HARDEST 6
+#define TRAINER_MAX     7 // Maxes out effort values; is not player legal.
 
 #endif  // GUARD_TRAINERS_H
