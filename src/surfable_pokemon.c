@@ -6,6 +6,7 @@
 #include "main.h"
 #include "party_menu.h"
 #include "sprite.h"
+#include "constants/event_object_movement.h"
 #include "constants/field_effects.h"
 #include "constants/moves.h"
 #include "constants/species.h"
@@ -65,7 +66,7 @@ static void LoadSurfOverworldPalette(void)
 {
     u8 i;
 
-    for (i = 0; i < 6; i++)
+    for (i = 0; i < PARTY_SIZE; i++)
         if (MonKnowsMove(&gPlayerParty[i], MOVE_SURF))
             break;
 
@@ -94,8 +95,8 @@ u32 CreateSurfablePokemonSprite(void)
     }
     else
     { // Create surf blob
-        LoadFieldEffectPalette(7);
-        spriteId = CreateSpriteAtEnd(gFieldEffectObjectTemplatePointers[7], gFieldEffectArguments[0], gFieldEffectArguments[1], 0x96);
+        LoadFieldEffectPalette(FLDEFFOBJ_SURF_BLOB);
+        spriteId = CreateSpriteAtEnd(gFieldEffectObjectTemplatePointers[FLDEFFOBJ_SURF_BLOB], gFieldEffectArguments[0], gFieldEffectArguments[1], 0x96);
     }
 
     if (spriteId != MAX_SPRITES)
@@ -128,7 +129,7 @@ static void CreateOverlaySprite(void)
         sprite->data[7] = -1;
         sprite->oam.priority = 1;
     }
-    SetSurfBlob_BobState(overlaySprite, 1);
+    SetSurfBlob_BobState(overlaySprite, BOB_PLAYER_AND_MON);
 }
 
 static void UpdateSurfMonOverlay(struct Sprite *sprite)
@@ -142,7 +143,7 @@ static void UpdateSurfMonOverlay(struct Sprite *sprite)
     SynchroniseSurfAnim(playerObj, sprite);
     SynchroniseSurfPosition(playerObj, sprite);
 
-    if (linkedSprite->animNum < 20)
+    if (linkedSprite->animNum < MOVEMENT_ACTION_DELAY_16)
     {
         sprite->pos1.x = linkedSprite->pos1.x;
         sprite->pos1.y = linkedSprite->pos1.y + 8;

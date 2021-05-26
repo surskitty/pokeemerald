@@ -13,6 +13,14 @@ const struct RideablePokemon gSurfablePokemon[] =
         .trainerPose = 0,
     },
     {
+        .species = SPECIES_PIKACHU,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_RAICHU,
+        .trainerPose = 0,
+    },
+    {
         .species = SPECIES_NIDOQUEEN,
         .trainerPose = 0,
     },
@@ -195,6 +203,10 @@ const struct RideablePokemon gSurfablePokemon[] =
     },
     {
         .species = SPECIES_LANTURN,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_PICHU,
         .trainerPose = 0,
     },
     {
@@ -410,4 +422,90 @@ const struct RideablePokemon gSurfablePokemon[] =
         .species = SPECIES_RAYQUAZA,
         .trainerPose = 0,
     },
+#ifdef POKEMON_EXPANSION
+/*    {
+        .species = SPECIES_PIPLUP,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_PRINPLUP,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_EMPOLEON,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_BIBAREL,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_RAMPARDOS,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_BUIZEL,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_FLOATZEL,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_SHELLOS,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_GASTRODON,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_GARCHOMP,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_MUNCHLAX,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_FINNEON,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_LUMINEON,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_MANTYKE,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_WEAVILE,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_LICKILICKY,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_RHYPERIOR,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_PALKIA,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_PHIONE,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_MANAPHY,
+        .trainerPose = 0,
+    },
+    {
+        .species = SPECIES_ARCEUS,
+        .trainerPose = 0,
+    },*/
+#endif
 };
