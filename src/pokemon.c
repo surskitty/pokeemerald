@@ -6331,6 +6331,7 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
                    moves[numMoves++] = eggMoves[i];
             }
         }
+        return numEggMoves;
         break;
     }
 

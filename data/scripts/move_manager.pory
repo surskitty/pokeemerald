@@ -47,7 +47,6 @@ script MoveManager_CheckItem
     {
         case MOVE_REMINDER_LEARN_ALL_MOVES:
             msgbox("In that case, I would like\na Heart Scale.")
-            waitmessage
             checkitem(ITEM_HEART_SCALE, 1)
             if (!var(VAR_RESULT))
             {
@@ -56,16 +55,14 @@ script MoveManager_CheckItem
             }
         case MOVE_TUTOR_EGG_MOVES:
             msgbox("In that case, I would like\na Tiny Mushroom.")
-            waitmessage
             checkitem(ITEM_TINY_MUSHROOM, 1)
             if (!var(VAR_RESULT))
             {
                 msgbox(MoveManager_ComeBackWithItem)
                 goto(MoveManager_Exit)
             }
-        default:
-            goto(MoveManager_ChooseMon)
     }
+    goto(MoveManager_ChooseMon)
 }
 
 script MoveManager_ChooseMon {

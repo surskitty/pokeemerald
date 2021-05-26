@@ -64,36 +64,35 @@ MoveManager_Introduction_8:
 
 MoveManager_CheckItem::
 	switch VAR_MOVE_MANAGER
-	case MOVE_REMINDER_LEARN_ALL_MOVES, MoveManager_CheckItem_2
-	case MOVE_TUTOR_EGG_MOVES, MoveManager_CheckItem_3
+	case MOVE_REMINDER_LEARN_ALL_MOVES, MoveManager_CheckItem_3
+	case MOVE_TUTOR_EGG_MOVES, MoveManager_CheckItem_4
+MoveManager_CheckItem_1:
 	goto MoveManager_ChooseMon
 	return
 
-MoveManager_CheckItem_2:
+MoveManager_CheckItem_3:
 	msgbox MoveManager_CheckItem_Text_0
-	waitmessage
 	checkitem ITEM_HEART_SCALE, 1
 	compare VAR_RESULT, 0
 	goto_if_eq MoveManager_CheckItem_5
-	return
+	goto MoveManager_CheckItem_1
 
-MoveManager_CheckItem_3:
+MoveManager_CheckItem_4:
 	msgbox MoveManager_CheckItem_Text_1
-	waitmessage
 	checkitem ITEM_TINY_MUSHROOM, 1
 	compare VAR_RESULT, 0
 	goto_if_eq MoveManager_CheckItem_7
-	return
+	goto MoveManager_CheckItem_1
 
 MoveManager_CheckItem_5:
 	msgbox MoveManager_ComeBackWithItem
 	goto MoveManager_Exit
-	return
+	goto MoveManager_CheckItem_1
 
 MoveManager_CheckItem_7:
 	msgbox MoveManager_ComeBackWithItem
 	goto MoveManager_Exit
-	return
+	goto MoveManager_CheckItem_1
 
 
 MoveManager_ChooseMon::
