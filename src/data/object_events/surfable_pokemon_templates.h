@@ -331,25 +331,36 @@ const struct SpritePalette sSurfablePokemonShinyPalettes[] = {
 
 const union AnimCmd gSurfablePokemonAnim_FaceSouth[] =
 {
-    ANIMCMD_FRAME(2, 1),
+    ANIMCMD_FRAME(2, 16),
+    ANIMCMD_FRAME(3, 16),
     ANIMCMD_JUMP(0),
 };
 
 const union AnimCmd gSurfablePokemonAnim_FaceNorth[] =
 {
-    ANIMCMD_FRAME(0, 1),
+    ANIMCMD_FRAME(0, 16),
+    ANIMCMD_FRAME(1, 16),
     ANIMCMD_JUMP(0),
 };
 
 const union AnimCmd gSurfablePokemonAnim_FaceWest[] =
 {
-    ANIMCMD_FRAME(4, 1),
+    ANIMCMD_FRAME(4, 16),
+    ANIMCMD_FRAME(5, 16),
     ANIMCMD_JUMP(0),
 };
 
 const union AnimCmd gSurfablePokemonAnim_FaceEast[] =
 {
-    ANIMCMD_FRAME(4, 1, .hFlip = TRUE),
+    ANIMCMD_FRAME(4, 16, .hFlip = TRUE),
+    ANIMCMD_FRAME(5, 16, .hFlip = TRUE),
+    ANIMCMD_JUMP(0),
+};
+
+const union AnimCmd gSurfablePokemonAnim_NoFlipFaceEast[] =
+{
+    ANIMCMD_FRAME(6, 16),
+    ANIMCMD_FRAME(7, 16),
     ANIMCMD_JUMP(0),
 };
 
@@ -359,6 +370,14 @@ const union AnimCmd *const gSurfablePokemonAnimTable[] =
     gSurfablePokemonAnim_FaceNorth,
     gSurfablePokemonAnim_FaceWest,
     gSurfablePokemonAnim_FaceEast,
+};
+
+const union AnimCmd *const gSurfablePokemonNoFlipAnimTable[] =
+{
+    gSurfablePokemonAnim_FaceSouth,
+    gSurfablePokemonAnim_FaceNorth,
+    gSurfablePokemonAnim_FaceWest,
+    gSurfablePokemonAnim_NoFlipFaceEast,
 };
 
 const struct SpriteTemplate gSurfablePokemonOverworldSprites[] =
