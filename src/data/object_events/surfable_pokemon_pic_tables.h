@@ -238,10 +238,16 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Shellder[] = {
     overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 7),
 };
 
+const struct SpriteFrameImage gSurfingOverlayPicTable_Shellder[] = {
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 6),
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 11),
+};
 const struct SpriteFrameImage gSurfingOverworldPicTable_Cloyster[] = {
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 0),
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 1),

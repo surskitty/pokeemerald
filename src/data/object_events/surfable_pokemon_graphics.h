@@ -70,9 +70,9 @@ const u32 gSurfablePokemonPic_Dewgong[] = INCBIN_U32("graphics/object_events/pic
 const u16 gSurfablePokemonPalette_Dewgong[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/087_dewgong.gbapal");
 const u16 gSurfablePokemonShinyPalette_Dewgong[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/087_dewgong_shiny.gbapal");
 
-const u32 gSurfablePokemonPic_Shellder[] = INCBIN_U32("graphics/object_events/pics/pokemon/surfable/090_shellder.4bpp");
-const u16 gSurfablePokemonPalette_Shellder[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/090_shellder.gbapal");
-const u16 gSurfablePokemonShinyPalette_Shellder[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/090_shellder_shiny.gbapal");
+const u32 gSurfablePokemonPic_Shellder[] = INCBIN_U32("graphics/object_events/pics/pokemon/surfable/shellder.4bpp");
+const u16 gSurfablePokemonPalette_Shellder[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/shellder.gbapal");
+const u16 gSurfablePokemonShinyPalette_Shellder[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/shellder_shiny.gbapal");
 
 const u32 gSurfablePokemonPic_Cloyster[] = INCBIN_U32("graphics/object_events/pics/pokemon/surfable/091_cloyster.4bpp");
 const u16 gSurfablePokemonPalette_Cloyster[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/091_cloyster.gbapal");
