@@ -470,13 +470,13 @@ $(OBJEVENTGFXDIR)/pokemon/zigzagoon.4bpp: %.4bpp: %.png
 
 # Surfable Pokemon
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/007_squirtle.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/squirtle.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/008_wartortle.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/wartortle.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/009_blastoise.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/blastoise.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
 $(OBJEVENTGFXDIR)/pokemon/surfable/025_pikachu.4bpp: %.4bpp: %.png
@@ -485,22 +485,22 @@ $(OBJEVENTGFXDIR)/pokemon/surfable/025_pikachu.4bpp: %.4bpp: %.png
 $(OBJEVENTGFXDIR)/pokemon/surfable/026_raichu.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/072_tentacool.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/tentacool.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/073_tentacruel.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/tentacruel.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/120_staryu.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/staryu.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/131_lapras.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/lapras.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
 $(OBJEVENTGFXDIR)/pokemon/surfable/172_pichu.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
-$(OBJEVENTGFXDIR)/pokemon/surfable/382_kyogre.4bpp: %.4bpp: %.png
+$(OBJEVENTGFXDIR)/pokemon/surfable/kyogre.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 8 -mheight 8
 
 # Berry trees
