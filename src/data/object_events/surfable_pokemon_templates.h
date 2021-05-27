@@ -217,6 +217,9 @@ const struct SpritePalette sSurfablePokemonPalettes[] = {
     {gSurfablePokemonPalette_Latios,    PAL_TAG_LATIOS_SURF},
     {gSurfablePokemonPalette_Kyogre,    PAL_TAG_KYOGRE_SURF},
     {gSurfablePokemonPalette_Rayquaza,  PAL_TAG_RAYQUAZA_SURF},
+#ifdef POKEMON_EXPANSION
+    {gSurfablePokemonPalette_KyogrePrimal,    PAL_TAG_KYOGRE_PRIMAL_SURF},
+#endif
 };
 
 const struct SpritePalette sSurfablePokemonShinyPalettes[] = {
@@ -327,6 +330,9 @@ const struct SpritePalette sSurfablePokemonShinyPalettes[] = {
     {gSurfablePokemonShinyPalette_Latios,    PAL_TAG_LATIOS_SURF},
     {gSurfablePokemonShinyPalette_Kyogre,    PAL_TAG_KYOGRE_SURF},
     {gSurfablePokemonShinyPalette_Rayquaza,  PAL_TAG_RAYQUAZA_SURF},
+#ifdef POKEMON_EXPANSION
+    {gSurfablePokemonShinyPalette_KyogrePrimal,    PAL_TAG_KYOGRE_PRIMAL_SURF},
+#endif
 };
 
 const union AnimCmd gSurfablePokemonAnim_FaceSouth[] =
@@ -489,6 +495,9 @@ const struct SpriteTemplate gSurfablePokemonOverworldSprites[] =
     {0xFFFF, PAL_TAG_LATIOS_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Latios,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_KYOGRE_SURF,    &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Kyogre,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_RAYQUAZA_SURF,  &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Rayquaza,  gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
+#ifdef POKEMON_EXPANSION
+    {0xFFFF, PAL_TAG_KYOGRE_PRIMAL_SURF,    &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_KyogrePrimal,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
+#endif
 };
 
 #define NO_OVERLAY {0, 0, NULL, NULL, NULL, NULL, NULL}
@@ -601,4 +610,7 @@ const struct SpriteTemplate gSurfablePokemonOverlaySprites[] =
     {0xFFFF, PAL_TAG_LATIOS_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Latios,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     NO_OVERLAY, // Kyogre
     {0xFFFF, PAL_TAG_RAYQUAZA_SURF,  &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Rayquaza,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
+#ifdef POKEMON_EXPANSION
+    NO_OVERLAY, // Primal Kyogre
+#endif
 };

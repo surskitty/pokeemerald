@@ -1191,8 +1191,6 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kyogre[] = {
     overworld_frame(gSurfablePokemonPic_Kyogre, 8, 8, 3),
     overworld_frame(gSurfablePokemonPic_Kyogre, 8, 8, 4),
     overworld_frame(gSurfablePokemonPic_Kyogre, 8, 8, 5),
-    overworld_frame(gSurfablePokemonPic_Kyogre, 8, 8, 6),
-    overworld_frame(gSurfablePokemonPic_Kyogre, 8, 8, 7),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Rayquaza[] = {
@@ -1205,3 +1203,14 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Rayquaza[] = {
     overworld_frame(gSurfablePokemonPic_Rayquaza, 8, 8, 6),
     overworld_frame(gSurfablePokemonPic_Rayquaza, 8, 8, 7),
 };
+
+#ifdef POKEMON_EXPANSION
+const struct SpriteFrameImage gSurfingOverworldPicTable_KyogrePrimal[] = {
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 0),
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 1),
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 2),
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 3),
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 4),
+    overworld_frame(gSurfablePokemonPic_KyogrePrimal, 8, 8, 5),
+};
+#endif

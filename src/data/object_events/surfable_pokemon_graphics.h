@@ -421,3 +421,10 @@ const u16 gSurfablePokemonShinyPalette_Kyogre[] = INCBIN_U16("graphics/object_ev
 const u32 gSurfablePokemonPic_Rayquaza[] = INCBIN_U32("graphics/object_events/pics/pokemon/surfable/384_rayquaza.4bpp");
 const u16 gSurfablePokemonPalette_Rayquaza[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/384_rayquaza.gbapal");
 const u16 gSurfablePokemonShinyPalette_Rayquaza[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/384_rayquaza_shiny.gbapal");
+
+#ifdef POKEMON_EXPANSION
+const u32 gSurfablePokemonPic_KyogrePrimal[] = INCBIN_U32("graphics/object_events/pics/pokemon/surfable/kyogre_primal.4bpp");
+const u16 gSurfablePokemonPalette_KyogrePrimal[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/kyogre_primal.gbapal");
+const u16 gSurfablePokemonShinyPalette_KyogrePrimal[] = INCBIN_U16("graphics/object_events/pics/pokemon/surfable/kyogre_primal_shiny.gbapal");
+#endif
+
