@@ -576,7 +576,7 @@ const struct SpriteTemplate gSurfablePokemonOverlaySprites[] =
 // Gen III Pokemon
     {0xFFFF, PAL_TAG_MUDKIP_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Mudkip,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_MARSHTOMP_SURF, &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Marshtomp, gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
-    {0xFFFF, PAL_TAG_SWAMPERT_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Swampert,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
+    {0xFFFF, PAL_TAG_SWAMPERT_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Swampert,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_ZIGZAGOON_SURF, &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Zigzagoon, gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_LINOONE_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Linoone,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_LOTAD_SURF,     &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Lotad,     gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},

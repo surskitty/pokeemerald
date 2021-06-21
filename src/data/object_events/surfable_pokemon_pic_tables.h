@@ -845,8 +845,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Swampert[] = {
     overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Swampert[] = {
     overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Swampert, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Zigzagoon[] = {

@@ -503,6 +503,9 @@ $(OBJEVENTGFXDIR)/pokemon/surfable/lapras.4bpp: %.4bpp: %.png
 $(OBJEVENTGFXDIR)/pokemon/surfable/172_pichu.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 4 -mheight 4
 
+$(OBJEVENTGFXDIR)/pokemon/surfable/swampert.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -mwidth 4 -mheight 4
+
 $(OBJEVENTGFXDIR)/pokemon/surfable/kyogre.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -mwidth 8 -mheight 8
 
