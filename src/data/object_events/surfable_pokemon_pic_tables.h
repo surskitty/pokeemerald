@@ -81,8 +81,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Nidoqueen[] = {
     overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Nidoqueen[] = {
     overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Nidoqueen, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Nidoking[] = {
@@ -92,8 +99,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Nidoking[] = {
     overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Nidoking[] = {
     overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Nidoking, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Psyduck[] = {
@@ -103,8 +117,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Psyduck[] = {
     overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Psyduck[] = {
     overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Psyduck, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Golduck[] = {
@@ -114,8 +135,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Golduck[] = {
     overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Golduck[] = {
     overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Golduck, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwag[] = {
@@ -125,8 +153,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwag[] = {
     overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Poliwag[] = {
     overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Poliwag, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwhirl[] = {
@@ -136,8 +171,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwhirl[] = {
     overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Poliwhirl[] = {
     overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Poliwhirl, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwrath[] = {
@@ -147,8 +189,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Poliwrath[] = {
     overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Poliwrath[] = {
     overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Poliwrath, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Tentacool[] = {
@@ -194,8 +243,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Slowpoke[] = {
     overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Slowpoke[] = {
     overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Slowpoke, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Slowbro[] = {
@@ -205,8 +261,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Slowbro[] = {
     overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Slowbro[] = {
     overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Slowbro, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Seel[] = {
@@ -216,8 +279,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Seel[] = {
     overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Seel[] = {
     overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Seel, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Dewgong[] = {
@@ -227,8 +297,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Dewgong[] = {
     overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Dewgong[] = {
     overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Dewgong, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Shellder[] = {
@@ -248,6 +325,7 @@ const struct SpriteFrameImage gSurfingOverlayPicTable_Shellder[] = {
     overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 10),
     overworld_frame(gSurfablePokemonPic_Shellder, 4, 4, 11),
 };
+
 const struct SpriteFrameImage gSurfingOverworldPicTable_Cloyster[] = {
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 0),
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 1),
@@ -255,8 +333,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Cloyster[] = {
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Cloyster[] = {
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Cloyster, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Krabby[] = {
@@ -266,8 +351,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Krabby[] = {
     overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Krabby[] = {
     overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Krabby, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Kingler[] = {
@@ -277,8 +369,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kingler[] = {
     overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Kingler[] = {
     overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Kingler, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lickitung[] = {
@@ -288,8 +387,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Lickitung[] = {
     overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Lickitung[] = {
     overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Lickitung, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Rhydon[] = {
@@ -299,8 +405,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Rhydon[] = {
     overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Rhydon[] = {
     overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Rhydon, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Kangaskhan[] = {
@@ -310,8 +423,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kangaskhan[] = {
     overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Kangaskhan[] = {
     overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Kangaskhan, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Horsea[] = {
@@ -321,8 +441,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Horsea[] = {
     overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Horsea[] = {
     overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Horsea, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Seadra[] = {
@@ -332,8 +459,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Seadra[] = {
     overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Seadra[] = {
     overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Seadra, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Goldeen[] = {
@@ -343,8 +477,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Goldeen[] = {
     overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Goldeen[] = {
     overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Goldeen, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Seaking[] = {
@@ -354,8 +495,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Seaking[] = {
     overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Seaking[] = {
     overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Seaking, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Staryu[] = {
@@ -383,8 +531,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Starmie[] = {
     overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Starmie[] = {
     overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Starmie, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Tauros[] = {
@@ -394,8 +549,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Tauros[] = {
     overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Tauros[] = {
     overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Tauros, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Gyarados[] = {
@@ -405,8 +567,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Gyarados[] = {
     overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Gyarados[] = {
     overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Gyarados, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lapras[] = {
@@ -434,8 +603,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Vaporeon[] = {
     overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Vaporeon[] = {
     overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Vaporeon, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Omanyte[] = {
@@ -445,8 +621,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Omanyte[] = {
     overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Omanyte[] = {
     overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Omanyte, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Omastar[] = {
@@ -456,8 +639,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Omastar[] = {
     overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Omastar[] = {
     overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Omastar, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Kabuto[] = {
@@ -467,8 +657,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kabuto[] = {
     overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Kabuto[] = {
     overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Kabuto, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Kabutops[] = {
@@ -478,8 +675,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kabutops[] = {
     overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Kabutops[] = {
     overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Kabutops, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Snorlax[] = {
@@ -489,8 +693,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Snorlax[] = {
     overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Snorlax[] = {
     overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Snorlax, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Dratini[] = {
@@ -500,8 +711,6 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Dratini[] = {
     overworld_frame(gSurfablePokemonPic_Dratini, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Dratini, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Dratini, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Dratini, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Dratini, 4, 4, 7),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Dragonair[] = {
@@ -511,8 +720,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Dragonair[] = {
     overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Dragonair[] = {
     overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Dragonair, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Dragonite[] = {
@@ -522,8 +738,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Dragonite[] = {
     overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Dragonite[] = {
     overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Dragonite, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Mew[] = {
@@ -533,8 +756,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Mew[] = {
     overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 7),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Mew[] = {
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 0),
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 1),
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 2),
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 3),
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 4),
+    overworld_frame(gSurfablePokemonPic_Mew, 4, 4, 5),
 };
 
 // Gen II Pokemon
@@ -546,8 +776,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Totodile[] = {
     overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 7),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Totodile[] = {
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 0),
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 1),
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 2),
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 3),
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 4),
+    overworld_frame(gSurfablePokemonPic_Totodile, 4, 4, 5),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Croconaw[] = {
@@ -557,8 +794,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Croconaw[] = {
     overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 7),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Croconaw[] = {
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 0),
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 1),
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 2),
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 3),
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 4),
+    overworld_frame(gSurfablePokemonPic_Croconaw, 4, 4, 5),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Feraligatr[] = {
@@ -568,8 +812,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Feraligatr[] = {
     overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Feraligatr[] = {
     overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Sentret[] = {
@@ -579,8 +830,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Sentret[] = {
     overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Sentret[] = {
     overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Sentret, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Furret[] = {
@@ -590,8 +848,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Furret[] = {
     overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Furret[] = {
     overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Furret, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Chinchou[] = {
@@ -601,8 +866,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Chinchou[] = {
     overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Chinchou[] = {
     overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Chinchou, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lanturn[] = {
@@ -612,8 +884,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Lanturn[] = {
     overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Lanturn[] = {
     overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Lanturn, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Pichu[] = {
@@ -634,8 +913,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Marill[] = {
     overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Marill[] = {
     overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Marill, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Azumarill[] = {
@@ -645,8 +931,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Azumarill[] = {
     overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Azumarill[] = {
     overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Azumarill, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Politoed[] = {
@@ -656,8 +949,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Politoed[] = {
     overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Politoed[] = {
     overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Politoed, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Wooper[] = {
@@ -667,8 +967,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Wooper[] = {
     overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Wooper[] = {
     overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Wooper, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Quagsire[] = {
@@ -678,8 +985,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Quagsire[] = {
     overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 5),
-    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 7),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Quagsire[] = {
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 0),
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 1),
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 2),
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 3),
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 4),
+    overworld_frame(gSurfablePokemonPic_Quagsire, 4, 4, 5),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Slowking[] = {
@@ -689,8 +1003,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Slowking[] = {
     overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Slowking[] = {
     overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Slowking, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Qwilfish[] = {
@@ -700,8 +1021,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Qwilfish[] = {
     overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Qwilfish[] = {
     overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Qwilfish, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Sneasel[] = {
@@ -715,6 +1043,17 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Sneasel[] = {
     overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 7),
 };
 
+const struct SpriteFrameImage gSurfingOverlayPicTable_Sneasel[] = {
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 11),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 12),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 13),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 14),
+    overworld_frame(gSurfablePokemonPic_Sneasel, 4, 4, 15),
+};
+
 const struct SpriteFrameImage gSurfingOverworldPicTable_Corsola[] = {
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 0),
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 1),
@@ -722,8 +1061,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Corsola[] = {
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Corsola[] = {
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Corsola, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Remoraid[] = {
@@ -733,8 +1079,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Remoraid[] = {
     overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Remoraid[] = {
     overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Remoraid, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Octillery[] = {
@@ -744,8 +1097,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Octillery[] = {
     overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Octillery[] = {
     overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Octillery, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Mantine[] = {
@@ -755,8 +1115,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Mantine[] = {
     overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Mantine[] = {
     overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Mantine, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Kingdra[] = {
@@ -766,8 +1133,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Kingdra[] = {
     overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Kingdra[] = {
     overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Kingdra, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Miltank[] = {
@@ -777,8 +1151,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Miltank[] = {
     overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Miltank[] = {
     overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Miltank, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Suicune[] = {
@@ -788,8 +1169,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Suicune[] = {
     overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Suicune[] = {
     overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Suicune, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Tyranitar[] = {
@@ -799,8 +1187,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Tyranitar[] = {
     overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Tyranitar[] = {
     overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Tyranitar, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lugia[] = {
@@ -810,8 +1205,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Lugia[] = {
     overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 3),
     overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 4),
     overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Lugia[] = {
     overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 6),
     overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 7),
+    overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 8),
+    overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 9),
+    overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 10),
+    overworld_frame(gSurfablePokemonPic_Lugia, 8, 8, 11),
 };
 
 // Gen III Pokemon
@@ -823,8 +1225,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Mudkip[] = {
     overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Mudkip[] = {
     overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Mudkip, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Marshtomp[] = {
@@ -834,8 +1243,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Marshtomp[] = {
     overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Marshtomp[] = {
     overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Marshtomp, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Swampert[] = {
@@ -863,8 +1279,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Zigzagoon[] = {
     overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Zigzagoon[] = {
     overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Zigzagoon, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Linoone[] = {
@@ -874,8 +1297,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Linoone[] = {
     overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Linoone[] = {
     overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Linoone, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lotad[] = {
@@ -885,8 +1315,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Lotad[] = {
     overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Lotad[] = {
     overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Lotad, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Lombre[] = {
@@ -896,8 +1333,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Lombre[] = {
     overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Lombre[] = {
     overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Lombre, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Ludicolo[] = {
@@ -907,8 +1351,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Ludicolo[] = {
     overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Ludicolo[] = {
     overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Ludicolo, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Pelipper[] = {
@@ -918,8 +1369,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Pelipper[] = {
     overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Pelipper[] = {
     overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Pelipper, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Exploud[] = {
@@ -929,8 +1387,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Exploud[] = {
     overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Exploud[] = {
     overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Exploud, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Makuhita[] = {
@@ -940,8 +1405,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Makuhita[] = {
     overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Makuhita[] = {
     overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Makuhita, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Hariyama[] = {
@@ -951,8 +1423,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Hariyama[] = {
     overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Hariyama[] = {
     overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Hariyama, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Azurill[] = {
@@ -962,8 +1441,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Azurill[] = {
     overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Azurill[] = {
     overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Azurill, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Aggron[] = {
@@ -1094,8 +1580,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Spheal[] = {
     overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Spheal[] = {
     overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Spheal, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Sealeo[] = {
@@ -1105,8 +1598,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Sealeo[] = {
     overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Sealeo[] = {
     overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Sealeo, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Walrein[] = {
@@ -1116,8 +1616,15 @@ const struct SpriteFrameImage gSurfingOverworldPicTable_Walrein[] = {
     overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 3),
     overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 4),
     overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 5),
+};
+
+const struct SpriteFrameImage gSurfingOverlayPicTable_Walrein[] = {
     overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 6),
     overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 7),
+    overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 8),
+    overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 9),
+    overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 10),
+    overworld_frame(gSurfablePokemonPic_Walrein, 4, 4, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Clamperl[] = {
