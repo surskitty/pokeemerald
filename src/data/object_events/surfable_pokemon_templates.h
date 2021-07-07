@@ -429,7 +429,7 @@ const struct SpriteTemplate gSurfablePokemonOverworldSprites[] =
     {0xFFFF, PAL_TAG_KABUTOPS_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Kabutops,   gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_SNORLAX_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Snorlax,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_DRATINI_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Dratini,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
-    {0xFFFF, PAL_TAG_DRAGONAIR_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Dragonair,  gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
+    {0xFFFF, PAL_TAG_DRAGONAIR_SURF,  &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Dragonair,  gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_DRAGONITE_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Dragonite,  gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_MEW_SURF,        &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Mew,        gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
 // Gen II Pokemon
@@ -544,7 +544,7 @@ const struct SpriteTemplate gSurfablePokemonOverlaySprites[] =
     {0xFFFF, PAL_TAG_KABUTOPS_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Kabutops,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_SNORLAX_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Snorlax,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_DRATINI_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Dratini,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
-    {0xFFFF, PAL_TAG_DRAGONAIR_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Dragonair,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
+    {0xFFFF, PAL_TAG_DRAGONAIR_SURF,  &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Dragonair,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_DRAGONITE_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Dragonite,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_MEW_SURF,        &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Mew,        gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
 // Gen II Pokemon
@@ -597,7 +597,7 @@ const struct SpriteTemplate gSurfablePokemonOverlaySprites[] =
     {0xFFFF, PAL_TAG_CORPHISH_SURF,  &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Corphish,  gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_CRAWDAUNT_SURF, &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Crawdaunt, gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_FEEBAS_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Feebas,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
-    {0xFFFF, PAL_TAG_MILOTIC_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Milotic,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
+    {0xFFFF, PAL_TAG_MILOTIC_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Milotic,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_SPHEAL_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Spheal,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_SEALEO_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Sealeo,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_WALREIN_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Walrein,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
