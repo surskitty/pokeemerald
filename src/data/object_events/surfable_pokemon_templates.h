@@ -435,7 +435,7 @@ const struct SpriteTemplate gSurfablePokemonOverworldSprites[] =
 // Gen II Pokemon
     {0xFFFF, PAL_TAG_TOTODILE_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Totodile,   gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_CROCONAW_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Croconaw,   gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
-    {0xFFFF, PAL_TAG_FERALIGATR_SURF, &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Feraligatr, gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
+    {0xFFFF, PAL_TAG_FERALIGATR_SURF, &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Feraligatr, gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_SENTRET_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Sentret,    gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_FURRET_SURF,     &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Furret,     gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
     {0xFFFF, PAL_TAG_CHINCHOU_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverworldPicTable_Chinchou,   gDummySpriteAffineAnimTable, UpdateSurfBlobFieldEffect},
@@ -550,7 +550,7 @@ const struct SpriteTemplate gSurfablePokemonOverlaySprites[] =
 // Gen II Pokemon
     {0xFFFF, PAL_TAG_TOTODILE_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Totodile,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_CROCONAW_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Croconaw,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
-    {0xFFFF, PAL_TAG_FERALIGATR_SURF, &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Feraligatr, gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
+    {0xFFFF, PAL_TAG_FERALIGATR_SURF, &gObjectEventBaseOam_64x64, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Feraligatr, gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_SENTRET_SURF,    &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Sentret,    gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_FURRET_SURF,     &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Furret,     gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},
     {0xFFFF, PAL_TAG_CHINCHOU_SURF,   &gObjectEventBaseOam_32x32, gSurfablePokemonAnimTable, gSurfingOverlayPicTable_Chinchou,   gDummySpriteAffineAnimTable, UpdateSurfMonOverlay},

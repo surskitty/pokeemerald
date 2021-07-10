@@ -806,21 +806,21 @@ const struct SpriteFrameImage gSurfingOverlayPicTable_Croconaw[] = {
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Feraligatr[] = {
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 0),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 1),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 2),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 3),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 4),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 5),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 0),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 1),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 2),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 3),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 4),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 5),
 };
 
 const struct SpriteFrameImage gSurfingOverlayPicTable_Feraligatr[] = {
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 6),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 7),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 8),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 9),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 10),
-    overworld_frame(gSurfablePokemonPic_Feraligatr, 4, 4, 11),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 6),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 7),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 8),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 9),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 10),
+    overworld_frame(gSurfablePokemonPic_Feraligatr, 8, 8, 11),
 };
 
 const struct SpriteFrameImage gSurfingOverworldPicTable_Sentret[] = {
