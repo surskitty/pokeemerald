@@ -9,6 +9,7 @@
 #include "constants/event_object_movement.h"
 #include "constants/field_effects.h"
 #include "constants/moves.h"
+#include "ride_pokemon.h"
 #include "constants/species.h"
 
 extern const struct OamData gObjectEventBaseOam_32x32;
@@ -20,12 +21,6 @@ extern void SynchroniseSurfPosition(struct ObjectEvent *playerObj, struct Sprite
 
 static void CreateOverlaySprite(void);
 static void UpdateSurfMonOverlay(struct Sprite *sprite);
-
-struct RideablePokemon
-{
-    u16 species;
-    u8 trainerPose;
-};
 
 #include "data/object_events/surfable_pokemon.h"
 #include "data/object_events/surfable_pokemon_graphics.h"

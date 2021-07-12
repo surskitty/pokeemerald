@@ -1,431 +1,116 @@
+#define POKERIDE_DIVE      (1 << 0)
+#define POKERIDE_WATERFALL (1 << 1)
+
 const struct RideablePokemon gSurfablePokemon[] =
 {
-    {
-        .species = SPECIES_SQUIRTLE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WARTORTLE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_BLASTOISE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_PIKACHU,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_RAICHU,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_NIDOQUEEN,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_NIDOKING,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_PSYDUCK,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_GOLDUCK,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_POLIWAG,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_POLIWHIRL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_POLIWRATH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_TENTACOOL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_TENTACRUEL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SLOWPOKE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SLOWBRO,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SEEL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_DEWGONG,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SHELLDER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CLOYSTER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KRABBY,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KINGLER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LICKITUNG,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_RHYDON,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KANGASKHAN,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_HORSEA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SEADRA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_GOLDEEN,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SEAKING,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_STARYU,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_STARMIE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_TAUROS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_GYARADOS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LAPRAS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_VAPOREON,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_OMANYTE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_OMASTAR,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KABUTO,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KABUTOPS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SNORLAX,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_DRATINI,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_DRAGONAIR,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_DRAGONITE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MEW,
-        .trainerPose = 0,
-    },
+    { .species = SPECIES_SQUIRTLE,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WARTORTLE,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_BLASTOISE,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_PIKACHU,       .flags = 0, },
+    { .species = SPECIES_RAICHU,        .flags = 0, },
+    { .species = SPECIES_NIDOQUEEN,     .flags = 0, },
+    { .species = SPECIES_NIDOKING,      .flags = 0, },
+    { .species = SPECIES_PSYDUCK,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_GOLDUCK,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_POLIWAG,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_POLIWHIRL,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_POLIWRATH,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_TENTACOOL,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_TENTACRUEL,    .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SLOWPOKE,      .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_SLOWBRO,       .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_SEEL,          .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_DEWGONG,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SHELLDER,      .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_CLOYSTER,      .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_KRABBY,        .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_KINGLER,       .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_LICKITUNG,     .flags = 0, },
+    { .species = SPECIES_RHYDON,        .flags = 0, },
+    { .species = SPECIES_KANGASKHAN,    .flags = 0, },
+    { .species = SPECIES_HORSEA,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SEADRA,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_GOLDEEN,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SEAKING,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_STARYU,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_STARMIE,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_TAUROS,        .flags = 0, },
+    { .species = SPECIES_GYARADOS,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LAPRAS,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_VAPOREON,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_OMANYTE,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_OMASTAR,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_KABUTO,        .flags = POKERIDE_WATERFALL, },
+    { .species = SPECIES_KABUTOPS,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SNORLAX,       .flags = 0, },
+    { .species = SPECIES_DRATINI,       .flags = POKERIDE_WATERFALL, },
+    { .species = SPECIES_DRAGONAIR,     .flags = POKERIDE_WATERFALL, },
+    { .species = SPECIES_DRAGONITE,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_MEW,           .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
 // Gen II Pokemon
-    {
-        .species = SPECIES_TOTODILE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CROCONAW,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_FERALIGATR,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SENTRET,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_FURRET,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CHINCHOU,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LANTURN,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_PICHU,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MARILL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_AZUMARILL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_POLITOED,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WOOPER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_QUAGSIRE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SLOWKING,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_QWILFISH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SNEASEL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CORSOLA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_REMORAID,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_OCTILLERY,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MANTINE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KINGDRA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MILTANK,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SUICUNE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_TYRANITAR,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LUGIA,
-        .trainerPose = 0,
-    },
+    { .species = SPECIES_TOTODILE,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_CROCONAW,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_FERALIGATR,    .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SENTRET,       .flags = 0, },
+    { .species = SPECIES_FURRET,        .flags = 0, },
+    { .species = SPECIES_CHINCHOU,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LANTURN,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_PICHU,         .flags = 0, },
+    { .species = SPECIES_MARILL,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_AZUMARILL,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_POLITOED,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WOOPER,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_QUAGSIRE,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SLOWKING,      .flags = POKERIDE_DIVE, },
+    { .species = SPECIES_QWILFISH,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SNEASEL,       .flags = 0, },
+    { .species = SPECIES_CORSOLA,       .flags = 0, },
+    { .species = SPECIES_REMORAID,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_OCTILLERY,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_MANTINE,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_KINGDRA,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_MILTANK,       .flags = 0, },
+    { .species = SPECIES_SUICUNE,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_TYRANITAR,     .flags = 0, },
+    { .species = SPECIES_LUGIA,         .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
 // Gen III Pokemon
-    {
-        .species = SPECIES_MUDKIP,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MARSHTOMP,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SWAMPERT,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_ZIGZAGOON,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LINOONE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LOTAD,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LOMBRE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LUDICOLO,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_PELIPPER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_EXPLOUD,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MAKUHITA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_HARIYAMA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_AZURILL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_AGGRON,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CARVANHA,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SHARPEDO,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WAILMER,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WAILORD,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_BARBOACH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WHISCASH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CORPHISH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CRAWDAUNT,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_FEEBAS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_MILOTIC,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SPHEAL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_SEALEO,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_WALREIN,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_CLAMPERL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_HUNTAIL,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_GOREBYSS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_RELICANTH,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LUVDISC,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LATIAS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_LATIOS,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_KYOGRE,
-        .trainerPose = 0,
-    },
-    {
-        .species = SPECIES_RAYQUAZA,
-        .trainerPose = 0,
-    },
+    { .species = SPECIES_MUDKIP,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_MARSHTOMP,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SWAMPERT,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_ZIGZAGOON,     .flags = 0, },
+    { .species = SPECIES_LINOONE,       .flags = 0, },
+    { .species = SPECIES_LOTAD,         .flags = 0, },
+    { .species = SPECIES_LOMBRE,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LUDICOLO,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_PELIPPER,      .flags = 0, },
+    { .species = SPECIES_EXPLOUD,       .flags = 0, },
+    { .species = SPECIES_MAKUHITA,      .flags = 0, },
+    { .species = SPECIES_HARIYAMA,      .flags = 0, },
+    { .species = SPECIES_AZURILL,       .flags = POKERIDE_WATERFALL, },
+    { .species = SPECIES_AGGRON,        .flags = 0, },
+    { .species = SPECIES_CARVANHA,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SHARPEDO,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WAILMER,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WAILORD,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_BARBOACH,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WHISCASH,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_CORPHISH,      .flags = POKERIDE_WATERFALL, },
+    { .species = SPECIES_CRAWDAUNT,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_FEEBAS,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_MILOTIC,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SPHEAL,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_SEALEO,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_WALREIN,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_CLAMPERL,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_HUNTAIL,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_GOREBYSS,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_RELICANTH,     .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LUVDISC,       .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LATIAS,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_LATIOS,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_KYOGRE,        .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
+    { .species = SPECIES_RAYQUAZA,      .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
 #ifdef POKEMON_EXPANSION
-    {
-        .species = SPECIES_KYOGRE_PRIMAL,
-        .trainerPose = 0,
-    },
+    { .species = SPECIES_KYOGRE_PRIMAL, .flags = POKERIDE_DIVE || POKERIDE_WATERFALL, },
 #endif
 };
