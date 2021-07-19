@@ -3144,6 +3144,8 @@ static void FillPartnerParty(u16 trainerId)
 
                for (j = 0; j < NUM_STATS; j++)
                    SetMonData(&gPlayerParty[i + 3], MON_DATA_HP_IV + j, &setIVs[j]);
+               
+               CalculateMonStats(&gPlayerParty[i + 3]);
 
             }
 

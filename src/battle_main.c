@@ -2107,9 +2107,10 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
                }
 
                for (j = 0; j < NUM_STATS; j++)
-                   SetMonData(&party[i + 3], MON_DATA_HP_IV + j, &ivs[j]);
+                   SetMonData(&party[i], MON_DATA_HP_IV + j, &ivs[j]);
             }
-
+            
+            CalculateMonStats(&party[i]);
         }
 
         gBattleTypeFlags |= gTrainers[trainerNum].doubleBattle;
