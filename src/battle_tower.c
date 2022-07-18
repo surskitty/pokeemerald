@@ -3017,6 +3017,8 @@ static void FillPartnerParty(u16 trainerId)
             for (j = 0; gTrainers[trainerId - TRAINER_CUSTOM_PARTNER].trainerName[j] != EOS; j++)
                 nameHash += gTrainers[trainerId - TRAINER_CUSTOM_PARTNER].trainerName[j];
 
+            gender = MON_MALE; // defaulting to 0
+
             if (gTrainers[trainerId - TRAINER_CUSTOM_PARTNER].doubleBattle == TRUE)
                 personalityValue = 0x80;
 
