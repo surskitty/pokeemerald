@@ -169,7 +169,7 @@ AI_DOUBLE_BATTLE_TEST("AI will choose Beat Up on an ally with Justified if it wi
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_CLEFABLE);
         OPPONENT(SPECIES_SNEASEL) { Moves(MOVE_BEAT_UP); }
-        OPPONENT(SPECIES_GROWLITHE) { Moves(MOVE_CELEBRATE); HP(currentHP); Ability(ability); }
+        OPPONENT(SPECIES_GROWLITHE) { Moves(MOVE_CELEBRATE, MOVE_TACKLE); HP(currentHP); Ability(ability); }
     } WHEN {
         if (!(currentHP == 1) && (ability == ABILITY_JUSTIFIED))
             TURN { EXPECT_MOVE(opponentLeft, MOVE_BEAT_UP, target: opponentRight); }
