@@ -131,47 +131,49 @@ AI_DOUBLE_BATTLE_TEST("AI will not choose Earthquake if it damages the partner w
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI will choose Bulldoze if it triggers its ally's Defiant but will not KO the ally")
+AI_DOUBLE_BATTLE_TEST("AI will choose Bulldoze if it triggers its ally's ability but will not KO the ally")
 {
-    TO_DO;
+    ASSUME(GetMoveTarget(MOVE_BULLDOZE) == MOVE_TARGET_FOES_AND_ALLY);
 
-    u32 species, ability, level;    
+    u32 species, ability, currentHP;    
 
-    PARAMETRIZE { species = SPECIES_KINGAMBIT; ability = ABILITY_DEFIANT;  level = 100; }
-    PARAMETRIZE { species = SPECIES_PAWNIARD;  ability = ABILITY_PRESSURE; level = 1; }
-    PARAMETRIZE { species = SPECIES_PAWNIARD;  ability = ABILITY_DEFIANT;  level = 1; }
+    PARAMETRIZE { species = SPECIES_KINGAMBIT; ability = ABILITY_DEFIANT;  currentHP = 400; }
+    PARAMETRIZE { species = SPECIES_SHUCKLE;   ability = ABILITY_CONTRARY; currentHP = 400; }
+    PARAMETRIZE { species = SPECIES_PAWNIARD;  ability = ABILITY_PRESSURE; currentHP = 1; }
+    PARAMETRIZE { species = SPECIES_PAWNIARD;  ability = ABILITY_DEFIANT;  currentHP = 1; }
+    PARAMETRIZE { species = SPECIES_SHUCKLE;   ability = ABILITY_CONTRARY; currentHP = 1; }
 
     GIVEN {
-        ASSUME(GetMoveTarget(MOVE_EARTHQUAKE) == MOVE_TARGET_FOES_AND_ALLY);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
-        OPPONENT(SPECIES_PHANPY) { Moves(MOVE_BULLDOZE, MOVE_TACKLE); }
-        OPPONENT(species) { Moves(MOVE_CELEBRATE); Level(level); Ability(ability); }
+        OPPONENT(SPECIES_PHANPY) { Moves(MOVE_BULLDOZE, MOVE_HIGH_HORSEPOWER); }
+        OPPONENT(species) { Moves(MOVE_CELEBRATE); HP(currentHP); Ability(ability); Moves(MOVE_TACKLE);}
     } WHEN {
-        if ((species == SPECIES_KINGAMBIT) && (ability == ABILITY_DEFIANT))
+        if (currentHP != 1)
             TURN { EXPECT_MOVE(opponentLeft, MOVE_BULLDOZE); }
         else
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_TACKLE, target: playerLeft); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_HIGH_HORSEPOWER); }
     }
 }
 
 AI_DOUBLE_BATTLE_TEST("AI will choose Beat Up on an ally with Justified if it will benefit the ally")
 {
-    u32 ability, currentHP;
+    u32 defAbility, atkAbility, currentHP;
 
-    PARAMETRIZE { ability = ABILITY_FLASH_FIRE; currentHP = 400; }
-    PARAMETRIZE { ability = ABILITY_JUSTIFIED;  currentHP = 400; }
-    PARAMETRIZE { ability = ABILITY_JUSTIFIED;  currentHP = 1; }
+    PARAMETRIZE { defAbility = ABILITY_FLASH_FIRE; atkAbility = ABILITY_SCRAPPY;        currentHP = 400; }
+    PARAMETRIZE { defAbility = ABILITY_JUSTIFIED;  atkAbility = ABILITY_SCRAPPY;        currentHP = 400; }
+    PARAMETRIZE { defAbility = ABILITY_JUSTIFIED;  atkAbility = ABILITY_MOLD_BREAKER;   currentHP = 400; }
+    PARAMETRIZE { defAbility = ABILITY_JUSTIFIED;  atkAbility = ABILITY_SCRAPPY;        currentHP = 1; }
 
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_CLEFABLE);
-        OPPONENT(SPECIES_SNEASEL) { Moves(MOVE_BEAT_UP); }
-        OPPONENT(SPECIES_GROWLITHE) { Moves(MOVE_CELEBRATE, MOVE_TACKLE); HP(currentHP); Ability(ability); }
+        OPPONENT(SPECIES_PANGORO)   { Ability(atkAbility); Moves(MOVE_BEAT_UP); }
+        OPPONENT(SPECIES_GROWLITHE) { Moves(MOVE_CELEBRATE, MOVE_TACKLE); HP(currentHP); Ability(defAbility); }
     } WHEN {
-        if (!(currentHP == 1) && (ability == ABILITY_JUSTIFIED))
+        if (!(currentHP == 1) && (defAbility == ABILITY_JUSTIFIED) && (atkAbility != ABILITY_MOLD_BREAKER))
             TURN { EXPECT_MOVE(opponentLeft, MOVE_BEAT_UP, target: opponentRight); }
         else
             TURN { EXPECT_MOVE(opponentLeft, MOVE_BEAT_UP, target: playerLeft); }
@@ -244,89 +246,93 @@ AI_DOUBLE_BATTLE_TEST("AI recognizes Volt Absorb received from Trace")
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("Skill Swap: AI knows that giving its ally its immunity would let it use a spread move")
+AI_DOUBLE_BATTLE_TEST("Skill Swap: AI tries to give its ally an immunity when it has a spread move")
 {
     ASSUME(GetMoveTarget(MOVE_SURF)         == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveEffect(MOVE_SKILL_SWAP)   == EFFECT_SKILL_SWAP);
 
-    u32 ability, move;
+    u32 ability, move, species;
 
-    PARAMETRIZE { ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
+    PARAMETRIZE { species = SPECIES_PSYDUCK;    ability = ABILITY_CLOUD_NINE;         move = MOVE_CROSS_CHOP; }
+    PARAMETRIZE { species = SPECIES_UNOWN;      ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_ORTHWORM;   ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_LANTURN;    ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_EMOLGA;     ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_GROWLITHE;  ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_DACHSBUN;   ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_QUAGSIRE;   ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_ZIGZAGOON);
         PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ability); Moves(MOVE_SKILL_SWAP, move, MOVE_TACKLE); }
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ABILITY_CLOUD_NINE); Moves(MOVE_CELEBRATE);  }
+        OPPONENT(species) { Ability(ability); Moves(MOVE_SKILL_SWAP, move); }
+        OPPONENT(SPECIES_ZIGZAGOON) { Ability(ABILITY_GLUTTONY); Moves(MOVE_TACKLE);  }
     } WHEN {
-        TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_TACKLE); NOT_EXPECT_MOVE(opponentLeft, move); }
-        TURN { EXPECT_MOVE(opponentLeft, move); }
-    } THEN {
-        EXPECT(gBattleResources->aiData->abilities[B_POSITION_OPPONENT_RIGHT] == ability);
+        if (move != MOVE_CROSS_CHOP)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SKILL_SWAP, target: opponentRight); }
+        else
+            TURN { EXPECT_MOVE(opponentLeft, move); }
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("Skill Swap: AI knows that taking its ally's immunity would let its ally use a spread move")
+AI_DOUBLE_BATTLE_TEST("Skill Swap: AI tries to take its ally's immunity when the ally has a spread move")
 {
     ASSUME(GetMoveTarget(MOVE_SURF)         == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveEffect(MOVE_SKILL_SWAP)   == EFFECT_SKILL_SWAP);
 
-    u32 ability, move;
+    u32 ability, move, species;
 
-    PARAMETRIZE { ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
+    PARAMETRIZE { species = SPECIES_PSYDUCK;    ability = ABILITY_CLOUD_NINE;         move = MOVE_CROSS_CHOP; }
+    PARAMETRIZE { species = SPECIES_CLAYDOL;    ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_ORTHWORM;   ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_LANTURN;    ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_EMOLGA;     ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_GROWLITHE;  ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_DACHSBUN;   ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_QUAGSIRE;   ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
-        PLAYER(SPECIES_ZIGZAGOON);
-        PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ABILITY_CLOUD_NINE); Moves(MOVE_SKILL_SWAP, MOVE_TACKLE); }
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ability); Moves(move, MOVE_TACKLE);  }
+        PLAYER(SPECIES_ZIGZAGOON_GALAR);
+        PLAYER(SPECIES_ZIGZAGOON_GALAR);
+        OPPONENT(SPECIES_PSYDUCK) { Ability(ABILITY_CLOUD_NINE); Moves(MOVE_SKILL_SWAP, MOVE_CROSS_CHOP); }
+        OPPONENT(species) { Ability(ability); Moves(move, MOVE_TACKLE);  }
     } WHEN {
-        TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_TACKLE); }
-    } THEN {
-        EXPECT(gBattleResources->aiData->abilities[B_POSITION_OPPONENT_LEFT] == ability);
+        if (move != MOVE_CROSS_CHOP)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SKILL_SWAP, target: opponentRight); }
+        else
+            TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_SKILL_SWAP); }
     }
 }
 
 AI_DOUBLE_BATTLE_TEST("Entrainment: AI knows that giving its ally its immunity is strong")
 {
-TO_DO;
     ASSUME(GetMoveTarget(MOVE_SURF)         == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveEffect(MOVE_ENTRAINMENT)  == EFFECT_ENTRAINMENT);
 
-    u32 ability, move;
+    u32 ability, move, species;
 
-    PARAMETRIZE { ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
+    PARAMETRIZE { species = SPECIES_PSYDUCK;    ability = ABILITY_DAMP;               move = MOVE_CROSS_CHOP; }
+    PARAMETRIZE { species = SPECIES_CLAYDOL;    ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_ORTHWORM;   ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_LANTURN;    ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_EMOLGA;     ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_GROWLITHE;  ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_DACHSBUN;   ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_QUAGSIRE;   ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_ZIGZAGOON);
         PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ability); Moves(MOVE_ENTRAINMENT, move, MOVE_TACKLE); }
+        OPPONENT(species) { Ability(ability); Moves(MOVE_ENTRAINMENT, move, MOVE_TACKLE); }
         OPPONENT(SPECIES_PSYDUCK) { Ability(ABILITY_CLOUD_NINE); Moves(MOVE_CELEBRATE);  }
     } WHEN {
-        TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_TACKLE); NOT_EXPECT_MOVE(opponentLeft, move); }
-    } THEN {
-        EXPECT(gBattleResources->aiData->abilities[B_POSITION_OPPONENT_RIGHT] == ability);
+        if (ability != ABILITY_DAMP)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_ENTRAINMENT, target: opponentRight); }
+        else
+            TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_ENTRAINMENT); }
     }
 }
 
@@ -335,26 +341,29 @@ AI_DOUBLE_BATTLE_TEST("Role Play: AI knows that copying an ally's immunity is st
     ASSUME(GetMoveTarget(MOVE_SURF)         == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveEffect(MOVE_ROLE_PLAY)    == EFFECT_ROLE_PLAY);
 
-    u32 ability, move;
+    u32 ability, move, species;
 
-    PARAMETRIZE { ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
-    PARAMETRIZE { ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
-    PARAMETRIZE { ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
-    PARAMETRIZE { ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
+    PARAMETRIZE { species = SPECIES_PSYDUCK;    ability = ABILITY_DAMP;               move = MOVE_CROSS_CHOP; }
+    PARAMETRIZE { species = SPECIES_CLAYDOL;    ability = ABILITY_LEVITATE;           move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_ORTHWORM;   ability = ABILITY_EARTH_EATER;        move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { species = SPECIES_LANTURN;    ability = ABILITY_VOLT_ABSORB;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;      move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_EMOLGA;     ability = ABILITY_MOTOR_DRIVE;        move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_GROWLITHE;  ability = ABILITY_FLASH_FIRE;         move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_DACHSBUN;   ability = ABILITY_WELL_BAKED_BODY;    move = MOVE_LAVA_PLUME; }
+    PARAMETRIZE { species = SPECIES_QUAGSIRE;   ability = ABILITY_WATER_ABSORB;       move = MOVE_SURF; }
+
     GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
-        PLAYER(SPECIES_ZIGZAGOON);
-        PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ABILITY_CLOUD_NINE); Moves(MOVE_ROLE_PLAY, MOVE_TACKLE); }
-        OPPONENT(SPECIES_PSYDUCK) { Ability(ability); Moves(move, MOVE_TACKLE);  }
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_SABLEYE) { Ability(ABILITY_STALL); };
+        PLAYER(SPECIES_SABLEYE) { Ability(ABILITY_STALL); };
+        OPPONENT(SPECIES_DELPHOX) { Ability(ABILITY_BLAZE); Moves(MOVE_ROLE_PLAY, MOVE_FIRE_BLAST); }
+        OPPONENT(species) { Ability(ability); Moves(move, MOVE_TACKLE);  }
     } WHEN {
-        TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_TACKLE); }
-    } THEN {
-        EXPECT(gBattleResources->aiData->abilities[B_POSITION_OPPONENT_LEFT] == ability);
+        if (ability != ABILITY_DAMP)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_ROLE_PLAY, target: opponentRight); }
+        else
+            TURN { NOT_EXPECT_MOVE(opponentLeft, MOVE_ROLE_PLAY); }
     }
 }
 

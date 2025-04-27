@@ -57,4 +57,10 @@
 // AI prediction chances
 #define PREDICT_SWITCH_CHANCE                                   50
 
+// Acceptable number of hits to KO with friendly fire.
+#define FRIENDLY_FIRE_RISKY_THRESHOLD           2
+#define FRIENDLY_FIRE_NORMAL_THRESHOLD          3
+#define FRIENDLY_FIRE_CONSERVATIVE_THRESHOLD    4
+
+
 #endif // GUARD_CONFIG_AI_H
