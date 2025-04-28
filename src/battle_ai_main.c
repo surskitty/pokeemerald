@@ -2893,6 +2893,11 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         break;
     } // global move effect check
 
+    if ((moveTarget == MOVE_TARGET_FOES_AND_ALLY) &&(CanIndexMoveFaintTarget(battlerAtk, battlerAtkPartner, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING)))
+    {
+        RETURN_SCORE_MINUS(10);
+    } 
+
     // check specific target
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
     {
@@ -2902,6 +2907,11 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             friendlyFire = FRIENDLY_FIRE_RISKY_THRESHOLD;
         if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_CONSERVATIVE)
             friendlyFire = FRIENDLY_FIRE_CONSERVATIVE_THRESHOLD;
+
+        if (CanIndexMoveFaintTarget(battlerAtk, battlerAtkPartner, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING))
+        {
+            RETURN_SCORE_MINUS(10);
+        } 
 
         // partner ability checks
         if (!partnerProtecting && moveTarget != MOVE_TARGET_BOTH && !DoesBattlerIgnoreAbilityChecks(battlerAtk, aiData->abilities[battlerAtk], move))
@@ -2984,7 +2994,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     && BattlerStatCanRise(battlerAtkPartner, atkPartnerAbility, STAT_ATK)
                     && (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING) >= friendlyFire))
                 {
-                    ADJUST_SCORE(GOOD_EFFECT);
+                    ADJUST_SCORE(WEAK_EFFECT);
                 }
                 break;
             case ABILITY_RATTLED:
@@ -2997,10 +3007,19 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 }
                 break;
             case ABILITY_CONTRARY:
-                if (IsStatLoweringEffect(effect)
-                    && (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING) >= friendlyFire))
+            case ABILITY_DEFIANT:
+            case ABILITY_COMPETITIVE:
+                if (IsStatLoweringEffect(effect) && (moveTarget == MOVE_TARGET_FOES_AND_ALLY))
                 {
-                    ADJUST_SCORE(DECENT_EFFECT);
+                    if ((atkPartnerAbility == ABILITY_DEFIANT) && !BattlerStatCanRise(battlerAtkPartner, atkPartnerAbility, STAT_ATK))
+                        break;
+                    if ((atkPartnerAbility == ABILITY_COMPETITIVE) && !BattlerStatCanRise(battlerAtkPartner, atkPartnerAbility, STAT_SPATK))
+                        break;
+                    ADJUST_SCORE(WEAK_EFFECT);
+                    if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING) >= friendlyFire)
+                    {
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    }
                 }
                 break;
             }
@@ -3193,7 +3212,12 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             } // attacker move effects
         } // check partner protecting
 
-        ADJUST_SCORE(-30); // otherwise, don't target partner
+        // if after all checks, the score is unchanged, don't attack the partner
+        if (score == AI_SCORE_DEFAULT)
+        {
+            ADJUST_SCORE(-30);
+        }
+
     }
     else // checking opponent
     {
