@@ -2893,21 +2893,45 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         break;
     } // global move effect check
 
+    // Don't kill your ally for no reason.
+    // TODO: logic for when it's OK to kill your ally.
+    // But for now, don't kill your ally for no reason.
     if ((moveTarget == MOVE_TARGET_FOES_AND_ALLY) &&(CanIndexMoveFaintTarget(battlerAtk, battlerAtkPartner, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING)))
     {
         RETURN_SCORE_MINUS(10);
     } 
 
+    u32 friendlyFire = FRIENDLY_FIRE_NORMAL_THRESHOLD;
+    
+    if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_RISKY)
+        friendlyFire = FRIENDLY_FIRE_RISKY_THRESHOLD;
+    if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_CONSERVATIVE)
+        friendlyFire = FRIENDLY_FIRE_CONSERVATIVE_THRESHOLD;
+
+    // Triggering your ally's hold item should only be done deliberately with a spread move.
+    if (moveTarget == MOVE_TARGET_FOES_AND_ALLY)
+    {
+        switch (atkPartnerHoldEffect)
+        {
+        case HOLD_EFFECT_WEAKNESS_POLICY:
+            if (CalcTypeEffectivenessMultiplier(move, moveType, battlerAtk, battlerAtkPartner, atkPartnerAbility, FALSE) >= UQ_4_12(2.0))
+            {
+                ADJUST_SCORE(WEAK_EFFECT);
+                
+                if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING) >= friendlyFire)
+                {
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }
+            }            
+            break;
+        default:
+            break;
+        }
+    }
+
     // check specific target
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
     {
-        u32 friendlyFire = FRIENDLY_FIRE_NORMAL_THRESHOLD;
-        
-        if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_RISKY)
-            friendlyFire = FRIENDLY_FIRE_RISKY_THRESHOLD;
-        if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_CONSERVATIVE)
-            friendlyFire = FRIENDLY_FIRE_CONSERVATIVE_THRESHOLD;
-
         if (CanIndexMoveFaintTarget(battlerAtk, battlerAtkPartner, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING))
         {
             RETURN_SCORE_MINUS(10);

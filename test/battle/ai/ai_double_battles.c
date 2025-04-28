@@ -367,10 +367,8 @@ AI_DOUBLE_BATTLE_TEST("Role Play: AI knows that copying an ally's immunity is st
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI activates its ally's Weakness Policy with spread moves if it will not KO")
+AI_DOUBLE_BATTLE_TEST("AI activates its ally's Weakness Policy with spread moves if it is below the damage threshold")
 {
-    TO_DO;
-    
     u32 holdItem, currentHP;
 
     PARAMETRIZE { holdItem = ITEM_NONE; currentHP = 500; }
@@ -383,13 +381,13 @@ AI_DOUBLE_BATTLE_TEST("AI activates its ally's Weakness Policy with spread moves
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
-        OPPONENT(SPECIES_PHANPY) { Moves(MOVE_EARTHQUAKE, MOVE_STOMPING_TANTRUM); }
-        OPPONENT(SPECIES_INCINEROAR) { Moves(MOVE_CELEBRATE); Item(holdItem); HP(currentHP); }
+        OPPONENT(SPECIES_PHANPY) { Moves(MOVE_BULLDOZE, MOVE_STOMPING_TANTRUM); }
+        OPPONENT(SPECIES_INCINEROAR) { Moves(MOVE_DARKEST_LARIAT); Item(holdItem); HP(currentHP); }
     } WHEN {
         if ((holdItem = ITEM_WEAKNESS_POLICY) && (currentHP == 500))
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_EARTHQUAKE); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_BULLDOZE); }
         else
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_STOMPING_TANTRUM, target: playerLeft); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_STOMPING_TANTRUM); }
     }
 }
 
