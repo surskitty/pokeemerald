@@ -3,14 +3,20 @@
 ### Q: How do I disable DNS?
 A: Set `OW_ENABLE_DNS` to `FALSE` in `include/config/overworld.h`.
 
-### Q: What map changes need to be made for DNS?
-A: If your project uses vanilla Emerald maps, and you have _not_ edited them already, revert commit [a5b079d833f18f66ebd53ac77f00227ae4a1f389](https://github.com/rh-hideout/pokeemerald-expansion/pull/6562/commits/a5b079d833f18f66ebd53ac77f00227ae4a1f389).
+### Q: What map changes should be made for DNS?
+A: By default, the only map changes that need to be made are to edit the Lavaridge Town map to change the metatiles the two old ladies are on in the hot springs to be the normal hot spring water tile. This is to avoid a visual bug from when `OW_OBJECT_VANILLA_SHADOWS` is FALSE.
 
-If you _have_ edited them already, you will need to edit the Lavaridge Town map to change the metatiles the two old ladies are on in the hot springs to be the normal hot spring water tile. You will also want to add some of the lighting object events from that commit, and copy the tileset changes and pla files to have as much of Hoenn light-blended as possible.
+However, by default no maps have lighting effects of any kind. The rest of this tutorial is to aid in adding lighting effects.
 
-If you are not using Hoenn maps, the primary concern is that you do not use the exact same colors in a palette for both a window light and a standard color. By default, there are no lights, which prevents any strange effects like yellow water.
+If you intend to use vanilla maps and have not already edited them, revert commit [a5b079d833f18f66ebd53ac77f00227ae4a1f389](https://github.com/rh-hideout/pokeemerald-expansion/pull/6562/commits/a5b079d833f18f66ebd53ac77f00227ae4a1f389). This commit includes a lot of tileset, metatile, and palette changes to accommodate light-blending, and applies `OBJ_EVENT_GFX_LIGHT_SPRITE` where they make sense.
 
-When writing map scripts, `fadescreenswapbuffers` should be preferred over `fadescreen` unless you are using `OW_OBJECT_VANILLA_SHADOWS`.
+If you _have_ edited vanilla maps, the merge conflicts from reverting that commit will cause problems. If you are using vanilla maps, manually copy some of the tileset changes, `.pal`, and `.pla` files in your branch, and begin rebuilding your metatiles to have windows use the palettes that have a `.pla` for light blending the correct color slots. [Triple-layer metatiles](https://github.com/pret/pokeemerald/wiki/Triple-layer-metatiles) are highly recommended.
+
+You will also want to add the lighting object events from that commit.
+
+If you are not using Hoenn maps, the primary concern is that you do not use the exact same colors in a palette for a color you want to be darkened during night time and a color you want to light up. Err towards not light blending a color if you aren't sure how to avoid conflicts.
+
+When writing map scripts, `fadescreenswapbuffers` should be preferred over `fadescreen`. This is to avoid odd behavior from the GBA's limitations in alpha blending.
 
 ### Q: How do I make lightbulbs glow?
 
@@ -44,6 +50,13 @@ The windows appear as normal during the day time (blue) and light up in the nigh
 
 ### Q: How do I return to using regular shadows?
 A: Set `OW_OBJECT_VANILLA_SHADOWS` to `TRUE` in `include/config/overworld.h`.
+
+### Q: What graphical errors are likely to occur while using DNS?
+A: If you have `OW_POPUP_GENERATION` set to `GEN_5` and `OW_POPUP_BW_ALPHA_BLEND` set to `TRUE`, you may have color errors during map popups. This is due to the GBA being severely limited in use of color blending and having both the overworld blended and the popup blended is difficult.
+
+If you have `OW_OBJECT_VANILLA_SHADOWS` set to `TRUE`, this will also cause visual errors.
+
+Any other graphical error should be reported.
 
 ### Q: How do I disable shadows for certain locations?
 A: Shadows can be disabled for certain locations by modifying the `CurrentMapHasShadows` function in `src/overworld.c`.
