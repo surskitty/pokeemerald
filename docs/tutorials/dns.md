@@ -12,12 +12,12 @@ If you are not using Hoenn maps, the primary concern is that you do not use the 
 
 When writing map scripts, `fadescreenswapbuffers` should be preferred over `fadescreen` unless you are using `OW_OBJECT_VANILLA_SHADOWS`.
 
-### How do I make lightbulbs glow?
+### Q: How do I make lightbulbs glow?
 
 ![Rustboro before adding lamp object events](/docs/tutorials/img/dns/without_lamp.png)
 ![Rustboro after adding lamp object events](/docs/tutorials/img/dns/with_lamp.png)
 
-Making lamps glow is not part of the tileset itself.  Instead, place certain object events on top of where you desire a glowing effect.
+A: Making lamps glow is not part of the tileset itself.  Instead, place certain object events on top of where you desire a glowing effect.
 
 These object events should use `OBJ_EVENT_GFX_LIGHT_SPRITE` and then as their `trainer_sight_or_berry_tree_id`, use `LIGHT_TYPE_BALL` for round lights (such as candles or gas lamps), `LIGHT_TYPE_PKMN_CENTER_SIGN` over a Pok&eacute;mon Center sign, or `LIGHT_TYPE_POKE_MART_SIGN` over a Pok&eacute;mart sign.
 
@@ -40,6 +40,7 @@ During the day time, these color indices appear as normal, but will be blended w
 
 ![Rustboro gym after light-blending the windows](/docs/tutorials/img/dns/window_lights.png)
 
+The windows appear as normal during the day time (blue) and light up in the night. These use the default color.
 
 ### Q: How do I return to using regular shadows?
 A: Set `OW_OBJECT_VANILLA_SHADOWS` to `TRUE` in `include/config/overworld.h`.
