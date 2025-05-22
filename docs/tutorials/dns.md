@@ -4,7 +4,7 @@
 A: Set `OW_ENABLE_DNS` to `FALSE` in `include/config/overworld.h`.
 
 ### Q: What map changes should be made for DNS?
-A: By default, the only map changes that need to be made are to edit the Lavaridge Town map to change the metatiles the two old ladies are on in the hot springs to be the normal hot spring water tile. This is to avoid a visual bug from when `OW_OBJECT_VANILLA_SHADOWS` is FALSE.
+A: By default, the only Hoenn map changes that need to be made are to edit the Lavaridge Town map to change the metatiles the two old ladies are on in the hot springs to be the normal hot spring water tile. This is to avoid a visual bug from when `OW_OBJECT_VANILLA_SHADOWS` is FALSE.
 
 However, by default no maps have lighting effects of any kind. The rest of this tutorial is to aid in adding lighting effects.
 
@@ -14,7 +14,7 @@ If you _have_ edited vanilla maps, the merge conflicts from reverting that commi
 
 You will also want to add the lighting object events from that commit.
 
-If you are not using Hoenn maps, the primary concern is that you do not use the exact same colors in a palette for a color you want to be darkened during night time and a color you want to light up. Err towards not light blending a color if you aren't sure how to avoid conflicts.
+If you are not using Hoenn maps, the primary concern is that you do not use the exact same palette indices for colors you want to be darkened during night time and colors you want to light up. Err towards not light blending a color if you aren't sure how to avoid conflicts.
 
 When writing map scripts, `fadescreenswapbuffers` should be preferred over `fadescreen`. This is to avoid odd behavior from the GBA's limitations in alpha blending.
 
@@ -42,7 +42,7 @@ on separate lines to mark those colors as being light-blended, i.e:
 10
 ```
 
-During the day time, these color indices appear as normal, but will be blended with either yellow or the 0 index at night. These indices should only be used for things you expect to light up. If you are using porytiles, palette overrides and using slight alterations to a color will aid you in avoiding color conflicts where the wrong index is assigned.
+During the day time, these color indices appear as normal, but will be blended with either yellow or the 0 index at night. These indices should only be used for things you expect to light up. If you are using [porytiles](https://github.com/grunt-lucas/porytiles/wiki), palette overrides and using slight alterations to a color will aid you in avoiding color conflicts where the wrong index is assigned.
 
 ![Rustboro gym after light-blending the windows](/docs/tutorials/img/dns/window_lights.png)
 
