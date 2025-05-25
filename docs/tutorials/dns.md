@@ -25,7 +25,7 @@ When writing map scripts, `fadescreenswapbuffers` should be preferred over `fade
 
 A: Making lamps glow is not part of the tileset itself.  Instead, place certain object events on top of where you desire a glowing effect.
 
-These object events should use `OBJ_EVENT_GFX_LIGHT_SPRITE` and then as their `trainer_sight_or_berry_tree_id`, use `LIGHT_TYPE_BALL` for round lights (such as candles or gas lamps), `LIGHT_TYPE_PKMN_CENTER_SIGN` over a Pok&eacute;mon Center sign, or `LIGHT_TYPE_POKE_MART_SIGN` over a Pok&eacute;mart sign.
+These object events should use `OBJ_EVENT_GFX_LIGHT_SPRITE` and then as their `trainer_sight_or_berry_tree_id` (called Sight Radius/Berry Tree ID in porymap), use `LIGHT_TYPE_BALL` for round lights (such as candles or gas lamps), `LIGHT_TYPE_PKMN_CENTER_SIGN` over a Pok&eacute;mon Center sign, or `LIGHT_TYPE_POKE_MART_SIGN` over a Pok&eacute;mart sign.
 
 ### Q: How do I mark certain colors in a palette as light-blended?
 A: Create a `.pla` file in the same folder as the `.pal` with the same name. This can be done on any kind of palette; the commit to revert listed up above only applies it to tilesets, but you could easily do it for object events as well. Of note, there is a [commit reverted for being out of scope](https://github.com/rh-hideout/pokeemerald-expansion/pull/6562/commits/348f5967ac8d383c827b415e1040234a3f28626f) to make a follower Ampharos's tail glow.
