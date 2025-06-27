@@ -220,11 +220,9 @@ enum AbilityChangeEffect
     CHANGE_WANDERING_SPIRIT,
 };
 
-
-
 bool32 IsMoxieTypeAbility(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
-bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect);
+bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, struct AiLogicData *aiData);
 s32 AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect);
 
 // partner logic

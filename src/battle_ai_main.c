@@ -2362,13 +2362,13 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_ROLE_PLAY:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ROLE_PLAY) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ROLE_PLAY, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5))
                 ADJUST_SCORE(-4);
             break;
         case EFFECT_DOODLE: // Same as Role Play, but also check if the partner's ability should be replaced
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_DOODLE) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_DOODLE, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5) || IsAbilityOfRating(aiData->abilities[BATTLE_PARTNER(battlerAtk)], 5))
                 ADJUST_SCORE(-4);
@@ -2394,23 +2394,23 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-20);
             break;
         case EFFECT_SKILL_SWAP:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SKILL_SWAP) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SKILL_SWAP, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_WORRY_SEED:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_WORRY_SEED) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_WORRY_SEED, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_GASTRO_ACID:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_GASTRO_ACID) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_GASTRO_ACID, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_ENTRAINMENT:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ENTRAINMENT) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ENTRAINMENT, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_SIMPLE_BEAM:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SIMPLE_BEAM) == FALSE)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SIMPLE_BEAM, aiData) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_SNATCH:

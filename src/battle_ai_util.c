@@ -4949,7 +4949,7 @@ bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
 
 // Used by CheckBadMove; this is determining purely if the effect CAN change an ability, not if it SHOULD.
 // At the moment, the parts about Mummy and Wandering Spirit are not actually used.
-bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect)
+bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, struct AiLogicData *aiData)
 {
     // Dynamaxed Pokemon are immune to some ability-changing effects. 
     if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
@@ -4967,8 +4967,6 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
 
     if (gStatuses3[battlerDef] & STATUS3_GASTRO_ACID)
         return FALSE;
-
-    struct AiLogicData *aiData = gAiLogicData;
     
     u32 atkAbility = aiData->abilities[battlerAtk];
     u32 defAbility = aiData->abilities[battlerDef];
