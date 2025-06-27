@@ -3618,6 +3618,12 @@ bool32 IsValidDoubleBattle(u32 battlerAtk)
     return FALSE;
 }
 
+// TODO: Handling for when the 'partner' is not actually a partner, a la Battle Royale or B_WILD_NATURAL_ENEMIES
+bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef)
+{
+    return ((battlerAtk) == (battlerDef ^ BIT_FLANK));
+}
+
 u32 GetAllyChosenMove(u32 battlerId)
 {
     u32 partnerBattler = BATTLE_PARTNER(battlerId);
@@ -4887,49 +4893,57 @@ bool32 IsMoxieTypeAbility(u32 ability)
     }
 }
 
-// Should the AI use a spread move to deliberately activate its partner's ability?
-bool32 ShouldTriggerAbility(u32 battler, u32 ability)
+// TODO: work out when to attack into the player's contextually 'beneficial' ability
+bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
 {
-    switch (ability)
+    if (IsTargetingPartner(battlerAtk, battlerDef))
     {
-        case ABILITY_LIGHTNING_ROD:
-        case ABILITY_STORM_DRAIN:
-            if (B_REDIRECT_ABILITY_IMMUNITY < GEN_5)
+        switch (ability)
+        {
+            case ABILITY_LIGHTNING_ROD:
+            case ABILITY_STORM_DRAIN:
+                if (B_REDIRECT_ABILITY_IMMUNITY < GEN_5)
+                    return FALSE;
+                else
+                    return (BattlerStatCanRise(battlerDef, ability, STAT_SPATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL));
+
+            case ABILITY_DEFIANT:
+            case ABILITY_JUSTIFIED:
+            case ABILITY_MOXIE:
+            case ABILITY_SAP_SIPPER:
+            case ABILITY_THERMAL_EXCHANGE:
+                return (BattlerStatCanRise(battlerDef, ability, STAT_ATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL));
+
+            case ABILITY_COMPETITIVE:
+                return (BattlerStatCanRise(battlerDef, ability, STAT_SPATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL));
+
+            // TODO: logic for when to trigger Contrary
+            case ABILITY_CONTRARY:
+                return TRUE;
+
+            case ABILITY_DRY_SKIN:
+            case ABILITY_VOLT_ABSORB:
+            case ABILITY_WATER_ABSORB:
+                return (gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_HP_AWARE);
+
+            case ABILITY_RATTLED:
+            case ABILITY_STEAM_ENGINE:
+                return BattlerStatCanRise(battlerDef, ability, STAT_SPEED);
+
+            case ABILITY_FLASH_FIRE:
+                return (HasMoveWithType(battlerDef, TYPE_FIRE) && !gDisableStructs[battlerDef].flashFireBoosted);
+
+            case ABILITY_WATER_COMPACTION:
+            case ABILITY_WELL_BAKED_BODY:
+                return (BattlerStatCanRise(battlerDef, ability, STAT_DEF));
+
+            default:
                 return FALSE;
-            else
-                return (BattlerStatCanRise(battler, ability, STAT_SPATK) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL));
-
-        case ABILITY_DEFIANT:
-        case ABILITY_JUSTIFIED:
-        case ABILITY_MOXIE:
-        case ABILITY_SAP_SIPPER:
-        case ABILITY_THERMAL_EXCHANGE:
-            return (BattlerStatCanRise(battler, ability, STAT_ATK) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL));
-
-        case ABILITY_COMPETITIVE:
-            return (BattlerStatCanRise(battler, ability, STAT_SPATK) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL));
-
-        case ABILITY_CONTRARY:
-            return TRUE;
-
-        case ABILITY_DRY_SKIN:
-        case ABILITY_VOLT_ABSORB:
-        case ABILITY_WATER_ABSORB:
-            return (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_HP_AWARE);
-
-        case ABILITY_RATTLED:
-        case ABILITY_STEAM_ENGINE:
-            return BattlerStatCanRise(battler, ability, STAT_SPEED);
-
-        case ABILITY_FLASH_FIRE:
-            return (HasMoveWithType(battler, TYPE_FIRE) && !gDisableStructs[battler].flashFireBoosted);
-
-        case ABILITY_WATER_COMPACTION:
-        case ABILITY_WELL_BAKED_BODY:
-            return (BattlerStatCanRise(battler, ability, STAT_DEF));
-
-        default:
-            return FALSE;
+        }
+    }
+    else
+    {
+        return FALSE;
     }
 }
 

@@ -208,10 +208,10 @@ bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
 
 // ability logic
 bool32 IsMoxieTypeAbility(u32 ability);
-bool32 ShouldTriggerAbility(u32 battler, u32 ability);
+bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
 
 // partner logic
-#define IS_TARGETING_PARTNER(battlerAtk, battlerDef)((battlerAtk) == (battlerDef ^ BIT_FLANK))
+bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef);
 u32 GetAllyChosenMove(u32 battlerId);
 bool32 IsValidDoubleBattle(u32 battlerAtk);
 bool32 DoesPartnerHaveSameMoveEffect(u32 battlerAtkPartner, u32 battlerDef, u32 move, u32 partnerMove);
