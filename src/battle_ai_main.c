@@ -2362,21 +2362,13 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_ROLE_PLAY:
-            if (aiData->abilities[battlerAtk] == aiData->abilities[battlerDef]
-              || aiData->abilities[battlerDef] == ABILITY_NONE
-              || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeSuppressed
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeCopied)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ROLE_PLAY) == FALSE)
                 ADJUST_SCORE(-10);
             else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5))
                 ADJUST_SCORE(-4);
             break;
         case EFFECT_DOODLE: // Same as Role Play, but also check if the partner's ability should be replaced
-            if (aiData->abilities[battlerAtk] == aiData->abilities[battlerDef]
-             || aiData->abilities[BATTLE_PARTNER(battlerAtk)] == aiData->abilities[battlerDef]
-             || aiData->abilities[battlerDef] == ABILITY_NONE
-             || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeSuppressed
-             || gAbilitiesInfo[aiData->abilities[BATTLE_PARTNER(battlerAtk)]].cantBeSuppressed
-             || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeCopied)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_DOODLE) == FALSE)
                 ADJUST_SCORE(-10);
             else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5) || IsAbilityOfRating(aiData->abilities[BATTLE_PARTNER(battlerAtk)], 5))
                 ADJUST_SCORE(-4);
@@ -2402,38 +2394,23 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-20);
             break;
         case EFFECT_SKILL_SWAP:
-            if (aiData->abilities[battlerAtk] == ABILITY_NONE || aiData->abilities[battlerDef] == ABILITY_NONE
-              || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeSwapped
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeSwapped
-              || aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
-                ADJUST_SCORE(-10);
-            else if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SKILL_SWAP) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_WORRY_SEED:
-            if (aiData->abilities[battlerDef] == ABILITY_INSOMNIA
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeOverwritten
-              || aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_WORRY_SEED) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_GASTRO_ACID:
-            if (gStatuses3[battlerDef] & STATUS3_GASTRO_ACID
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeSuppressed)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_GASTRO_ACID) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_ENTRAINMENT:
-            if (aiData->abilities[battlerAtk] == ABILITY_NONE
-              || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeCopied
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeOverwritten
-              || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_ABILITY_SHIELD)
-                ADJUST_SCORE(-10);
-            else if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ENTRAINMENT) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_SIMPLE_BEAM:
-            if (aiData->abilities[battlerDef] == ABILITY_SIMPLE
-              || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeOverwritten
-              || aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SIMPLE_BEAM) == FALSE)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_SNATCH:

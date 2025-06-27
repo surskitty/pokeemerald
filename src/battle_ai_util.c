@@ -4947,6 +4947,159 @@ bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
     }
 }
 
+// Used by CheckBadMove; this is determining purely if the effect CAN change an ability, not if it SHOULD.
+// At the moment, the parts about Mummy and Wandering Spirit are not actually used.
+bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect)
+{
+    // Dynamaxed Pokemon are immune to some ability-changing effects. 
+    if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
+    {
+        switch (effect)
+        {
+            case CHANGE_ENTRAINMENT:
+            case CHANGE_SKILL_SWAP:
+            case CHANGE_WANDERING_SPIRIT:
+                return FALSE;
+            default:
+                break;
+        }
+    }
+
+    if (gStatuses3[battlerDef] & STATUS3_GASTRO_ACID)
+        return FALSE;
+
+    struct AiLogicData *aiData = gAiLogicData;
+    
+    u32 atkAbility = aiData->abilities[battlerAtk];
+    u32 defAbility = aiData->abilities[battlerDef];
+    bool32 hasSameAbility = (atkAbility == defAbility);
+
+    if (defAbility == ABILITY_NONE)
+        return FALSE;
+
+    if (atkAbility == ABILITY_NONE)
+    {
+        switch (effect)
+        {
+            case CHANGE_DOODLE:
+            case CHANGE_ENTRAINMENT:
+            case CHANGE_ROLE_PLAY:
+            case CHANGE_SKILL_SWAP:
+                return FALSE;
+
+            default:
+                break;
+        }
+    }
+
+    // Checking for Ability-specific immunities.
+    switch (effect)
+    {
+        case CHANGE_DOODLE:
+            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
+                return FALSE;
+
+            if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
+            {
+                u32 partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
+                if (gAbilitiesInfo[partnerAbility].cantBeSuppressed)
+                    return FALSE; 
+                if (partnerAbility == defAbility)
+                    return FALSE;
+            }
+            break;
+
+        case CHANGE_ROLE_PLAY:
+            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
+                return FALSE;
+            break;
+
+        case CHANGE_SKILL_SWAP:
+        case CHANGE_WANDERING_SPIRIT:
+            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSwapped || gAbilitiesInfo[defAbility].cantBeSwapped)
+                return FALSE;
+            break;
+
+        case CHANGE_MUMMY:
+        case CHANGE_GASTRO_ACID:
+            if (gAbilitiesInfo[defAbility].cantBeSuppressed)
+                return FALSE;
+            break;
+
+        case CHANGE_ENTRAINMENT:
+            if (hasSameAbility || gAbilitiesInfo[defAbility].cantBeOverwritten || gAbilitiesInfo[atkAbility].cantBeCopied)
+                return FALSE;
+            break;
+
+        case CHANGE_SIMPLE_BEAM:
+            if (defAbility == ABILITY_SIMPLE || gAbilitiesInfo[defAbility].cantBeOverwritten)
+                return FALSE;
+            break;
+
+        case CHANGE_WORRY_SEED:
+            if (defAbility == ABILITY_INSOMNIA || gAbilitiesInfo[defAbility].cantBeOverwritten)
+                return FALSE;
+            break;
+    }
+
+    if (aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
+    {
+        switch (effect)
+        {
+            case CHANGE_ENTRAINMENT:
+            case CHANGE_GASTRO_ACID:
+            case CHANGE_ROLE_PLAY:
+            case CHANGE_SIMPLE_BEAM:
+            case CHANGE_SKILL_SWAP:
+            case CHANGE_WORRY_SEED:
+            case CHANGE_MUMMY:
+            case CHANGE_WANDERING_SPIRIT:
+                return FALSE;
+            default:
+                break;
+        }
+    }
+
+    if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_ABILITY_SHIELD)
+    {
+        switch (effect)
+        {
+            case CHANGE_DOODLE:
+            case CHANGE_ROLE_PLAY:
+            case CHANGE_SKILL_SWAP:
+            case CHANGE_WANDERING_SPIRIT:
+                return FALSE;
+            default:
+                break;
+        }
+    }
+
+    return TRUE;
+}
+
+s32 AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect)
+{
+    s32 score;
+    
+    switch (effect)
+    {
+        case CHANGE_DOODLE:
+        case CHANGE_ENTRAINMENT:
+        case CHANGE_GASTRO_ACID:
+        case CHANGE_ROLE_PLAY:
+        case CHANGE_SKILL_SWAP:
+        case CHANGE_SIMPLE_BEAM:
+        case CHANGE_WORRY_SEED:
+        case CHANGE_MUMMY:
+        case CHANGE_WANDERING_SPIRIT:
+            return score;
+        
+        default:
+            return -30;
+    }
+    return score;
+}
+
 u32 GetThinkingBattler(u32 battler)
 {
     if (gAiLogicData->aiPredictionInProgress)

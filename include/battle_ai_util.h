@@ -207,8 +207,25 @@ bool32 IsWakeupTurn(u32 battler);
 bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
 
 // ability logic
+enum AbilityChangeEffect
+{
+    CHANGE_DOODLE,
+    CHANGE_ENTRAINMENT,
+    CHANGE_GASTRO_ACID,
+    CHANGE_ROLE_PLAY,
+    CHANGE_SKILL_SWAP,
+    CHANGE_SIMPLE_BEAM,
+    CHANGE_WORRY_SEED,
+    CHANGE_MUMMY,
+    CHANGE_WANDERING_SPIRIT,
+};
+
+
+
 bool32 IsMoxieTypeAbility(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
+bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect);
+s32 AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect);
 
 // partner logic
 bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef);
