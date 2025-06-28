@@ -213,17 +213,20 @@ enum AbilityChangeEffect
     CHANGE_ENTRAINMENT,
     CHANGE_GASTRO_ACID,
     CHANGE_ROLE_PLAY,
-    CHANGE_SKILL_SWAP,
     CHANGE_SIMPLE_BEAM,
+    CHANGE_SKILL_SWAP,
     CHANGE_WORRY_SEED,
     CHANGE_MUMMY,
     CHANGE_WANDERING_SPIRIT,
+    CHANGE_NONE,
 };
 
 bool32 IsMoxieTypeAbility(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
 bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, struct AiLogicData *aiData);
-s32 AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect);
+void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, s32 *score, struct AiLogicData *aiData);
+enum AbilityChangeEffect MoveEffectToAbilityChange(u32 effect);
+
 
 // partner logic
 bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef);

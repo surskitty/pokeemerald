@@ -5038,6 +5038,9 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
             if (defAbility == ABILITY_INSOMNIA || gAbilitiesInfo[defAbility].cantBeOverwritten)
                 return FALSE;
             break;
+        
+        case CHANGE_NONE:
+            return FALSE;
     }
 
     if (aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
@@ -5075,28 +5078,187 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
     return TRUE;
 }
 
-s32 AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect)
+// Is it beneficial to Skill Swap etc entirely to trigger this ability again?
+bool32 ShouldAbilityRetrigger(u32 ability)
 {
-    s32 score;
-    
+    switch (ability)
+    {
+        case ABILITY_INTIMIDATE:
+        case ABILITY_DOWNLOAD:
+        case ABILITY_SUPERSWEET_SYRUP:
+            return TRUE;
+        case ABILITY_HOSPITALITY:
+        case ABILITY_CURIOUS_MEDICINE:
+        default:
+            return FALSE;
+    }
+}
+
+// The attacker gives its ability to someone else.
+bool32 AttackerTransfersAbility(enum AbilityChangeEffect effect)
+{
     switch (effect)
     {
-        case CHANGE_DOODLE:
         case CHANGE_ENTRAINMENT:
-        case CHANGE_GASTRO_ACID:
-        case CHANGE_ROLE_PLAY:
         case CHANGE_SKILL_SWAP:
-        case CHANGE_SIMPLE_BEAM:
-        case CHANGE_WORRY_SEED:
-        case CHANGE_MUMMY:
-        case CHANGE_WANDERING_SPIRIT:
-            return score;
-        
+            return TRUE;
         default:
-            return -30;
+            return FALSE;
     }
-    return score;
 }
+
+void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, s32 *score, struct AiLogicData *aiData)
+{
+    bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
+
+    if (CanEffectChangeAbility(battlerAtk, battlerDef, effect, aiData) == FALSE)
+    {
+        ADJUST_SCORE(-30);
+    }
+    else 
+    {
+        u32 atkAbility = aiData->abilities[battlerAtk];
+        u32 defAbility = aiData->abilities[battlerDef];
+        bool32 partnerHasBadAbility = FALSE;
+        u32 partnerAbility = ABILITY_NONE;
+        bool32 attackerHasBadAbility = (gAbilitiesInfo[atkAbility].aiRating < 0);
+
+        if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
+        {
+            partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
+            if (!(gAbilitiesInfo[partnerAbility].cantBeSuppressed) && (gAbilitiesInfo[partnerAbility].aiRating < 0))
+                partnerHasBadAbility = TRUE;
+        }
+
+        if (partnerHasBadAbility && effect == CHANGE_DOODLE)
+        {
+            ADJUST_SCORE(DECENT_EFFECT);
+        }
+
+        if (attackerHasBadAbility)
+        {
+            switch (effect)
+            {
+                case CHANGE_DOODLE:
+                case CHANGE_ROLE_PLAY:
+                case CHANGE_SKILL_SWAP:
+                case CHANGE_MUMMY:
+                case CHANGE_WANDERING_SPIRIT:
+                    ADJUST_SCORE(DECENT_EFFECT);
+                default:
+                    break;
+            }
+        }
+
+        if (effect == CHANGE_SKILL_SWAP && ShouldAbilityRetrigger(defAbility))
+            ADJUST_SCORE(DECENT_EFFECT);
+
+        if (isTargetingPartner)
+        {
+            u32 atkPartnerHoldEffect = aiData->holdEffects[BATTLE_PARTNER(battlerAtk)];
+            u32 battlerAtkPartner = BATTLE_PARTNER(battlerAtk);
+            
+            if (partnerHasBadAbility)
+            {
+                switch (effect)
+                {
+                    case CHANGE_GASTRO_ACID:
+                    case CHANGE_SIMPLE_BEAM:
+                    case CHANGE_WORRY_SEED:
+                        ADJUST_SCORE(10);
+                        break;
+                    case CHANGE_ENTRAINMENT:
+                    case CHANGE_SKILL_SWAP:
+                        if (attackerHasBadAbility)
+                            ADJUST_SCORE(-20);
+                        else
+                            ADJUST_SCORE(10);
+                        break;
+                    case CHANGE_ROLE_PLAY:
+                        ADJUST_SCORE(-20);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            if (AttackerTransfersAbility(effect))
+            {
+                switch (atkAbility)
+                {
+                    case ABILITY_COMPOUND_EYES:
+                        if (HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, partnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
+                            ADJUST_SCORE(GOOD_EFFECT);
+                        break;
+                    case ABILITY_CONTRARY:
+                        if (HasMoveThatLowersOwnStats(battlerAtkPartner))
+                        {
+                            ADJUST_SCORE(GOOD_EFFECT);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+        }
+        // Targeting an opponent.
+        else
+        {
+
+            if (AttackerTransfersAbility(effect))
+            {
+                if (gAbilitiesInfo[atkAbility].aiRating <= 0)
+                    ADJUST_SCORE(GOOD_EFFECT);
+                else if (IsAbilityOfRating(defAbility, 5) && gAbilitiesInfo[atkAbility].aiRating <= 3)
+                    ADJUST_SCORE(WEAK_EFFECT);
+            }
+
+            switch (effect)
+            {
+                case CHANGE_ENTRAINMENT:
+                case CHANGE_SKILL_SWAP:
+                case CHANGE_GASTRO_ACID:
+                case CHANGE_DOODLE:
+                case CHANGE_SIMPLE_BEAM:
+                case CHANGE_WORRY_SEED:
+                case CHANGE_ROLE_PLAY:
+                    if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
+                        ADJUST_SCORE(GOOD_EFFECT);
+                    break;
+
+                case CHANGE_MUMMY:
+                case CHANGE_WANDERING_SPIRIT:
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+enum AbilityChangeEffect MoveEffectToAbilityChange(u32 effect)
+{
+    switch (effect)
+    {
+        case MOVE_DOODLE:
+            return CHANGE_DOODLE;
+        case MOVE_ENTRAINMENT:
+            return CHANGE_ENTRAINMENT;
+        case MOVE_GASTRO_ACID:
+            return CHANGE_GASTRO_ACID;
+        case MOVE_ROLE_PLAY:
+            return CHANGE_ROLE_PLAY;
+        case MOVE_SIMPLE_BEAM:
+            return CHANGE_SIMPLE_BEAM;
+        case MOVE_SKILL_SWAP:
+            return CHANGE_SKILL_SWAP;
+        case MOVE_WORRY_SEED:
+            return CHANGE_WORRY_SEED;
+        default:
+            return CHANGE_NONE;
+    }
+}
+
 
 u32 GetThinkingBattler(u32 battler)
 {

@@ -2361,18 +2361,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
               || !CanBattlerGetOrLoseItem(battlerAtk, gBattleMons[battlerAtk].item))    // AI knows its own item
                 ADJUST_SCORE(-10);
             break;
-        case EFFECT_ROLE_PLAY:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ROLE_PLAY, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5))
-                ADJUST_SCORE(-4);
-            break;
-        case EFFECT_DOODLE: // Same as Role Play, but also check if the partner's ability should be replaced
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_DOODLE, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            else if (IsAbilityOfRating(aiData->abilities[battlerAtk], 5) || IsAbilityOfRating(aiData->abilities[BATTLE_PARTNER(battlerAtk)], 5))
-                ADJUST_SCORE(-4);
-            break;
         case EFFECT_WISH:
             if (gWishFutureKnock.wishCounter[battlerAtk] > gBattleTurnCounter)
                 ADJUST_SCORE(-10);
@@ -2393,25 +2381,15 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (PartnerMoveActivatesSleepClause(aiData->partnerMove))
                 ADJUST_SCORE(-20);
             break;
-        case EFFECT_SKILL_SWAP:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SKILL_SWAP, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            break;
-        case EFFECT_WORRY_SEED:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_WORRY_SEED, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            break;
-        case EFFECT_GASTRO_ACID:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_GASTRO_ACID, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            break;
+        case EFFECT_DOODLE:
         case EFFECT_ENTRAINMENT:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_ENTRAINMENT, aiData) == FALSE)
-                ADJUST_SCORE(-10);
-            break;
+        case EFFECT_GASTRO_ACID:
+        case EFFECT_ROLE_PLAY:
         case EFFECT_SIMPLE_BEAM:
-            if (CanEffectChangeAbility(battlerAtk, battlerDef, CHANGE_SIMPLE_BEAM, aiData) == FALSE)
-                ADJUST_SCORE(-10);
+        case EFFECT_SKILL_SWAP:
+        case EFFECT_WORRY_SEED:
+            if (CanEffectChangeAbility(battlerAtk, battlerDef, MoveEffectToAbilityChange(moveEffect), aiData) == FALSE)
+                ADJUST_AND_RETURN_SCORE(NO_DAMAGE_OR_FAILS);
             break;
         case EFFECT_SNATCH:
             if (!HasMoveWithFlag(battlerDef, MoveCanBeSnatched)
@@ -2961,7 +2939,6 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     u32 atkPartnerHoldEffect = aiData->holdEffects[BATTLE_PARTNER(battlerAtk)];
     enum BattleMoveEffects partnerEffect = GetMoveEffect(aiData->partnerMove);
     bool32 partnerProtecting = IsAllyProtectingFromMove(battlerAtk, move, aiData->partnerMove) && !MoveIgnoresProtect(move);
-    bool32 attackerHasBadAbility = (gAbilitiesInfo[aiData->abilities[battlerAtk]].aiRating < 0);
     bool32 partnerHasBadAbility = (gAbilitiesInfo[atkPartnerAbility].aiRating < 0);
     u32 predictedMove = GetIncomingMove(battlerAtk, battlerDef, gAiLogicData);
 
@@ -3448,6 +3425,15 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
             switch (effect)
             {
+            case EFFECT_DOODLE:
+            case EFFECT_ENTRAINMENT:
+            case EFFECT_GASTRO_ACID:
+            case EFFECT_ROLE_PLAY:
+            case EFFECT_SIMPLE_BEAM:
+            case EFFECT_SKILL_SWAP:
+            case EFFECT_WORRY_SEED:
+                AbilityChangeScore(battlerAtk, battlerAtkPartner, MoveEffectToAbilityChange(effect), &score, aiData);
+                return score;
             case EFFECT_SPICY_EXTRACT:
                 if (AI_ShouldSpicyExtract(battlerAtk, battlerAtkPartner, move, aiData))
                 {
@@ -3494,51 +3480,6 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                         ADJUST_SCORE(DECENT_EFFECT);
                     }
                     RETURN_SCORE_PLUS(WEAK_EFFECT);
-                }
-                break;
-            case EFFECT_SKILL_SWAP:
-                if (aiData->abilities[battlerAtk] != aiData->abilities[BATTLE_PARTNER(battlerAtk)] && !attackerHasBadAbility)
-                {
-                    // Partner abilities
-                    if (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_TRUANT)
-                    {
-                        ADJUST_SCORE(10);
-                    }
-                    else if (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_INTIMIDATE)
-                    {
-                        ADJUST_SCORE(DECENT_EFFECT);
-                    }
-                    // Active mon abilities
-                    if (aiData->abilities[battlerAtk] == ABILITY_COMPOUND_EYES
-                        && HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, atkPartnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
-                    {
-                        ADJUST_SCORE(GOOD_EFFECT);
-                    }
-                    else if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY && HasMoveThatLowersOwnStats(battlerAtkPartner))
-                    {
-                        ADJUST_SCORE(GOOD_EFFECT);
-                    }
-                    return score;
-                }
-                break;
-            case EFFECT_ROLE_PLAY:
-                if (attackerHasBadAbility && !partnerHasBadAbility)
-                {
-                    RETURN_SCORE_PLUS(WEAK_EFFECT);
-                }
-                break;
-            case EFFECT_WORRY_SEED:
-            case EFFECT_GASTRO_ACID:
-            case EFFECT_SIMPLE_BEAM:
-                if (partnerHasBadAbility)
-                {
-                    RETURN_SCORE_PLUS(DECENT_EFFECT);
-                }
-                break;
-            case EFFECT_ENTRAINMENT:
-                if (partnerHasBadAbility && IsAbilityOfRating(aiData->abilities[battlerAtk], 0))
-                {
-                    RETURN_SCORE_PLUS(DECENT_EFFECT);
                 }
                 break;
             case EFFECT_SOAK:
@@ -3596,6 +3537,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     else // checking opponent
     {
         // these checks mostly handled in AI_CheckBadMove and AI_CheckViability
+/*
         switch (effect)
         {
         case EFFECT_SKILL_SWAP:
@@ -3607,7 +3549,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         default:
             break;
         }
-
+*/
         // lightning rod, flash fire against enemy handled in AI_CheckBadMove
     }
 
@@ -4599,11 +4541,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             }
         }
         break;
-    case EFFECT_ROLE_PLAY:
-    case EFFECT_DOODLE:
-        if (IsAbilityOfRating(aiData->abilities[battlerDef], 5))
-            ADJUST_SCORE(DECENT_EFFECT);
-        break;
     case EFFECT_INGRAIN:
         ADJUST_SCORE(WEAK_EFFECT);
         if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
@@ -4640,29 +4577,15 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_AURORA_VEIL)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
-    case EFFECT_SKILL_SWAP:
-        if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
-            break;
-        else if (gAbilitiesInfo[aiData->abilities[battlerDef]].aiRating > gAbilitiesInfo[aiData->abilities[battlerAtk]].aiRating)
-            ADJUST_SCORE(DECENT_EFFECT);
-        break;
-    case EFFECT_WORRY_SEED:
-    case EFFECT_GASTRO_ACID:
-    case EFFECT_SIMPLE_BEAM:
-        if (IsAbilityOfRating(aiData->abilities[battlerDef], 5))
-            ADJUST_SCORE(DECENT_EFFECT);
-        break;
+    case EFFECT_DOODLE:
     case EFFECT_ENTRAINMENT:
-        if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
-            break;
-        if (aiData->abilities[battlerDef] != aiData->abilities[battlerAtk] && !(gStatuses3[battlerDef] & STATUS3_GASTRO_ACID))
-        {
-            if (gAbilitiesInfo[aiData->abilities[battlerAtk]].aiRating <= 0)
-                ADJUST_SCORE(DECENT_EFFECT);
-            else if (IsAbilityOfRating(aiData->abilities[battlerDef], 5) && gAbilitiesInfo[aiData->abilities[battlerAtk]].aiRating <= 3)
-                ADJUST_SCORE(WEAK_EFFECT);
-        }
-        break;
+    case EFFECT_GASTRO_ACID:
+    case EFFECT_ROLE_PLAY:
+    case EFFECT_SIMPLE_BEAM:
+    case EFFECT_SKILL_SWAP:
+    case EFFECT_WORRY_SEED:
+        AbilityChangeScore(battlerAtk, battlerDef, MoveEffectToAbilityChange(moveEffect), &score, aiData);
+        return score;
     case EFFECT_IMPRISON:
         if (predictedMove != MOVE_NONE && HasMove(battlerAtk, predictedMove))
             ADJUST_SCORE(DECENT_EFFECT);
