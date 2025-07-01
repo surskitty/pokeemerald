@@ -4949,16 +4949,15 @@ bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
 
 // Used by CheckBadMove; this is determining purely if the effect CAN change an ability, not if it SHOULD.
 // At the moment, the parts about Mummy and Wandering Spirit are not actually used.
-bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, struct AiLogicData *aiData)
+bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct AiLogicData *aiData)
 {
     // Dynamaxed Pokemon are immune to some ability-changing effects. 
     if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
     {
         switch (effect)
         {
-            case CHANGE_ENTRAINMENT:
-            case CHANGE_SKILL_SWAP:
-            case CHANGE_WANDERING_SPIRIT:
+            case EFFECT_ENTRAINMENT:
+            case EFFECT_SKILL_SWAP:
                 return FALSE;
             default:
                 break;
@@ -4979,10 +4978,10 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
     {
         switch (effect)
         {
-            case CHANGE_DOODLE:
-            case CHANGE_ENTRAINMENT:
-            case CHANGE_ROLE_PLAY:
-            case CHANGE_SKILL_SWAP:
+            case EFFECT_DOODLE:
+            case EFFECT_ENTRAINMENT:
+            case EFFECT_ROLE_PLAY:
+            case EFFECT_SKILL_SWAP:
                 return FALSE;
 
             default:
@@ -4993,7 +4992,7 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
     // Checking for Ability-specific immunities.
     switch (effect)
     {
-        case CHANGE_DOODLE:
+        case EFFECT_DOODLE:
             if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
                 return FALSE;
 
@@ -5007,39 +5006,37 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
             }
             break;
 
-        case CHANGE_ROLE_PLAY:
+        case EFFECT_ROLE_PLAY:
             if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
                 return FALSE;
             break;
 
-        case CHANGE_SKILL_SWAP:
-        case CHANGE_WANDERING_SPIRIT:
+        case EFFECT_SKILL_SWAP:
             if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSwapped || gAbilitiesInfo[defAbility].cantBeSwapped)
                 return FALSE;
             break;
 
-        case CHANGE_MUMMY:
-        case CHANGE_GASTRO_ACID:
+        case EFFECT_GASTRO_ACID:
             if (gAbilitiesInfo[defAbility].cantBeSuppressed)
                 return FALSE;
             break;
 
-        case CHANGE_ENTRAINMENT:
+        case EFFECT_ENTRAINMENT:
             if (hasSameAbility || gAbilitiesInfo[defAbility].cantBeOverwritten || gAbilitiesInfo[atkAbility].cantBeCopied)
                 return FALSE;
             break;
 
-        case CHANGE_SIMPLE_BEAM:
+        case EFFECT_SIMPLE_BEAM:
             if (defAbility == ABILITY_SIMPLE || gAbilitiesInfo[defAbility].cantBeOverwritten)
                 return FALSE;
             break;
 
-        case CHANGE_WORRY_SEED:
+        case EFFECT_WORRY_SEED:
             if (defAbility == ABILITY_INSOMNIA || gAbilitiesInfo[defAbility].cantBeOverwritten)
                 return FALSE;
             break;
         
-        case CHANGE_NONE:
+        default:
             return FALSE;
     }
 
@@ -5047,14 +5044,12 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
     {
         switch (effect)
         {
-            case CHANGE_ENTRAINMENT:
-            case CHANGE_GASTRO_ACID:
-            case CHANGE_ROLE_PLAY:
-            case CHANGE_SIMPLE_BEAM:
-            case CHANGE_SKILL_SWAP:
-            case CHANGE_WORRY_SEED:
-            case CHANGE_MUMMY:
-            case CHANGE_WANDERING_SPIRIT:
+            case EFFECT_ENTRAINMENT:
+            case EFFECT_GASTRO_ACID:
+            case EFFECT_ROLE_PLAY:
+            case EFFECT_SIMPLE_BEAM:
+            case EFFECT_SKILL_SWAP:
+            case EFFECT_WORRY_SEED:
                 return FALSE;
             default:
                 break;
@@ -5065,10 +5060,9 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, enum AbilityChange
     {
         switch (effect)
         {
-            case CHANGE_DOODLE:
-            case CHANGE_ROLE_PLAY:
-            case CHANGE_SKILL_SWAP:
-            case CHANGE_WANDERING_SPIRIT:
+            case EFFECT_DOODLE:
+            case EFFECT_ROLE_PLAY:
+            case EFFECT_SKILL_SWAP:
                 return FALSE;
             default:
                 break;
@@ -5095,19 +5089,19 @@ bool32 ShouldAbilityRetrigger(u32 ability)
 }
 
 // The attacker gives its ability to someone else.
-bool32 AttackerTransfersAbility(enum AbilityChangeEffect effect)
+bool32 AttackerTransfersAbility(u32 effect)
 {
     switch (effect)
     {
-        case CHANGE_ENTRAINMENT:
-        case CHANGE_SKILL_SWAP:
+        case EFFECT_ENTRAINMENT:
+        case EFFECT_SKILL_SWAP:
             return TRUE;
         default:
             return FALSE;
     }
 }
 
-void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect effect, s32 *score, struct AiLogicData *aiData)
+void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData)
 {
     bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
 
@@ -5130,7 +5124,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect
                 partnerHasBadAbility = TRUE;
         }
 
-        if (partnerHasBadAbility && effect == CHANGE_DOODLE)
+        if (partnerHasBadAbility && effect == EFFECT_DOODLE)
         {
             ADJUST_SCORE(DECENT_EFFECT);
         }
@@ -5139,18 +5133,16 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect
         {
             switch (effect)
             {
-                case CHANGE_DOODLE:
-                case CHANGE_ROLE_PLAY:
-                case CHANGE_SKILL_SWAP:
-                case CHANGE_MUMMY:
-                case CHANGE_WANDERING_SPIRIT:
+                case EFFECT_DOODLE:
+                case EFFECT_ROLE_PLAY:
+                case EFFECT_SKILL_SWAP:
                     ADJUST_SCORE(DECENT_EFFECT);
                 default:
                     break;
             }
         }
 
-        if (effect == CHANGE_SKILL_SWAP && ShouldAbilityRetrigger(defAbility))
+        if (effect == EFFECT_SKILL_SWAP && ShouldAbilityRetrigger(defAbility))
             ADJUST_SCORE(DECENT_EFFECT);
 
         if (isTargetingPartner)
@@ -5162,19 +5154,19 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect
             {
                 switch (effect)
                 {
-                    case CHANGE_GASTRO_ACID:
-                    case CHANGE_SIMPLE_BEAM:
-                    case CHANGE_WORRY_SEED:
+                    case EFFECT_GASTRO_ACID:
+                    case EFFECT_SIMPLE_BEAM:
+                    case EFFECT_WORRY_SEED:
                         ADJUST_SCORE(10);
                         break;
-                    case CHANGE_ENTRAINMENT:
-                    case CHANGE_SKILL_SWAP:
+                    case EFFECT_ENTRAINMENT:
+                    case EFFECT_SKILL_SWAP:
                         if (attackerHasBadAbility)
                             ADJUST_SCORE(-20);
                         else
                             ADJUST_SCORE(10);
                         break;
-                    case CHANGE_ROLE_PLAY:
+                    case EFFECT_ROLE_PLAY:
                         ADJUST_SCORE(-20);
                         break;
                     default:
@@ -5216,49 +5208,23 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, enum AbilityChangeEffect
 
             switch (effect)
             {
-                case CHANGE_ENTRAINMENT:
-                case CHANGE_SKILL_SWAP:
-                case CHANGE_GASTRO_ACID:
-                case CHANGE_DOODLE:
-                case CHANGE_SIMPLE_BEAM:
-                case CHANGE_WORRY_SEED:
-                case CHANGE_ROLE_PLAY:
+                case EFFECT_ENTRAINMENT:
+                case EFFECT_SKILL_SWAP:
+                case EFFECT_GASTRO_ACID:
+                case EFFECT_DOODLE:
+                case EFFECT_SIMPLE_BEAM:
+                case EFFECT_WORRY_SEED:
+                case EFFECT_ROLE_PLAY:
                     if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
                         ADJUST_SCORE(GOOD_EFFECT);
                     break;
 
-                case CHANGE_MUMMY:
-                case CHANGE_WANDERING_SPIRIT:
                 default:
                     break;
             }
         }
     }
 }
-
-enum AbilityChangeEffect MoveEffectToAbilityChange(u32 effect)
-{
-    switch (effect)
-    {
-        case MOVE_DOODLE:
-            return CHANGE_DOODLE;
-        case MOVE_ENTRAINMENT:
-            return CHANGE_ENTRAINMENT;
-        case MOVE_GASTRO_ACID:
-            return CHANGE_GASTRO_ACID;
-        case MOVE_ROLE_PLAY:
-            return CHANGE_ROLE_PLAY;
-        case MOVE_SIMPLE_BEAM:
-            return CHANGE_SIMPLE_BEAM;
-        case MOVE_SKILL_SWAP:
-            return CHANGE_SKILL_SWAP;
-        case MOVE_WORRY_SEED:
-            return CHANGE_WORRY_SEED;
-        default:
-            return CHANGE_NONE;
-    }
-}
-
 
 u32 GetThinkingBattler(u32 battler)
 {
