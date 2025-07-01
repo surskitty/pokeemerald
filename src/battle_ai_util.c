@@ -5107,7 +5107,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
     if (CanEffectChangeAbility(battlerAtk, battlerDef, effect, aiData) == FALSE)
     {
-        ADJUST_SCORE(-30);
+        ADJUST_SCORE_PTR(-30);
     }
     else 
     {
@@ -5126,7 +5126,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
         if (partnerHasBadAbility && effect == EFFECT_DOODLE)
         {
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
         }
 
         if (attackerHasBadAbility)
@@ -5136,14 +5136,14 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             case EFFECT_DOODLE:
             case EFFECT_ROLE_PLAY:
             case EFFECT_SKILL_SWAP:
-                ADJUST_SCORE(DECENT_EFFECT);
+                ADJUST_SCORE_PTR(DECENT_EFFECT);
             default:
                 break;
             }
         }
 
         if (effect == EFFECT_SKILL_SWAP && ShouldAbilityRetrigger(defAbility))
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
 
         if (isTargetingPartner)
         {
@@ -5157,17 +5157,17 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 case EFFECT_GASTRO_ACID:
                 case EFFECT_SIMPLE_BEAM:
                 case EFFECT_WORRY_SEED:
-                    ADJUST_SCORE(10);
+                    ADJUST_SCORE_PTR(10);
                     break;
                 case EFFECT_ENTRAINMENT:
                 case EFFECT_SKILL_SWAP:
                     if (attackerHasBadAbility)
-                        ADJUST_SCORE(-20);
+                        ADJUST_SCORE_PTR(-20);
                     else
-                        ADJUST_SCORE(10);
+                        ADJUST_SCORE_PTR(10);
                     break;
                 case EFFECT_ROLE_PLAY:
-                    ADJUST_SCORE(-20);
+                    ADJUST_SCORE_PTR(-20);
                     break;
                 default:
                     break;
@@ -5180,12 +5180,12 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 {
                 case ABILITY_COMPOUND_EYES:
                     if (HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, partnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
-                        ADJUST_SCORE(GOOD_EFFECT);
+                        ADJUST_SCORE_PTR(GOOD_EFFECT);
                     break;
                 case ABILITY_CONTRARY:
                     if (HasMoveThatLowersOwnStats(battlerAtkPartner))
                     {
-                        ADJUST_SCORE(GOOD_EFFECT);
+                        ADJUST_SCORE_PTR(GOOD_EFFECT);
                     }
                     break;
                 default:
@@ -5201,9 +5201,9 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             if (AttackerTransfersAbility(effect))
             {
                 if (gAbilitiesInfo[atkAbility].aiRating <= 0)
-                    ADJUST_SCORE(GOOD_EFFECT);
+                    ADJUST_SCORE_PTR(GOOD_EFFECT);
                 else if (IsAbilityOfRating(defAbility, 5) && gAbilitiesInfo[atkAbility].aiRating <= 3)
-                    ADJUST_SCORE(WEAK_EFFECT);
+                    ADJUST_SCORE_PTR(WEAK_EFFECT);
             }
 
             switch (effect)
@@ -5216,7 +5216,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             case EFFECT_WORRY_SEED:
             case EFFECT_ROLE_PLAY:
                 if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
-                    ADJUST_SCORE(GOOD_EFFECT);
+                    ADJUST_SCORE_PTR(GOOD_EFFECT);
                 break;
 
             default:
