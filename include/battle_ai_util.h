@@ -79,6 +79,7 @@ bool32 AI_BattlerAtMaxHp(u32 battler);
 u32 GetHealthPercentage(u32 battler);
 bool32 AI_CanBattlerEscape(u32 battler);
 bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef);
+bool32 IsFitBattlerStatused(u32 battler);
 s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler2, u32 moveConsidered);
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk);
 u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk);
@@ -208,9 +209,11 @@ bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
 
 // ability logic
 bool32 IsMoxieTypeAbility(u32 ability);
+bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
 bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct AiLogicData *aiData);
 void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData);
+u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData);
 
 // partner logic
 bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef);

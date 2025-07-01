@@ -383,6 +383,10 @@ bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
     return FALSE;
 }
 
+bool32 IsFitBattlerStatused(u32 battler)
+{
+    return gBattleMons[battler].status1 & (STATUS1_BURN | STATUS1_FROSTBITE | STATUS1_POISON | STATUS1_TOXIC_POISON | STATUS1_PARALYSIS);
+}
 u32 GetTotalBaseStat(u32 species)
 {
     return GetSpeciesBaseHP(species)
@@ -1981,6 +1985,9 @@ u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
 
     // Don't decrese stat if opposing battler has Encore
     if (HasBattlerSideMoveWithEffect(battlerDef, EFFECT_ENCORE))
+        return NO_INCREASE;
+    
+    if (DoesAbilityRaiseStatsWhenLowered(gAiLogicData->abilities[battlerDef]))
         return NO_INCREASE;
 
     // TODO: Avoid decreasing stat if
@@ -4893,6 +4900,19 @@ bool32 IsMoxieTypeAbility(u32 ability)
     }
 }
 
+bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability)
+{
+    switch (ability)
+    {
+    case ABILITY_CONTRARY:
+    case ABILITY_COMPETITIVE:
+    case ABILITY_DEFIANT:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
 // TODO: work out when to attack into the player's contextually 'beneficial' ability
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
 {
@@ -5072,35 +5092,6 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct
     return TRUE;
 }
 
-// Is it beneficial to Skill Swap etc entirely to trigger this ability again?
-bool32 ShouldAbilityRetrigger(u32 ability)
-{
-    switch (ability)
-    {
-    case ABILITY_INTIMIDATE:
-    case ABILITY_DOWNLOAD:
-    case ABILITY_SUPERSWEET_SYRUP:
-        return TRUE;
-    case ABILITY_HOSPITALITY:
-    case ABILITY_CURIOUS_MEDICINE:
-    default:
-        return FALSE;
-    }
-}
-
-// The attacker gives its ability to someone else.
-bool32 AttackerTransfersAbility(u32 effect)
-{
-    switch (effect)
-    {
-    case EFFECT_ENTRAINMENT:
-    case EFFECT_SKILL_SWAP:
-        return TRUE;
-    default:
-        return FALSE;
-    }
-}
-
 void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData)
 {
     bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
@@ -5111,11 +5102,11 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
     }
     else 
     {
-        u32 atkAbility = aiData->abilities[battlerAtk];
-        u32 defAbility = aiData->abilities[battlerDef];
+        u32 abilityAtk = aiData->abilities[battlerAtk];
+        u32 abilityDef = aiData->abilities[battlerDef];
         bool32 partnerHasBadAbility = FALSE;
         u32 partnerAbility = ABILITY_NONE;
-        bool32 attackerHasBadAbility = (gAbilitiesInfo[atkAbility].aiRating < 0);
+        bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
 
         if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
         {
@@ -5142,14 +5133,13 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             }
         }
 
-        if (effect == EFFECT_SKILL_SWAP && ShouldAbilityRetrigger(defAbility))
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+        if (effect == EFFECT_DOODLE || effect == EFFECT_ROLE_PLAY || effect == EFFECT_SKILL_SWAP)
+        {
+            ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData));
+        }
 
         if (isTargetingPartner)
         {
-            u32 atkPartnerHoldEffect = aiData->holdEffects[BATTLE_PARTNER(battlerAtk)];
-            u32 battlerAtkPartner = BATTLE_PARTNER(battlerAtk);
-            
             if (partnerHasBadAbility)
             {
                 switch (effect)
@@ -5174,23 +5164,17 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 }
             }
             
-            if (AttackerTransfersAbility(effect))
+            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SKILL_SWAP)
             {
-                switch (atkAbility)
-                {
-                case ABILITY_COMPOUND_EYES:
-                    if (HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, partnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
-                        ADJUST_SCORE_PTR(GOOD_EFFECT);
-                    break;
-                case ABILITY_CONTRARY:
-                    if (HasMoveThatLowersOwnStats(battlerAtkPartner))
-                    {
-                        ADJUST_SCORE_PTR(GOOD_EFFECT);
-                    }
-                    break;
-                default:
-                    break;
-                }
+                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData));
+            }
+            
+            // Trigger Plus or Minus
+            if (B_PLUS_MINUS_INTERACTION >= GEN_5)
+            {
+                if (((effect == EFFECT_ENTRAINMENT) && (abilityAtk == ABILITY_PLUS || abilityAtk == ABILITY_MINUS)) ||
+                    ((effect == EFFECT_ROLE_PLAY) && (abilityDef == ABILITY_PLUS || abilityDef == ABILITY_MINUS)))
+                        ADJUST_SCORE_PTR(DECENT_EFFECT);
             }
             
         }
@@ -5198,11 +5182,11 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         else
         {
 
-            if (AttackerTransfersAbility(effect))
+            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SKILL_SWAP)
             {
-                if (gAbilitiesInfo[atkAbility].aiRating <= 0)
+                if (gAbilitiesInfo[abilityAtk].aiRating <= 0)
                     ADJUST_SCORE_PTR(GOOD_EFFECT);
-                else if (IsAbilityOfRating(defAbility, 5) && gAbilitiesInfo[atkAbility].aiRating <= 3)
+                else if (IsAbilityOfRating(abilityDef, 5) && gAbilitiesInfo[abilityAtk].aiRating <= 3)
                     ADJUST_SCORE_PTR(WEAK_EFFECT);
             }
 
@@ -5224,6 +5208,50 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             }
         }
     }
+}
+
+u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData)
+{
+    switch (ability)
+    {
+    case ABILITY_COMPOUND_EYES:
+        if (HasMoveWithLowAccuracy(battler, FOE(battler), 90, TRUE, aiData->abilities[battler], aiData->abilities[FOE(battler)], aiData->holdEffects[battler], aiData->holdEffects[FOE(battler)]))
+            return GOOD_EFFECT;
+        break;
+    case ABILITY_CONTRARY:
+        if (HasMoveThatLowersOwnStats(battler))
+            return GOOD_EFFECT;
+        break;
+    case ABILITY_GUTS:
+        if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && IsFitBattlerStatused(battler))
+            return GOOD_EFFECT;
+        break;
+    case ABILITY_INTIMIDATE:
+        if (B_UPDATED_INTIMIDATE >= GEN_8)
+        {
+            u32 abilityDef = aiData->abilities[FOE(battler)];
+            switch (abilityDef)
+            {
+            case ABILITY_GUARD_DOG:
+            case ABILITY_INNER_FOCUS:
+            case ABILITY_OBLIVIOUS:
+            case ABILITY_OWN_TEMPO:
+            case ABILITY_SCRAPPY:
+                return -GOOD_EFFECT;
+            default:
+                return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);            
+            }
+        }
+        return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
+    case ABILITY_NO_GUARD:
+        if (HasLowAccuracyMove(battler, FOE(battler)))
+            return GOOD_EFFECT;
+        break;
+    default:
+        break;
+    }
+
+    return NO_INCREASE;
 }
 
 u32 GetThinkingBattler(u32 battler)
