@@ -4900,45 +4900,45 @@ bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
     {
         switch (ability)
         {
-            case ABILITY_LIGHTNING_ROD:
-            case ABILITY_STORM_DRAIN:
-                if (B_REDIRECT_ABILITY_IMMUNITY < GEN_5)
-                    return FALSE;
-                else
-                    return (BattlerStatCanRise(battlerDef, ability, STAT_SPATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL));
-
-            case ABILITY_DEFIANT:
-            case ABILITY_JUSTIFIED:
-            case ABILITY_MOXIE:
-            case ABILITY_SAP_SIPPER:
-            case ABILITY_THERMAL_EXCHANGE:
-                return (BattlerStatCanRise(battlerDef, ability, STAT_ATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL));
-
-            case ABILITY_COMPETITIVE:
+        case ABILITY_LIGHTNING_ROD:
+        case ABILITY_STORM_DRAIN:
+            if (B_REDIRECT_ABILITY_IMMUNITY < GEN_5)
+                return FALSE;
+            else
                 return (BattlerStatCanRise(battlerDef, ability, STAT_SPATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL));
 
-            // TODO: logic for when to trigger Contrary
-            case ABILITY_CONTRARY:
-                return TRUE;
+        case ABILITY_DEFIANT:
+        case ABILITY_JUSTIFIED:
+        case ABILITY_MOXIE:
+        case ABILITY_SAP_SIPPER:
+        case ABILITY_THERMAL_EXCHANGE:
+            return (BattlerStatCanRise(battlerDef, ability, STAT_ATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL));
 
-            case ABILITY_DRY_SKIN:
-            case ABILITY_VOLT_ABSORB:
-            case ABILITY_WATER_ABSORB:
-                return (gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_HP_AWARE);
+        case ABILITY_COMPETITIVE:
+            return (BattlerStatCanRise(battlerDef, ability, STAT_SPATK) && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL));
 
-            case ABILITY_RATTLED:
-            case ABILITY_STEAM_ENGINE:
-                return BattlerStatCanRise(battlerDef, ability, STAT_SPEED);
+        // TODO: logic for when to trigger Contrary
+        case ABILITY_CONTRARY:
+            return TRUE;
 
-            case ABILITY_FLASH_FIRE:
-                return (HasMoveWithType(battlerDef, TYPE_FIRE) && !gDisableStructs[battlerDef].flashFireBoosted);
+        case ABILITY_DRY_SKIN:
+        case ABILITY_VOLT_ABSORB:
+        case ABILITY_WATER_ABSORB:
+            return (gAiThinkingStruct->aiFlags[battlerDef] & AI_FLAG_HP_AWARE);
 
-            case ABILITY_WATER_COMPACTION:
-            case ABILITY_WELL_BAKED_BODY:
-                return (BattlerStatCanRise(battlerDef, ability, STAT_DEF));
+        case ABILITY_RATTLED:
+        case ABILITY_STEAM_ENGINE:
+            return BattlerStatCanRise(battlerDef, ability, STAT_SPEED);
 
-            default:
-                return FALSE;
+        case ABILITY_FLASH_FIRE:
+            return (HasMoveWithType(battlerDef, TYPE_FIRE) && !gDisableStructs[battlerDef].flashFireBoosted);
+
+        case ABILITY_WATER_COMPACTION:
+        case ABILITY_WELL_BAKED_BODY:
+            return (BattlerStatCanRise(battlerDef, ability, STAT_DEF));
+
+        default:
+            return FALSE;
         }
     }
     else
@@ -4956,11 +4956,11 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct
     {
         switch (effect)
         {
-            case EFFECT_ENTRAINMENT:
-            case EFFECT_SKILL_SWAP:
-                return FALSE;
-            default:
-                break;
+        case EFFECT_ENTRAINMENT:
+        case EFFECT_SKILL_SWAP:
+            return FALSE;
+        default:
+            break;
         }
     }
 
@@ -4978,81 +4978,81 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct
     {
         switch (effect)
         {
-            case EFFECT_DOODLE:
-            case EFFECT_ENTRAINMENT:
-            case EFFECT_ROLE_PLAY:
-            case EFFECT_SKILL_SWAP:
-                return FALSE;
+        case EFFECT_DOODLE:
+        case EFFECT_ENTRAINMENT:
+        case EFFECT_ROLE_PLAY:
+        case EFFECT_SKILL_SWAP:
+            return FALSE;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
 
     // Checking for Ability-specific immunities.
     switch (effect)
     {
-        case EFFECT_DOODLE:
-            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
-                return FALSE;
-
-            if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
-            {
-                u32 partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
-                if (gAbilitiesInfo[partnerAbility].cantBeSuppressed)
-                    return FALSE; 
-                if (partnerAbility == defAbility)
-                    return FALSE;
-            }
-            break;
-
-        case EFFECT_ROLE_PLAY:
-            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
-                return FALSE;
-            break;
-
-        case EFFECT_SKILL_SWAP:
-            if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSwapped || gAbilitiesInfo[defAbility].cantBeSwapped)
-                return FALSE;
-            break;
-
-        case EFFECT_GASTRO_ACID:
-            if (gAbilitiesInfo[defAbility].cantBeSuppressed)
-                return FALSE;
-            break;
-
-        case EFFECT_ENTRAINMENT:
-            if (hasSameAbility || gAbilitiesInfo[defAbility].cantBeOverwritten || gAbilitiesInfo[atkAbility].cantBeCopied)
-                return FALSE;
-            break;
-
-        case EFFECT_SIMPLE_BEAM:
-            if (defAbility == ABILITY_SIMPLE || gAbilitiesInfo[defAbility].cantBeOverwritten)
-                return FALSE;
-            break;
-
-        case EFFECT_WORRY_SEED:
-            if (defAbility == ABILITY_INSOMNIA || gAbilitiesInfo[defAbility].cantBeOverwritten)
-                return FALSE;
-            break;
-        
-        default:
+    case EFFECT_DOODLE:
+        if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
             return FALSE;
+
+        if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
+        {
+            u32 partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
+            if (gAbilitiesInfo[partnerAbility].cantBeSuppressed)
+                return FALSE; 
+            if (partnerAbility == defAbility)
+                return FALSE;
+        }
+        break;
+
+    case EFFECT_ROLE_PLAY:
+        if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSuppressed || gAbilitiesInfo[defAbility].cantBeCopied)
+            return FALSE;
+        break;
+
+    case EFFECT_SKILL_SWAP:
+        if (hasSameAbility || gAbilitiesInfo[atkAbility].cantBeSwapped || gAbilitiesInfo[defAbility].cantBeSwapped)
+            return FALSE;
+        break;
+
+    case EFFECT_GASTRO_ACID:
+        if (gAbilitiesInfo[defAbility].cantBeSuppressed)
+            return FALSE;
+        break;
+
+    case EFFECT_ENTRAINMENT:
+        if (hasSameAbility || gAbilitiesInfo[defAbility].cantBeOverwritten || gAbilitiesInfo[atkAbility].cantBeCopied)
+            return FALSE;
+        break;
+
+    case EFFECT_SIMPLE_BEAM:
+        if (defAbility == ABILITY_SIMPLE || gAbilitiesInfo[defAbility].cantBeOverwritten)
+            return FALSE;
+        break;
+
+    case EFFECT_WORRY_SEED:
+        if (defAbility == ABILITY_INSOMNIA || gAbilitiesInfo[defAbility].cantBeOverwritten)
+            return FALSE;
+        break;
+    
+    default:
+        return FALSE;
     }
 
     if (aiData->holdEffects[battlerDef] == HOLD_EFFECT_ABILITY_SHIELD)
     {
         switch (effect)
         {
-            case EFFECT_ENTRAINMENT:
-            case EFFECT_GASTRO_ACID:
-            case EFFECT_ROLE_PLAY:
-            case EFFECT_SIMPLE_BEAM:
-            case EFFECT_SKILL_SWAP:
-            case EFFECT_WORRY_SEED:
-                return FALSE;
-            default:
-                break;
+        case EFFECT_ENTRAINMENT:
+        case EFFECT_GASTRO_ACID:
+        case EFFECT_ROLE_PLAY:
+        case EFFECT_SIMPLE_BEAM:
+        case EFFECT_SKILL_SWAP:
+        case EFFECT_WORRY_SEED:
+            return FALSE;
+        default:
+            break;
         }
     }
 
@@ -5060,12 +5060,12 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct
     {
         switch (effect)
         {
-            case EFFECT_DOODLE:
-            case EFFECT_ROLE_PLAY:
-            case EFFECT_SKILL_SWAP:
-                return FALSE;
-            default:
-                break;
+        case EFFECT_DOODLE:
+        case EFFECT_ROLE_PLAY:
+        case EFFECT_SKILL_SWAP:
+            return FALSE;
+        default:
+            break;
         }
     }
 
@@ -5077,14 +5077,14 @@ bool32 ShouldAbilityRetrigger(u32 ability)
 {
     switch (ability)
     {
-        case ABILITY_INTIMIDATE:
-        case ABILITY_DOWNLOAD:
-        case ABILITY_SUPERSWEET_SYRUP:
-            return TRUE;
-        case ABILITY_HOSPITALITY:
-        case ABILITY_CURIOUS_MEDICINE:
-        default:
-            return FALSE;
+    case ABILITY_INTIMIDATE:
+    case ABILITY_DOWNLOAD:
+    case ABILITY_SUPERSWEET_SYRUP:
+        return TRUE;
+    case ABILITY_HOSPITALITY:
+    case ABILITY_CURIOUS_MEDICINE:
+    default:
+        return FALSE;
     }
 }
 
@@ -5093,11 +5093,11 @@ bool32 AttackerTransfersAbility(u32 effect)
 {
     switch (effect)
     {
-        case EFFECT_ENTRAINMENT:
-        case EFFECT_SKILL_SWAP:
-            return TRUE;
-        default:
-            return FALSE;
+    case EFFECT_ENTRAINMENT:
+    case EFFECT_SKILL_SWAP:
+        return TRUE;
+    default:
+        return FALSE;
     }
 }
 
@@ -5133,12 +5133,12 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         {
             switch (effect)
             {
-                case EFFECT_DOODLE:
-                case EFFECT_ROLE_PLAY:
-                case EFFECT_SKILL_SWAP:
-                    ADJUST_SCORE(DECENT_EFFECT);
-                default:
-                    break;
+            case EFFECT_DOODLE:
+            case EFFECT_ROLE_PLAY:
+            case EFFECT_SKILL_SWAP:
+                ADJUST_SCORE(DECENT_EFFECT);
+            default:
+                break;
             }
         }
 
@@ -5154,23 +5154,23 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             {
                 switch (effect)
                 {
-                    case EFFECT_GASTRO_ACID:
-                    case EFFECT_SIMPLE_BEAM:
-                    case EFFECT_WORRY_SEED:
-                        ADJUST_SCORE(10);
-                        break;
-                    case EFFECT_ENTRAINMENT:
-                    case EFFECT_SKILL_SWAP:
-                        if (attackerHasBadAbility)
-                            ADJUST_SCORE(-20);
-                        else
-                            ADJUST_SCORE(10);
-                        break;
-                    case EFFECT_ROLE_PLAY:
+                case EFFECT_GASTRO_ACID:
+                case EFFECT_SIMPLE_BEAM:
+                case EFFECT_WORRY_SEED:
+                    ADJUST_SCORE(10);
+                    break;
+                case EFFECT_ENTRAINMENT:
+                case EFFECT_SKILL_SWAP:
+                    if (attackerHasBadAbility)
                         ADJUST_SCORE(-20);
-                        break;
-                    default:
-                        break;
+                    else
+                        ADJUST_SCORE(10);
+                    break;
+                case EFFECT_ROLE_PLAY:
+                    ADJUST_SCORE(-20);
+                    break;
+                default:
+                    break;
                 }
             }
             
@@ -5178,18 +5178,18 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             {
                 switch (atkAbility)
                 {
-                    case ABILITY_COMPOUND_EYES:
-                        if (HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, partnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
-                            ADJUST_SCORE(GOOD_EFFECT);
-                        break;
-                    case ABILITY_CONTRARY:
-                        if (HasMoveThatLowersOwnStats(battlerAtkPartner))
-                        {
-                            ADJUST_SCORE(GOOD_EFFECT);
-                        }
-                        break;
-                    default:
-                        break;
+                case ABILITY_COMPOUND_EYES:
+                    if (HasMoveWithLowAccuracy(battlerAtkPartner, FOE(battlerAtkPartner), 90, TRUE, partnerAbility, aiData->abilities[FOE(battlerAtkPartner)], atkPartnerHoldEffect, aiData->holdEffects[FOE(battlerAtkPartner)]))
+                        ADJUST_SCORE(GOOD_EFFECT);
+                    break;
+                case ABILITY_CONTRARY:
+                    if (HasMoveThatLowersOwnStats(battlerAtkPartner))
+                    {
+                        ADJUST_SCORE(GOOD_EFFECT);
+                    }
+                    break;
+                default:
+                    break;
                 }
             }
             
@@ -5208,19 +5208,19 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
             switch (effect)
             {
-                case EFFECT_ENTRAINMENT:
-                case EFFECT_SKILL_SWAP:
-                case EFFECT_GASTRO_ACID:
-                case EFFECT_DOODLE:
-                case EFFECT_SIMPLE_BEAM:
-                case EFFECT_WORRY_SEED:
-                case EFFECT_ROLE_PLAY:
-                    if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
-                        ADJUST_SCORE(GOOD_EFFECT);
-                    break;
+            case EFFECT_ENTRAINMENT:
+            case EFFECT_SKILL_SWAP:
+            case EFFECT_GASTRO_ACID:
+            case EFFECT_DOODLE:
+            case EFFECT_SIMPLE_BEAM:
+            case EFFECT_WORRY_SEED:
+            case EFFECT_ROLE_PLAY:
+                if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
+                    ADJUST_SCORE(GOOD_EFFECT);
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
     }
