@@ -5140,6 +5140,12 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
         if (isTargetingPartner)
         {
+            if (effect == EFFECT_SIMPLE_BEAM)
+                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, ABILITY_SIMPLE, aiData));
+
+            if (effect == EFFECT_WORRY_SEED)
+                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, ABILITY_INSOMNIA, aiData));
+
             if (partnerHasBadAbility)
             {
                 switch (effect)
@@ -5226,6 +5232,12 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && IsFitBattlerStatused(battler))
             return GOOD_EFFECT;
         break;
+    // Also used to Worry Seed WORRY_SEED an ally.
+    case ABILITY_INSOMNIA:
+    case ABILITY_VITAL_SPIRIT:
+        if (HasMoveWithEffect(battler, EFFECT_REST))
+            return -GOOD_EFFECT;
+        return NO_INCREASE;
     case ABILITY_INTIMIDATE:
         if (B_UPDATED_INTIMIDATE >= GEN_8)
         {
@@ -5247,6 +5259,12 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return GOOD_EFFECT;
         break;
+    // Also used to Simple Beam SIMPLE_BEAM an ally.
+    case ABILITY_SIMPLE:
+        // Prioritize moves like Metal Claw, Charge Beam, or Power up Punch
+        if (HasMoveWithAdditionalEffect(battler, MOVE_EFFECT_ATK_PLUS_1) || HasMoveWithAdditionalEffect(battler, MOVE_EFFECT_SP_ATK_PLUS_1))
+            return GOOD_EFFECT;
+        return NO_INCREASE;
     default:
         break;
     }
