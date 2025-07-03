@@ -5154,7 +5154,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 {
     bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
 
-    if (CanEffectChangeAbility(battlerAtk, battlerDef, effect, aiData) == FALSE)
+    if (!CanEffectChangeAbility(battlerAtk, battlerDef, effect, aiData))
     {
         ADJUST_SCORE_PTR(-30);
     }
