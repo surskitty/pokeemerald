@@ -5284,6 +5284,16 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
 {
     switch (ability)
     {
+    // Transferrable abilities that can be assumed to be always beneficial.
+    case ABILITY_CLEAR_BODY:
+    case ABILITY_GOOD_AS_GOLD:
+    case ABILITY_MAGIC_GUARD:
+    case ABILITY_MOODY:
+    case ABILITY_PURIFYING_SALT:
+    case ABILITY_SPEED_BOOST:
+    case ABILITY_WHITE_SMOKE:
+        return DECENT_EFFECT;
+    // Conditional ability logic goes here.
     case ABILITY_COMPOUND_EYES:
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return BEST_EFFECT;
@@ -5294,8 +5304,19 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasMoveThatLowersOwnStats(battler))
             return BEST_EFFECT;
         break;
+    case ABILITY_FRIEND_GUARD:
+    case ABILITY_POWER_SPOT:
+    case ABILITY_VICTORY_STAR:
+        if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)) && aiData->abilities[BATTLE_PARTNER(battler)] != ability)
+            return GOOD_EFFECT;
+        break;
     case ABILITY_GUTS:
         if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && gBattleMons[battler].status1 & (STATUS1_REFRESH))
+            return GOOD_EFFECT;
+        break;
+    case ABILITY_HUGE_POWER:
+    case ABILITY_PURE_POWER:
+        if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL))
             return BEST_EFFECT;
         break;
     // Also used to Worry Seed WORRY_SEED
@@ -5347,6 +5368,18 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasMoveThatRaisesOwnStats(battler))
             return GOOD_EFFECT;
         return NO_INCREASE;
+    case ABILITY_BEADS_OF_RUIN:
+    case ABILITY_SWORD_OF_RUIN:
+    case ABILITY_TABLETS_OF_RUIN:
+    case ABILITY_VESSEL_OF_RUIN:
+        if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        {
+            if (aiData->abilities[BATTLE_PARTNER(battler)] != ability)
+                return GOOD_EFFECT;
+            else
+                return NO_INCREASE;
+        }
+        return GOOD_EFFECT;
     default:
         break;
     }
