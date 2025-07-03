@@ -5167,7 +5167,6 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
         s32 currentAbilityScore, transferredAbilityScore = 0;
 
-
         if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
         {
             partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
@@ -5270,7 +5269,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             case EFFECT_WORRY_SEED:
             case EFFECT_ROLE_PLAY:
                 if (IsAbilityOfRating(abilityDef, 10))
-                    ADJUST_SCORE_PTR(GOOD_EFFECT);
+                    ADJUST_SCORE_PTR(DECENT_EFFECT);
                 break;
 
             default:
