@@ -5326,6 +5326,12 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return GOOD_EFFECT;
         break;
+    case ABILITY_POISON_HEAL:
+        if (gBattleMons[battler].status1 & (STATUS1_POISON))
+            return WEAK_EFFECT;
+        if (gBattleMons[battler].status1 & (STATUS1_TOXIC_POISON))
+            return BEST_EFFECT;
+        break;
     // Also used to Simple Beam SIMPLE_BEAM.
     case ABILITY_SIMPLE:
         // Prioritize moves like Metal Claw, Charge Beam, or Power up Punch
