@@ -4913,6 +4913,19 @@ bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability)
     }
 }
 
+bool32 DoesIntimidateRaiseAttack(u32 ability)
+{
+    switch (ability)
+    {
+        case ABILITY_CONTRARY:
+        case ABILITY_DEFIANT:
+        case ABILITY_GUARD_DOG:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
 // TODO: work out when to attack into the player's contextually 'beneficial' ability
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)
 {
@@ -5175,7 +5188,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData));
             }
             
-            // Trigger Plus or Minus
+            // Trigger Plus or Minus in modern gens. This is not in the overarching function because Skill Swap is rarely beneficial here.
             if (B_PLUS_MINUS_INTERACTION >= GEN_5)
             {
                 if (((effect == EFFECT_ENTRAINMENT) && (abilityAtk == ABILITY_PLUS || abilityAtk == ABILITY_MINUS)) ||
@@ -5205,7 +5218,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             case EFFECT_SIMPLE_BEAM:
             case EFFECT_WORRY_SEED:
             case EFFECT_ROLE_PLAY:
-                if (IsAbilityOfRating(aiData->abilities[battlerDef], 10))
+                if (IsAbilityOfRating(abilityDef, 10))
                     ADJUST_SCORE_PTR(GOOD_EFFECT);
                 break;
 
@@ -5221,16 +5234,18 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     switch (ability)
     {
     case ABILITY_COMPOUND_EYES:
+        if (HasLowAccuracyMove(battler, FOE(battler)))
+            return BEST_EFFECT;
         if (HasMoveWithLowAccuracy(battler, FOE(battler), 90, TRUE, aiData->abilities[battler], aiData->abilities[FOE(battler)], aiData->holdEffects[battler], aiData->holdEffects[FOE(battler)]))
             return GOOD_EFFECT;
         break;
     case ABILITY_CONTRARY:
         if (HasMoveThatLowersOwnStats(battler))
-            return GOOD_EFFECT;
+            return BEST_EFFECT;
         break;
     case ABILITY_GUTS:
         if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && IsFitBattlerStatused(battler))
-            return GOOD_EFFECT;
+            return BEST_EFFECT;
         break;
     // Also used to Worry Seed WORRY_SEED an ally.
     case ABILITY_INSOMNIA:
@@ -5239,22 +5254,28 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
             return -GOOD_EFFECT;
         return NO_INCREASE;
     case ABILITY_INTIMIDATE:
-        if (B_UPDATED_INTIMIDATE >= GEN_8)
+        u32 abilityDef = aiData->abilities[FOE(battler)];
+        if (DoesIntimidateRaiseAttack(abilityDef))
+            return NO_INCREASE;
+        else
         {
-            u32 abilityDef = aiData->abilities[FOE(battler)];
-            switch (abilityDef)
+            if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(FOE(battler))))
             {
-            case ABILITY_GUARD_DOG:
-            case ABILITY_INNER_FOCUS:
-            case ABILITY_OBLIVIOUS:
-            case ABILITY_OWN_TEMPO:
-            case ABILITY_SCRAPPY:
-                return -GOOD_EFFECT;
-            default:
-                return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);            
+                abilityDef = aiData->abilities[BATTLE_PARTNER(FOE(battler))];
+                if (DoesIntimidateRaiseAttack(abilityDef))
+                    return NO_INCREASE;
+                else
+                {
+                    s32 score1 = IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
+                    s32 score2 = IncreaseStatDownScore(battler, BATTLE_PARTNER(FOE(battler)), STAT_DEF);
+                    if (score1 > score2)
+                        return score1;
+                    else
+                        return score2;
+                }
             }
+            return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
         }
-        return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
     case ABILITY_NO_GUARD:
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return GOOD_EFFECT;
