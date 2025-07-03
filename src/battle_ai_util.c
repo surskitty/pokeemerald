@@ -5165,6 +5165,8 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         bool32 partnerHasBadAbility = FALSE;
         u32 partnerAbility = ABILITY_NONE;
         bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
+        s32 currentAbilityScore, transferredAbilityScore = 0;
+
 
         if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
         {
@@ -5199,7 +5201,9 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
         if (effect == EFFECT_DOODLE || effect == EFFECT_ROLE_PLAY || effect == EFFECT_SKILL_SWAP)
         {
-            ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData));
+            currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityAtk, aiData);
+            transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData);
+            ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
         }
 
         if (isTargetingPartner)
@@ -5230,7 +5234,9 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             
             if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
             {
-                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData));
+                currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
+                transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
+                ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
             }
             
             // Trigger Plus or Minus in modern gens. This is not in the overarching function because Skill Swap is rarely beneficial here.
@@ -5245,13 +5251,12 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         // Targeting an opponent.
         else
         {
-
             if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
             {
                 if (gAbilitiesInfo[abilityAtk].aiRating <= 0)
                     ADJUST_SCORE_PTR(GOOD_EFFECT);
-                s32 currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
-                s32 transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
+                currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
+                transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
                     ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
             }
 
@@ -5302,25 +5307,29 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_INTIMIDATE:
         u32 abilityDef = aiData->abilities[FOE(battler)];
         if (DoesIntimidateRaiseStats(abilityDef))
-            return -GOOD_EFFECT;
+        {
+            return -5;
+        }
         else
         {
             if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(FOE(battler))))
             {
                 abilityDef = aiData->abilities[BATTLE_PARTNER(FOE(battler))];
                 if (DoesIntimidateRaiseStats(abilityDef))
-                    return -GOOD_EFFECT;
+                {
+                    return -5;
+                }
                 else
                 {
-                    s32 score1 = IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
-                    s32 score2 = IncreaseStatDownScore(battler, BATTLE_PARTNER(FOE(battler)), STAT_DEF);
+                    s32 score1 = IncreaseStatDownScore(battler, FOE(battler), STAT_ATK);
+                    s32 score2 = IncreaseStatDownScore(battler, BATTLE_PARTNER(FOE(battler)), STAT_ATK);
                     if (score1 > score2)
                         return score1;
                     else
                         return score2;
                 }
             }
-            return IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
+            return IncreaseStatDownScore(battler, FOE(battler), STAT_ATK);
         }
     case ABILITY_NO_GUARD:
         if (HasLowAccuracyMove(battler, FOE(battler)))
