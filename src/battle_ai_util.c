@@ -383,10 +383,6 @@ bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
     return FALSE;
 }
 
-bool32 IsFitBattlerStatused(u32 battler)
-{
-    return gBattleMons[battler].status1 & (STATUS1_BURN | STATUS1_FROSTBITE | STATUS1_POISON | STATUS1_TOXIC_POISON | STATUS1_PARALYSIS);
-}
 u32 GetTotalBaseStat(u32 species)
 {
     return GetSpeciesBaseHP(species)
@@ -2365,6 +2361,28 @@ bool32 HasMoveThatLowersOwnStats(u32 battlerId)
     return FALSE;
 }
 
+bool32 HasMoveThatRaisesOwnStats(u32 battlerId)
+{
+    s32 i, j;
+    u32 aiMove;
+    u16 *moves = GetMovesArray(battlerId);
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        aiMove = moves[i];
+        if (aiMove != MOVE_NONE && aiMove != MOVE_UNAVAILABLE)
+        {
+            u32 additionalEffectCount = GetMoveAdditionalEffectCount(aiMove);
+            for (j = 0; j < additionalEffectCount; j++)
+            {
+                const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(aiMove, j);
+                if (IsSelfStatRaisingEffect(additionalEffect->moveEffect) && additionalEffect->self)
+                    return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
 bool32 HasMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef, u32 accCheck, bool32 ignoreStatus, u32 atkAbility, u32 defAbility, u32 atkHoldEffect, u32 defHoldEffect)
 {
     s32 i;
@@ -2589,6 +2607,31 @@ bool32 IsSelfStatLoweringEffect(enum BattleMoveEffects effect)
     case MOVE_EFFECT_V_CREATE:
     case MOVE_EFFECT_ATK_DEF_DOWN:
     case MOVE_EFFECT_DEF_SPDEF_DOWN:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+bool32 IsSelfStatRaisingEffect(enum BattleMoveEffects effect)
+{
+    // Self stat lowering moves like Power Up Punch or Charge Beam
+    switch (effect)
+    {
+    case MOVE_EFFECT_ATK_PLUS_1:
+    case MOVE_EFFECT_DEF_PLUS_1:
+    case MOVE_EFFECT_SPD_PLUS_1:
+    case MOVE_EFFECT_SP_ATK_PLUS_1:
+    case MOVE_EFFECT_SP_DEF_PLUS_1:
+    case MOVE_EFFECT_EVS_PLUS_1:
+    case MOVE_EFFECT_ACC_PLUS_1:
+    case MOVE_EFFECT_ATK_PLUS_2:
+    case MOVE_EFFECT_DEF_PLUS_2:
+    case MOVE_EFFECT_SPD_PLUS_2:
+    case MOVE_EFFECT_SP_ATK_PLUS_2:
+    case MOVE_EFFECT_SP_DEF_PLUS_2:
+    case MOVE_EFFECT_EVS_PLUS_2:
+    case MOVE_EFFECT_ACC_PLUS_2:
         return TRUE;
     default:
         return FALSE;
@@ -4913,16 +4956,18 @@ bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability)
     }
 }
 
-bool32 DoesIntimidateRaiseAttack(u32 ability)
+bool32 DoesIntimidateRaiseStats(u32 ability)
 {
     switch (ability)
     {
-        case ABILITY_CONTRARY:
-        case ABILITY_DEFIANT:
-        case ABILITY_GUARD_DOG:
-            return TRUE;
-        default:
-            return FALSE;
+    case ABILITY_COMPETITIVE:
+    case ABILITY_CONTRARY:
+    case ABILITY_DEFIANT:
+    case ABILITY_GUARD_DOG:
+    case ABILITY_RATTLED:
+        return TRUE;
+    default:
+        return FALSE;
     }
 }
 
@@ -5133,6 +5178,12 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
             ADJUST_SCORE_PTR(DECENT_EFFECT);
         }
 
+        if (effect == EFFECT_SIMPLE_BEAM)
+            abilityAtk = ABILITY_SIMPLE;
+
+        if (effect == EFFECT_WORRY_SEED)
+            abilityAtk = ABILITY_INSOMNIA;
+
         if (attackerHasBadAbility)
         {
             switch (effect)
@@ -5153,12 +5204,6 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
 
         if (isTargetingPartner)
         {
-            if (effect == EFFECT_SIMPLE_BEAM)
-                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, ABILITY_SIMPLE, aiData));
-
-            if (effect == EFFECT_WORRY_SEED)
-                ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, ABILITY_INSOMNIA, aiData));
-
             if (partnerHasBadAbility)
             {
                 switch (effect)
@@ -5166,7 +5211,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 case EFFECT_GASTRO_ACID:
                 case EFFECT_SIMPLE_BEAM:
                 case EFFECT_WORRY_SEED:
-                    ADJUST_SCORE_PTR(10);
+                    ADJUST_SCORE_PTR(BEST_EFFECT);
                     break;
                 case EFFECT_ENTRAINMENT:
                 case EFFECT_SKILL_SWAP:
@@ -5183,7 +5228,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
                 }
             }
             
-            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SKILL_SWAP)
+            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
             {
                 ADJUST_SCORE_PTR(BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData));
             }
@@ -5201,12 +5246,13 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         else
         {
 
-            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SKILL_SWAP)
+            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
             {
                 if (gAbilitiesInfo[abilityAtk].aiRating <= 0)
                     ADJUST_SCORE_PTR(GOOD_EFFECT);
-                else if (IsAbilityOfRating(abilityDef, 5) && gAbilitiesInfo[abilityAtk].aiRating <= 3)
-                    ADJUST_SCORE_PTR(WEAK_EFFECT);
+                s32 currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
+                s32 transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
+                    ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
             }
 
             switch (effect)
@@ -5229,7 +5275,7 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
     }
 }
 
-u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData)
+s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData)
 {
     switch (ability)
     {
@@ -5244,26 +5290,26 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
             return BEST_EFFECT;
         break;
     case ABILITY_GUTS:
-        if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && IsFitBattlerStatused(battler))
+        if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && gBattleMons[battler].status1 & (STATUS1_REFRESH))
             return BEST_EFFECT;
         break;
-    // Also used to Worry Seed WORRY_SEED an ally.
+    // Also used to Worry Seed WORRY_SEED
     case ABILITY_INSOMNIA:
     case ABILITY_VITAL_SPIRIT:
         if (HasMoveWithEffect(battler, EFFECT_REST))
-            return -GOOD_EFFECT;
+            return -10;
         return NO_INCREASE;
     case ABILITY_INTIMIDATE:
         u32 abilityDef = aiData->abilities[FOE(battler)];
-        if (DoesIntimidateRaiseAttack(abilityDef))
-            return NO_INCREASE;
+        if (DoesIntimidateRaiseStats(abilityDef))
+            return -GOOD_EFFECT;
         else
         {
             if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(FOE(battler))))
             {
                 abilityDef = aiData->abilities[BATTLE_PARTNER(FOE(battler))];
-                if (DoesIntimidateRaiseAttack(abilityDef))
-                    return NO_INCREASE;
+                if (DoesIntimidateRaiseStats(abilityDef))
+                    return -GOOD_EFFECT;
                 else
                 {
                     s32 score1 = IncreaseStatDownScore(battler, FOE(battler), STAT_DEF);
@@ -5280,10 +5326,10 @@ u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return GOOD_EFFECT;
         break;
-    // Also used to Simple Beam SIMPLE_BEAM an ally.
+    // Also used to Simple Beam SIMPLE_BEAM.
     case ABILITY_SIMPLE:
         // Prioritize moves like Metal Claw, Charge Beam, or Power up Punch
-        if (HasMoveWithAdditionalEffect(battler, MOVE_EFFECT_ATK_PLUS_1) || HasMoveWithAdditionalEffect(battler, MOVE_EFFECT_SP_ATK_PLUS_1))
+        if (HasMoveThatRaisesOwnStats(battler))
             return GOOD_EFFECT;
         return NO_INCREASE;
     default:

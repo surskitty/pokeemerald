@@ -178,6 +178,7 @@ bool32 HasThawingMove(u32 battler);
 bool32 IsStatRaisingEffect(enum BattleMoveEffects effect);
 bool32 IsStatLoweringEffect(enum BattleMoveEffects effect);
 bool32 IsSelfStatLoweringEffect(enum BattleMoveEffects effect);
+bool32 IsSelfStatRaisingEffect(enum BattleMoveEffects effect);
 bool32 IsSwitchOutEffect(enum BattleMoveEffects effect);
 bool32 IsChaseEffect(enum BattleMoveEffects effect);
 bool32 IsAttackBoostMoveEffect(enum BattleMoveEffects effect);
@@ -213,7 +214,7 @@ bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
 bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct AiLogicData *aiData);
 void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData);
-u32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData);
+s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData);
 
 // partner logic
 bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef);
