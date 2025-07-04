@@ -5162,6 +5162,7 @@ bool32 DoesEffectReplaceTargetAbility(u32 effect)
         return TRUE;
     default:
         return FALSE;
+    }
 }
 
 void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData)
