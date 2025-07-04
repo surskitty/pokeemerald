@@ -3128,7 +3128,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 }
                 else
                 {
-                    ADJUST_SCORE(-DECENT_EFFECT);
+                    ADJUST_SCORE(AWFUL_EFFECT);
                 }
             }
             // No reason to kill partner has been found.
@@ -3719,7 +3719,7 @@ static u32 AI_CalcHoldEffectMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         else
         {
-            ADJUST_SCORE(-DECENT_EFFECT);
+            ADJUST_SCORE(AWFUL_EFFECT);
         }
     }
     break;
@@ -5902,7 +5902,7 @@ static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     case EFFECT_ION_DELUGE:
     case EFFECT_MAGIC_COAT:
     case EFFECT_SNATCH:
-        ADJUST_SCORE(-BEST_EFFECT);
+        ADJUST_SCORE(WORST_EFFECT);
         break;
 
     // Get stuck in bad matchup
@@ -5912,7 +5912,7 @@ static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     case EFFECT_INGRAIN:
     case EFFECT_NO_RETREAT:
     case EFFECT_MEAN_LOOK:
-        ADJUST_SCORE(-GOOD_EFFECT);
+        ADJUST_SCORE(AWFUL_EFFECT);
         break;
 
     default:
@@ -5925,17 +5925,17 @@ static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         switch (GetMoveAdditionalEffectById(move, i)->moveEffect)
         {
             case MOVE_EFFECT_WRAP:
-                ADJUST_SCORE(-GOOD_EFFECT);
+                ADJUST_SCORE(AWFUL_EFFECT);
                 break;
             case MOVE_EFFECT_FEINT:
-                ADJUST_SCORE(-BEST_EFFECT);
+                ADJUST_SCORE(WORST_EFFECT);
                 break;
         }
     }
 
     // Take advantage of ability damage bonus
     if ((ability == ABILITY_STAKEOUT || ability == ABILITY_ANALYTIC) && IsBattleMoveStatus(move))
-        ADJUST_SCORE(-WEAK_EFFECT);
+        ADJUST_SCORE(BAD_EFFECT);
 
     // This must be last or the player can gauge whether the AI is predicting based on how long it thinks
     if (!IsBattlerPredictedToSwitch(battlerDef))

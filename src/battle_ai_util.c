@@ -5150,136 +5150,99 @@ bool32 CanEffectChangeAbility(u32 battlerAtk, u32 battlerDef, u32 effect, struct
     return TRUE;
 }
 
+bool32 DoesEffectReplaceTargetAbility(u32 effect)
+{
+    switch (effect)
+    {
+    case EFFECT_ENTRAINMENT:
+    case EFFECT_GASTRO_ACID:
+    case EFFECT_SIMPLE_BEAM:
+    case EFFECT_SKILL_SWAP:
+    case EFFECT_WORRY_SEED:
+        return TRUE;
+    default:
+        return FALSE;
+}
+
 void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, struct AiLogicData *aiData)
 {
     bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
+    u32 abilityAtk = aiData->abilities[battlerAtk];
+    u32 abilityDef = aiData->abilities[battlerDef];
+    bool32 partnerHasBadAbility = FALSE;
+    u32 partnerAbility = ABILITY_NONE;
+    bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
+    s32 currentAbilityScore, transferredAbilityScore = 0;
 
-    if (!CanEffectChangeAbility(battlerAtk, battlerDef, effect, aiData))
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
     {
-        ADJUST_SCORE_PTR(-30);
+        partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
+        if (!(gAbilitiesInfo[partnerAbility].cantBeSuppressed) && (gAbilitiesInfo[partnerAbility].aiRating < 0))
+            partnerHasBadAbility = TRUE;
     }
-    else 
+
+    if (effect == EFFECT_GASTRO_ACID)
+        abilityAtk = ABILITY_NONE;
+    else if (effect == EFFECT_SIMPLE_BEAM)
+        abilityAtk = ABILITY_SIMPLE;
+    else if (effect == EFFECT_WORRY_SEED)
+        abilityAtk = ABILITY_INSOMNIA;
+
+    if (effect == EFFECT_DOODLE || effect == EFFECT_ROLE_PLAY || effect == EFFECT_SKILL_SWAP)
     {
-        u32 abilityAtk = aiData->abilities[battlerAtk];
-        u32 abilityDef = aiData->abilities[battlerDef];
-        bool32 partnerHasBadAbility = FALSE;
-        u32 partnerAbility = ABILITY_NONE;
-        bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
-        s32 currentAbilityScore, transferredAbilityScore = 0;
-
-        if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
-        {
-            partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
-            if (!(gAbilitiesInfo[partnerAbility].cantBeSuppressed) && (gAbilitiesInfo[partnerAbility].aiRating < 0))
-                partnerHasBadAbility = TRUE;
-        }
-
         if (partnerHasBadAbility && effect == EFFECT_DOODLE)
-        {
             ADJUST_SCORE_PTR(DECENT_EFFECT);
-        }
-
-        if (effect == EFFECT_SIMPLE_BEAM)
-            abilityAtk = ABILITY_SIMPLE;
-
-        if (effect == EFFECT_WORRY_SEED)
-            abilityAtk = ABILITY_INSOMNIA;
 
         if (attackerHasBadAbility)
-        {
-            switch (effect)
-            {
-            case EFFECT_DOODLE:
-            case EFFECT_ROLE_PLAY:
-            case EFFECT_SKILL_SWAP:
-                ADJUST_SCORE_PTR(DECENT_EFFECT);
-            default:
-                break;
-            }
-        }
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
 
-        if (effect == EFFECT_DOODLE || effect == EFFECT_ROLE_PLAY || effect == EFFECT_SKILL_SWAP)
-        {
-            currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityAtk, aiData);
-            transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData);
-            ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
-        }
+        currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityAtk, aiData);
+        transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData);
+        ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
+    }
 
-        if (isTargetingPartner)
+    if (isTargetingPartner)
+    {
+        if (DoesEffectReplaceTargetAbility(effect))
         {
             if (partnerHasBadAbility)
-            {
-                switch (effect)
-                {
-                case EFFECT_GASTRO_ACID:
-                case EFFECT_SIMPLE_BEAM:
-                case EFFECT_WORRY_SEED:
-                    ADJUST_SCORE_PTR(BEST_EFFECT);
-                    break;
-                case EFFECT_ENTRAINMENT:
-                case EFFECT_SKILL_SWAP:
-                    if (attackerHasBadAbility)
-                        ADJUST_SCORE_PTR(-20);
-                    else
-                        ADJUST_SCORE_PTR(10);
-                    break;
-                case EFFECT_ROLE_PLAY:
-                    ADJUST_SCORE_PTR(-20);
-                    break;
-                default:
-                    break;
-                }
-            }
-            
-            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
-            {
-                currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
-                transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
-                ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
-            }
-            
-            // Trigger Plus or Minus in modern gens. This is not in the overarching function because Skill Swap is rarely beneficial here.
-            if (B_PLUS_MINUS_INTERACTION >= GEN_5)
-            {
-                if (((effect == EFFECT_ENTRAINMENT) && (abilityAtk == ABILITY_PLUS || abilityAtk == ABILITY_MINUS)) || ((effect == EFFECT_ROLE_PLAY) && (abilityDef == ABILITY_PLUS || abilityDef == ABILITY_MINUS)))
-                    ADJUST_SCORE_PTR(DECENT_EFFECT);
-            }
-            
+                ADJUST_SCORE_PTR(BEST_EFFECT);
+
+            currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
+            transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
+            ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
         }
-        // Targeting an opponent.
-        else
+        else // This is only Role Play as Doodle can't target the partner
         {
-            if (effect == EFFECT_ENTRAINMENT || effect == EFFECT_SIMPLE_BEAM || effect == EFFECT_SKILL_SWAP || effect == EFFECT_WORRY_SEED)
-            {
-                if (gAbilitiesInfo[abilityAtk].aiRating <= 0)
-                    ADJUST_SCORE_PTR(GOOD_EFFECT);
-                currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
-                transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
-                ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
-            }
-
-            switch (effect)
-            {
-            case EFFECT_ENTRAINMENT:
-            case EFFECT_SKILL_SWAP:
-            case EFFECT_GASTRO_ACID:
-            case EFFECT_DOODLE:
-            case EFFECT_SIMPLE_BEAM:
-            case EFFECT_WORRY_SEED:
-            case EFFECT_ROLE_PLAY:
-                if (IsAbilityOfRating(abilityDef, 10))
-                    ADJUST_SCORE_PTR(DECENT_EFFECT);
-                break;
-
-            default:
-                break;
-            }
+            ADJUST_SCORE_PTR(-20);
+        }
+        
+        // Trigger Plus or Minus in modern gens. This is not in the overarching function because Skill Swap is rarely beneficial here.
+        if (B_PLUS_MINUS_INTERACTION >= GEN_5)
+        {
+            if (((effect == EFFECT_ENTRAINMENT) && (abilityAtk == ABILITY_PLUS || abilityAtk == ABILITY_MINUS)) || ((effect == EFFECT_ROLE_PLAY) && (abilityDef == ABILITY_PLUS || abilityDef == ABILITY_MINUS)))
+                ADJUST_SCORE_PTR(DECENT_EFFECT);
+        }
+        
+    }
+    // Targeting an opponent.
+    else
+    {
+        // We already checked if we want their ability, so now we look to see if we want them to lose their ability.
+        if (DoesEffectReplaceTargetAbility(effect))
+        {
+            currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
+            transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
+            ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
         }
     }
 }
 
 s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData *aiData)
 {
+    if (gAbilitiesInfo[ability].aiRating < 0)
+        return WORST_EFFECT;
+
     switch (ability)
     {
     // Transferrable abilities that can be assumed to be always beneficial.
@@ -5290,17 +5253,17 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_PURIFYING_SALT:
     case ABILITY_SPEED_BOOST:
     case ABILITY_WHITE_SMOKE:
-        return DECENT_EFFECT;
+        return GOOD_EFFECT;
     // Conditional ability logic goes here.
     case ABILITY_COMPOUND_EYES:
-        if (HasLowAccuracyMove(battler, FOE(battler)))
-            return BEST_EFFECT;
         if (HasMoveWithLowAccuracy(battler, FOE(battler), 90, TRUE, aiData->abilities[battler], aiData->abilities[FOE(battler)], aiData->holdEffects[battler], aiData->holdEffects[FOE(battler)]))
             return GOOD_EFFECT;
         break;
     case ABILITY_CONTRARY:
         if (HasMoveThatLowersOwnStats(battler))
             return BEST_EFFECT;
+        if (HasMoveThatRaisesOwnStats(battler))
+            return AWFUL_EFFECT;
         break;
     case ABILITY_FRIEND_GUARD:
     case ABILITY_POWER_SPOT:
@@ -5321,13 +5284,13 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_INSOMNIA:
     case ABILITY_VITAL_SPIRIT:
         if (HasMoveWithEffect(battler, EFFECT_REST))
-            return -10;
+            return WORST_EFFECT;
         return NO_INCREASE;
     case ABILITY_INTIMIDATE:
         u32 abilityDef = aiData->abilities[FOE(battler)];
         if (DoesIntimidateRaiseStats(abilityDef))
         {
-            return -5;
+            return AWFUL_EFFECT;
         }
         else
         {
@@ -5336,7 +5299,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
                 abilityDef = aiData->abilities[BATTLE_PARTNER(FOE(battler))];
                 if (DoesIntimidateRaiseStats(abilityDef))
                 {
-                    return -5;
+                    return AWFUL_EFFECT;
                 }
                 else
                 {
@@ -5354,6 +5317,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasLowAccuracyMove(battler, FOE(battler)))
             return GOOD_EFFECT;
         break;
+    // Toxic counter ticks upward while Poison Healed; losing Poison Heal while Toxiced can KO.
     case ABILITY_POISON_HEAL:
         if (gBattleMons[battler].status1 & (STATUS1_POISON))
             return WEAK_EFFECT;
