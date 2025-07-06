@@ -5480,7 +5480,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     if (gAbilitiesInfo[ability].aiRating < 0)
         return WORST_EFFECT;
 
-    if (IsMoldBreakerTypeAbility(ability))
+    if (IsMoldBreakerTypeAbility(battler, ability))
         return GOOD_EFFECT;
 
     if (IsMoxieTypeAbility(ability) && CountUsablePartyMons(FOE(battler)) != 0)
@@ -5575,6 +5575,19 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (HasMoveThatRaisesOwnStats(battler))
             return GOOD_EFFECT;
         return NO_INCREASE;
+    case ABILITY_TRIAGE:
+        if ((gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) 
+         && (IsBattlerGrounded(FOE(battler)) || IsBattlerGrounded(BATTLE_PARTNER(FOE(battler)))))
+        {
+            return AWFUL_EFFECT;
+        }
+        else
+        {
+            if (HasHealingEffect(battler))
+                return GOOD_EFFECT;
+            else
+                return NO_INCREASE;
+        }
     case ABILITY_BEADS_OF_RUIN:
     case ABILITY_SWORD_OF_RUIN:
     case ABILITY_TABLETS_OF_RUIN:
