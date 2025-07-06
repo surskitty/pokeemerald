@@ -163,7 +163,7 @@ bool32 IsTwoTurnNotSemiInvulnerableMove(u32 battlerAtk, u32 move);
 bool32 IsBattlerDamagedByStatus(u32 battler);
 s32 ProtectChecks(u32 battlerAtk, u32 battlerDef, u32 move, u32 predictedMove);
 bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather);
-bool32 ShouldSetFieldOrTerrain(u32 battler, u32 ability, u32 fieldStatus);
+bool32 ShouldSetFieldOrTerrain(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 fieldStatus);
 bool32 HasSleepMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef);
 bool32 IsHealingMove(u32 move);
 bool32 HasHealingEffect(u32 battler);
