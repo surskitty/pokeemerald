@@ -1988,7 +1988,7 @@ static bool32 ShouldSetMistyTerrain(u32 battler, bool32 holdingSeed)
 
     // harass dragons
     if ((grounded || allyGrounded) 
-        && (HasMoveWithType(FOE(battler), TYPE_DRAGON) || HasMoveWithType(BATTLE_PARTNER(FOE(battler)), TYPE_DRAGON)))
+        && (HasDamagingMoveOfType(FOE(battler), TYPE_DRAGON) || HasDamagingMoveOfType(BATTLE_PARTNER(FOE(battler)), TYPE_DRAGON)))
         return TRUE;
 
     if ((grounded || allyGrounded) && HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP))
