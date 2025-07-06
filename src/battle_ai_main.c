@@ -3016,46 +3016,6 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         break;
     } // our effect relative to partner
 
-    // consider global move effects
-    switch (effect)
-    {
-    case EFFECT_SANDSTORM:
-        if (ShouldSetSandstorm(battlerAtkPartner, atkPartnerAbility, atkPartnerHoldEffect))
-        {
-            RETURN_SCORE_PLUS(WEAK_EFFECT);   // our partner benefits from sandstorm
-        }
-        break;
-    case EFFECT_RAIN_DANCE:
-        if (ShouldSetRain(battlerAtkPartner, atkPartnerAbility, atkPartnerHoldEffect))
-        {
-            RETURN_SCORE_PLUS(WEAK_EFFECT);   // our partner benefits from rain
-        }
-        break;
-    case EFFECT_SUNNY_DAY:
-        if (ShouldSetSun(battlerAtkPartner, atkPartnerAbility, atkPartnerHoldEffect))
-        {
-            RETURN_SCORE_PLUS(WEAK_EFFECT);   // our partner benefits from sun
-        }
-        break;
-    case EFFECT_HAIL:
-        if (IsBattlerAlive(battlerAtkPartner)
-         && ShouldSetHail(battlerAtkPartner, atkPartnerAbility, atkPartnerHoldEffect))
-        {
-            RETURN_SCORE_PLUS(DECENT_EFFECT);   // our partner benefits from hail
-        }
-        break;
-    case EFFECT_SNOWSCAPE:
-    case EFFECT_CHILLY_RECEPTION:
-        if (IsBattlerAlive(battlerAtkPartner)
-         && ShouldSetSnow(battlerAtkPartner, atkPartnerAbility, atkPartnerHoldEffect))
-        {
-            RETURN_SCORE_PLUS(DECENT_EFFECT);   // our partner benefits from snow
-        }
-        break;
-    default:
-        break;
-    } // global move effect check
-
     // Specific logic for spread moves.
     if (moveTarget == MOVE_TARGET_FOES_AND_ALLY)
     {
@@ -4228,7 +4188,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_SANDSTORM:
-        if (ShouldSetSandstorm(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk]))
+        if (ShouldSetWeather(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], B_WEATHER_SANDSTORM))
         {
             ADJUST_SCORE(DECENT_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_SMOOTH_ROCK)
@@ -4240,7 +4200,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_HAIL:
-        if (ShouldSetHail(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk]))
+        if (ShouldSetWeather(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], B_WEATHER_HAIL))
         {
             if ((HasMoveWithEffect(battlerAtk, EFFECT_AURORA_VEIL) || HasMoveWithEffect(BATTLE_PARTNER(battlerAtk), EFFECT_AURORA_VEIL))
               && ShouldSetScreen(battlerAtk, battlerDef, EFFECT_AURORA_VEIL))
@@ -4256,7 +4216,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SNOWSCAPE:
-        if (ShouldSetSnow(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk]))
+        if (ShouldSetWeather(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], B_WEATHER_SNOW))
         {
             if ((HasMoveWithEffect(battlerAtk, EFFECT_AURORA_VEIL) || HasMoveWithEffect(BATTLE_PARTNER(battlerAtk), EFFECT_AURORA_VEIL))
               && ShouldSetScreen(battlerAtk, battlerDef, EFFECT_AURORA_VEIL))
@@ -4272,7 +4232,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_RAIN_DANCE:
-        if (ShouldSetRain(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk]))
+        if (ShouldSetWeather(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], B_WEATHER_RAIN))
         {
             ADJUST_SCORE(DECENT_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_DAMP_ROCK)
@@ -4287,7 +4247,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SUNNY_DAY:
-        if (ShouldSetSun(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk]))
+        if (ShouldSetWeather(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], B_WEATHER_SUN))
         {
             ADJUST_SCORE(DECENT_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_HEAT_ROCK)
