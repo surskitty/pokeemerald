@@ -41,7 +41,7 @@ enum AIScore
     BEST_EFFECT = 4,
     BAD_EFFECT = -1,
     AWFUL_EFFECT = -3,
-    WORST_EFFECT = -5
+    WORST_EFFECT = -10
 };
 
 // AI_TryToFaint
