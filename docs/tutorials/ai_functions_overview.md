@@ -29,45 +29,44 @@ These are almost all named in the format HasMoveWith, HasMoveThat, or Has[x]Move
 Under most circumstances, you want to use these two:
 > `HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)` or `HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`
 
-If you are checking more than two move effects or additional effects, please consider making more of these little functions. `bool32 HasTrappingMoveEffect(u32 battler)` is a good model to follow.
+If you are checking more than two move effects or additional effects, please consider making more little functions like `HasTrappingMoveEffect(u32 battler)`.  These make it simpler to see when an effect is missing when it is later updated for new mechanics.
 
 ### `src/battle_ai_util.c`
-BattlerSide functions check both the battler and its ally for the effect.
+BattlerSide functions check both the battler and its ally for the effect. Most doubles helper functions will by themselves smoothly transition to single battles, so if you do not have a compelling reason to only check the user, check both!
 
 `HasBattlerSideMoveWithEffect(u32 battler, u32 effect)` is the Omniscient version of `HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)`
 
 `HasBattlerSideMoveWithAdditionalEffect` is the Omniscient version of `HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`.
 
-`PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)` and `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)` are to see if there is a `DAMAGE_CATEGORY_PHYSICAL` or `DAMAGE_CATEGORY_SPECIAL` move either somewhere in the party or active on the field.  `SideHasMoveCategory()` is the more doubles friendly version of `HasMoveWithCategory()`, which is used primarily to determine if a Pokemon should boost its Attack or Special Attack.
+`PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)` and `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)` are to see if there is a `DAMAGE_CATEGORY_PHYSICAL` or `DAMAGE_CATEGORY_SPECIAL` move either somewhere in the party or active on the field.  `SideHasMoveCategory()` is the doubles version version of `HasMoveWithCategory()`.
 
- `PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)`
+`PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)`
 
-Checking a specific Pok&eacute;mon.
-``` `HasMove(u32 battlerId, u32 move)`
-    `HasDamagingMove(u32 battlerId)`
-    `HasDamagingMoveOfType(u32 battlerId, u32 type)`
-    `HasOnlyMovesWithCategory(u32 battlerId, enum DamageCategory category, bool32 onlyOffensive)` -- The boolean is to decide if it counts status moves or not.
-    `HasMoveWithCategory(u32 battler, enum DamageCategory category)`
-    `HasMoveWithType(u32 battler, u32 type)`
-    `HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects moveEffect)`
-```
+Basic functions for checking a specific Pokemon: `HasMove(u32 battlerId, u32 move)`, `HasMoveWithType(u32 battler, u32 type)`, `HasDamagingMove(u32 battlerId)`, `HasDamagingMoveOfType(u32 battlerId, u32 type)`, `HasMoveWithCategory(u32 battler, enum DamageCategory category)`.
+
+`HasOnlyMovesWithCategory(u32 battlerId, enum DamageCategory category, bool32 onlyOffensive)` takes a boolean to decide if it only looks at Physical and Special, or if it also considers status moves.
+
+`HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects moveEffect)` and `HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect)` are your standards for checking moves that do things other than damage.
+
+`HasMoveThatLowersOwnStats(u32 battlerId)` is intended for Contrary and White Herb.
+
+`HasAnyKnownMove(u32 battlerId)` is about if the AI knows anything about the Pokemon's moves at all.
+
+The following are fairly self-explanatory: `HasMoveWithCriticalHitChance()`, `HasTrappingMoveEffect()`, `HasThawingMove()`
+
+`HasLightSensitiveMove(u32 battler)` -- Moves like Solar Beam and Synthesis that are weakened by `B_WEATHER_LOW_LIGHT` like Rain, Snow, or Fog, and strengthened by Sun.  Used for weather checks.
+
+`HasLowAccuracyMove(u32 battlerAtk, u32 battlerDef)` -- This uses `include/config/ai.h` `LOW_ACCURACY_THRESHOLD` which is by default 70%. It is used for Blunder Policy and No Guard.
+
+`HasMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef, u32 accCheck, bool32 ignoreStatus, u32 atkAbility, u32 defAbility, u32 atkHoldEffect, u32 defHoldEffect)` -- This lets you pick the low accuracy threshold per usage. Used for Compound Eyes checks
+
+`HasHealingEffect()` refers to moves that can heal, including anything blocked by Heal Block or boosted by Triage.
 
 - `HasNonVolatileMoveEffect(u32 battlerId, u32 effect)`
-- `HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect)`
-- `HasMoveWithCriticalHitChance(u32 battlerId)`
 - `HasMoveWithMoveEffectExcept(u32 battlerId, u32 moveEffect, enum BattleMoveEffects exception)`
-- `HasMoveThatLowersOwnStats(u32 battlerId)` -- Intended for Contrary and White Herb.
-- `HasAnyKnownMove(u32 battlerId)`
 - `HasSleepMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef)`
 
-- `HasTrappingMoveEffect(u32 battler)`
-- `HasLightSensitiveMove(u32 battler)` -- Moves like Solar Beam and Synthesis that are weakened by `B_WEATHER_LOW_LIGHT` like Rain, Snow, or Fog, and strengthened by Sun.
-- `HasThawingMove(u32 battler)`
 - `HasMoveWithFlag(u32 battler, MoveFlag getFlag)`
-- `HasLowAccuracyMove(u32 battlerAtk, u32 battlerDef)` -- This uses `include/config/ai.h` `LOW_ACCURACY_THRESHOLD` which is by default 70%. It is used for Blunder Policy and No Guard.
-- `HasMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef, u32 accCheck, bool32 ignoreStatus, u32 atkAbility, u32 defAbility, u32 atkHoldEffect, u32 defHoldEffect)` -- This lets you pick the low accuracy threshold per usage, but in practice, it's for Compound Eyes.
-- `HasHealingEffect(u32 battler)`
-
 
 ### `src/battle_util.c`
 - `MoveHasAdditionalEffect(u32 move, u32 moveEffect)`
@@ -75,24 +74,90 @@ Checking a specific Pok&eacute;mon.
 - `MoveHasAdditionalEffectSelf(u32 move, u32 moveEffect)`
 - `MoveHasChargeTurnAdditionalEffect(u32 move)`
 
-## Using Types of Moves
+## Teaching the AI about Abilities
+`s32 BattlerBenefitsFromAbilityScore()` is the big function for informing the AI if the current Ability it has is good in context.  This is the function you need to edit to improve logic for using Skill Swap, Role Play, Entrainment, Gastro Acid, and so on. If you are not adding new move effects that change abiities, you can ignore `CanEffectChangeAbility()` and `AbilityChangeScore()` entirely.
+
+Ability ratings as in `src/data/abilities.c` are for the AI to determine the likelihood it can predict the Ability with the AI flag `AI_FLAG_WEIGH_ABILITY_PREDICTION`.  Negative ratings are treated as always bad to have for the purposes of Skill Swap.
+
+`DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)` includes Terrains.
+
+`DoesAbilityBenefitFromWeather(u32 ability, u32 weather)`
+
+`IsMoxieTypeAbility(u32 ability)` -- Abilities that raise stats upon KO.
+
+`DoesAbilityRaiseStatsWhenLowered(u32 ability)` -- Abilities like Defiant or Contrary.
+
+`ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)` -- Under what circumstances do you attack into an Ability that buffs the Pokemon hit?
+
+`src/battle_util.c` has `IsMoldBreakerTypeAbility()`.
+
+## Determining move scores; should the AI --
 > `bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)`
 This is for trapping-based move effects. AI_CanBattlerEscape() and IsBattlerTrapped() determine if the Pok&eacute;mon is able to switch.
 
 >`ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)` and `ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 fieldStatus)`
 Overarching handlers for whether a weather effect or a terrain effect are beneficial to a pokemon and its partner. Called primarily in Check Viability.
 
-## Teaching the AI about Abilities
-`s32 BattlerBenefitsFromAbilityScore()` is the big function for informing the AI if the current Ability it has is good in context.  This is the function you need to edit to improve logic for using Skill Swap, Role Play, Entrainment, Gastro Acid, and so on. If you are not adding new move effects that change abiities, you can ignore `CanEffectChangeAbility()` and `AbilityChangeScore()` entirely.
+`bool32 ShouldTryOHKO(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)`
 
-Ability ratings as in `src/data/abilities.c` are for the AI to determine the likelihood it can predict the Ability with the AI flag `AI_FLAG_WEIGH_ABILITY_PREDICTION`.  Negative ratings are treated as always bad to have for the purposes of Skill Swap.
+`bool32 ShouldUseRecoilMove(u32 battlerAtk, u32 battlerDef, u32 recoilDmg, u32 moveIndex)`
 
-- `DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)` -- This includes Terrains.
-- `DoesAbilityBenefitFromWeather(u32 ability, u32 weather)`
-- `IsMoxieTypeAbility(u32 ability)` -- Abilities that raise stats upon KO.
-- `DoesAbilityRaiseStatsWhenLowered(u32 ability)` -- Abilities like Defiant or Contrary.
-- `ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)` -- Under what circumstances do you attack into an Ability that buffs the Pokemon hit?
+`bool32 ShouldAbsorb(u32 battlerAtk, u32 battlerDef, u32 move, s32 damage)`
 
+`bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent, enum DamageCalcContext calcContext)`
+
+`bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, enum BattleMoveEffects moveEffect)`
+
+`enum AIPivot ShouldPivot(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 moveIndex)`
+
+`bool32 ShouldRestoreHpBerry(u32 battlerAtk, u32 item)`
+
+`bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove)`
+
+`bool32 IsBattlerIncapacitated(u32 battler, u32 ability)`
+
+`bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)`
+
+`bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
+
+`bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
+
+`bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
+
+`bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)`
+
+`u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)`
+
+`bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)`
+
+`bool32 IsWakeupTurn(u32 battler)`
+
+
+
+`u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statId)`
+
+`u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statId)`
+
+`u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)`
+
+`void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+`void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+`void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+`void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+`void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+`void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+
+
+
+
+
+---
+This is simply a list of unsorted functions in `src/battle_ai_util.c` for reference that have not been added yet.
 
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk)
@@ -102,7 +167,6 @@ bool32 CanTargetMoveFaintAi(u32 move, u32 battlerDef, u32 battlerAtk, u32 nHits)
 bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dmgMod)
 s32 AI_DecideKnownAbilityForTurn(u32 battlerId)
 enum ItemHoldEffect AI_DecideHoldEffectForTurn(u32 battlerId)
-bool32 DoesBattlerIgnoreAbilityChecks(u32 battlerAtk, u32 atkAbility, u32 move)
 u32 AI_GetWeather(void)
 bool32 CanAIFaintTarget(u32 battlerAtk, u32 battlerDef, u32 numHits)
 bool32 CanIndexMoveFaintTarget(u32 battlerAtk, u32 battlerDef, u32 index, enum DamageCalcContext calcContext)
@@ -110,20 +174,11 @@ bool32 CanIndexMoveGuaranteeFaintTarget(u32 battlerAtk, u32 battlerDef, u32 inde
 u32 GetBattlerSecondaryDamage(u32 battlerId)
 bool32 BattlerWillFaintFromWeather(u32 battler, u32 ability)
 bool32 BattlerWillFaintFromSecondaryDamage(u32 battler, u32 ability)
-bool32 ShouldTryOHKO(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)
-bool32 ShouldUseRecoilMove(u32 battlerAtk, u32 battlerDef, u32 recoilDmg, u32 moveIndex)
-u32 GetBattlerSideSpeedAverage(u32 battler)
-bool32 ShouldAbsorb(u32 battlerAtk, u32 battlerDef, u32 move, s32 damage)
-bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent, enum DamageCalcContext calcContext)
-bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, enum BattleMoveEffects moveEffect)
-enum AIPivot ShouldPivot(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 moveIndex)
 bool32 IsRecycleEncouragedItem(u32 item)
-bool32 ShouldRestoreHpBerry(u32 battlerAtk, u32 item)
 bool32 IsStatBoostingBerry(u32 item)
 bool32 CanKnockOffItem(u32 battler, u32 item)
 bool32 AI_IsAbilityOnSide(u32 battlerId, u32 ability)
 bool32 AI_MoveMakesContact(u32 ability, enum ItemHoldEffect holdEffect, u32 move)
-bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove)
 void SetAIUsingGimmick(u32 battler, enum AIConsiderGimmick use)
 bool32 IsAIUsingGimmick(u32 battler)
 void DecideTerastal(u32 battler)
@@ -176,15 +231,6 @@ bool32 IsHazardClearingMove(u32 move)
 bool32 IsSubstituteEffect(enum BattleMoveEffects effect)
 
 // status checks
-bool32 IsBattlerIncapacitated(u32 battler, u32 ability)
-bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)
-bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
-bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
-bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
-bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)
-u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)
-bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)
-bool32 IsWakeupTurn(u32 battler)
 bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId)
 
 // partner logic
@@ -213,16 +259,6 @@ bool32 IsPartyFullyHealedExceptBattler(u32 battler)
 bool32 PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)
 bool32 SideHasMoveCategory(u32 battlerId, enum DamageCategory category)
 
-// score increases
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statId)
-u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statId)
-u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
-void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 
 s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, enum DamageCalcContext calcContext)
 u32 AI_WhoStrikesFirstPartyMon(u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, u32 moveConsidered)
