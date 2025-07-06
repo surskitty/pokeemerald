@@ -1799,10 +1799,13 @@ bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather)
 
 static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect holdEffect)
 {
+    if (HasLightSensitiveMove(FOE(battler))
+        return TRUE;
+
     if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SANDSTORM)
      || holdEffect == HOLD_EFFECT_SAFETY_GOGGLES
      || IS_BATTLER_ANY_TYPE(battler, TYPE_ROCK, TYPE_GROUND, TYPE_STEEL)
-     || HasMoveWithEffect(battler, EFFECT_SHORE_UP))
+     || HasBattlerSideMoveWithEffect(battler, EFFECT_SHORE_UP))
     {
         return TRUE;
     }
@@ -1811,11 +1814,14 @@ static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect h
 
 static bool32 ShouldSetHail(u32 battler, u32 ability, enum ItemHoldEffect holdEffect)
 {
+    if (HasLightSensitiveMove(FOE(battler))
+        return TRUE;
+
     if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_HAIL)
      || holdEffect == HOLD_EFFECT_SAFETY_GOGGLES
      || IS_BATTLER_OF_TYPE(battler, TYPE_ICE)
      || HasMoveWithFlag(battler, MoveAlwaysHitsInHailSnow)
-     || HasMoveWithEffect(battler, EFFECT_AURORA_VEIL))
+     || HasBattlerSideMoveWithEffect(battler, EFFECT_AURORA_VEIL))
     {
         return TRUE;
     }
@@ -1824,6 +1830,9 @@ static bool32 ShouldSetHail(u32 battler, u32 ability, enum ItemHoldEffect holdEf
 
 static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEffect)
 {
+    if (HasLightSensitiveMove(FOE(battler))
+        return TRUE;
+
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA 
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_RAIN)
       || HasMoveWithFlag(battler, MoveAlwaysHitsInRain)
@@ -1834,15 +1843,11 @@ static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEf
     return FALSE;
 }
 
-static bool32 ShouldSetSun(u32 battlerAtk, u32 ability, enum ItemHoldEffect holdEffect)
+static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEffect)
 {
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA 
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SUN)
-      || HasMoveWithEffect(battlerAtk, EFFECT_SOLAR_BEAM)
-      || HasMoveWithEffect(battlerAtk, EFFECT_MORNING_SUN)
-      || HasMoveWithEffect(battlerAtk, EFFECT_SYNTHESIS)
-      || HasMoveWithEffect(battlerAtk, EFFECT_MOONLIGHT)
-      || HasMoveWithEffect(battlerAtk, EFFECT_GROWTH)
+      || HasLightSensitiveMove(battler)
       || HasMoveWithType(battlerAtk, TYPE_FIRE)))
     {
         return TRUE;
@@ -1852,6 +1857,9 @@ static bool32 ShouldSetSun(u32 battlerAtk, u32 ability, enum ItemHoldEffect hold
 
 static bool32 ShouldSetSnow(u32 battler, u32 ability, enum ItemHoldEffect holdEffect)
 {
+    if (HasLightSensitiveMove(FOE(battler))
+        return TRUE;
+
     if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SNOW)
      || IS_BATTLER_OF_TYPE(battler, TYPE_ICE)
      || HasMoveWithFlag(battler, MoveAlwaysHitsInHailSnow)
@@ -1934,7 +1942,8 @@ static bool32 ShouldSetElectricTerrain(u32 battler, u32 ability, bool32 holdingS
     if (HasMoveWithEffect(FOE(battler), EFFECT_REST) && IsBattlerGrounded(FOE(battler)))
         return TRUE;
 
-    if (HasMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP) && (grounded || allyGrounded))
+    if ((grounded || allyGrounded) && (HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP)
+    || HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_YAWN))
         return TRUE;
 
     if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_ELECTRIC_TERRAIN))
@@ -1948,7 +1957,6 @@ static bool32 ShouldSetElectricTerrain(u32 battler, u32 ability, bool32 holdingS
 
     if (grounded && ((gBattleMons[battler].status1 & STATUS1_SLEEP) 
     || (gStatuses3[battler] & STATUS3_YAWN) 
-    || HasBattlerSideMoveWithEffect(FOE(battler), EFFECT_YAWN)
     || HasMoveWithType(battler, TYPE_ELECTRIC))
         return TRUE;
 
@@ -2548,6 +2556,36 @@ bool32 HasHealingEffect(u32 battlerId)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && IsHealingMove(moves[i]))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+
+static bool32 IsLightSensitiveMove(u32 move)
+{
+    switch (GetMoveEffect(move))
+    {
+    case EFFECT_SOLAR_BEAM:
+    case EFFECT_MORNING_SUN:
+    case EFFECT_SYNTHESIS:
+    case EFFECT_MOONLIGHT:
+    case EFFECT_GROWTH:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+bool32 HasLightSensitiveMove(u32 battler)
+{
+    s32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && IsLightSensitiveMove(moves[i]))
             return TRUE;
     }
 

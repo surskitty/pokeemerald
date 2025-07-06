@@ -169,6 +169,7 @@ bool32 IsHealingMove(u32 move);
 bool32 HasHealingEffect(u32 battler);
 bool32 IsTrappingMove(u32 move);
 bool32 HasTrappingMoveEffect(u32 battler);
+bool32 HasLightSensitiveMove(u32 battler);
 bool32 ShouldFakeOut(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 HasThawingMove(u32 battler);
 bool32 IsStatRaisingEffect(enum BattleMoveEffects effect);
