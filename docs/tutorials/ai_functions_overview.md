@@ -68,6 +68,13 @@ The following are fairly self-explanatory: `HasMoveWithCriticalHitChance()`, `Ha
 
 - `HasMoveWithFlag(u32 battler, MoveFlag getFlag)`
 
+`IsStatRaisingEffect(enum BattleMoveEffects effect)`, `IsStatLoweringEffect(enum BattleMoveEffects effect)`, `IsSelfStatLoweringEffect(enum BattleMoveEffects effect)`, and `IsSelfStatRaisingEffect(enum BattleMoveEffects effect)` are all fairly self-explanatory.
+
+`IsSwitchOutEffect(enum BattleMoveEffects effect)` refers to moves like U-turn or Parting Shot that switch out the user.
+
+`IsChaseEffect(enum BattleMoveEffects effect)` is for Pursuit.
+
+
 ### `src/battle_util.c`
 - `MoveHasAdditionalEffect(u32 move, u32 moveEffect)`
 - `MoveHasAdditionalEffectWithChance(u32 move, u32 moveEffect, u32 chance)`
@@ -86,6 +93,8 @@ Ability ratings as in `src/data/abilities.c` are for the AI to determine the lik
 `IsMoxieTypeAbility(u32 ability)` -- Abilities that raise stats upon KO.
 
 `DoesAbilityRaiseStatsWhenLowered(u32 ability)` -- Abilities like Defiant or Contrary.
+
+`DoesIntimidateRaiseStats(abilityDef)` -- abilities like Guard Dog in addition to Defiant and Contrary.
 
 `ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)` -- Under what circumstances do you attack into an Ability that buffs the Pokemon hit?
 
@@ -114,21 +123,15 @@ Ability ratings as in `src/data/abilities.c` are for the AI to determine the lik
 
 `bool32 IsBattlerIncapacitated(u32 battler, u32 ability)`
 
-`bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)`
+`ShouldPoison()`, `ShouldBurn()`, `ShouldFreezeOrFrostbite()`, and `ShouldParalyze()` are used to determine if a Pokemon benefits unusually from the status, and if so, either don't inflict it on an enemy or do inflict it on yourself. (Allies are not currently checked.)
 
-`bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
+`IncreasePoisonScore()`, `IncreaseBurnScore()`, `IncreaseParalyzeScore()`, `IncreaseFrostbiteScore()`, and `IncreaseSleepScore()` are the general logic assuming the target does not benefit from the status.
 
-`bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
-
-`bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef)`
-
-`bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)`
+`AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)` is for checking Heal Bell and Aromatherapy.
 
 `u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)`
 
-`bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)`
-
-`bool32 IsWakeupTurn(u32 battler)`
+`IsWakeupTurn()` specifically refers to Rest.
 
 
 
@@ -138,17 +141,9 @@ Ability ratings as in `src/data/abilities.c` are for the AI to determine the lik
 
 `u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)`
 
-`void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
 
-`void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
+`IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
 
-`void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
-
-`void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
-
-`void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
-
-`void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)`
 
 
 
@@ -215,12 +210,6 @@ s32 ProtectChecks(u32 battlerAtk, u32 battlerDef, u32 move, u32 predictedMove)
 bool32 HasSleepMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef)
 bool32 IsHealingMove(u32 move)
 bool32 ShouldFakeOut(u32 battlerAtk, u32 battlerDef, u32 move)
-bool32 IsStatRaisingEffect(enum BattleMoveEffects effect)
-bool32 IsStatLoweringEffect(enum BattleMoveEffects effect)
-bool32 IsSelfStatLoweringEffect(enum BattleMoveEffects effect)
-bool32 IsSelfStatRaisingEffect(enum BattleMoveEffects effect)
-bool32 IsSwitchOutEffect(enum BattleMoveEffects effect)
-bool32 IsChaseEffect(enum BattleMoveEffects effect)
 bool32 IsAttackBoostMoveEffect(enum BattleMoveEffects effect)
 bool32 IsUngroundingEffect(enum BattleMoveEffects effect)
 bool32 IsSemiInvulnerable(u32 battlerDef, u32 move)
