@@ -6,7 +6,7 @@ Most functions referred to here are in `src/battle_ai_util.c`.  Some others are 
 If it is not stated, the function probably returns a bool32.
 
 ## Important constants, macros, and simple functions
-> `FOE(battler)`, `PARTNER_OF(battler)`, `PARTNER_OF(FOE(battler))`
+> `FOE(battler)`, `BATTLE_PARTNER(battler)`, `BATTLE_PARTNER(FOE(battler))`
 
 These battler is the pokemon considering acting. All move prediction also involves running through what the AI knows of the player's team to decide how the AI would use it.
 
@@ -92,11 +92,9 @@ Ability ratings as in `src/data/abilities.c` are for the AI to determine the lik
 `src/battle_util.c` has `IsMoldBreakerTypeAbility()`.
 
 ## Determining move scores; should the AI --
-> `bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)`
-This is for trapping-based move effects. AI_CanBattlerEscape() and IsBattlerTrapped() determine if the Pok&eacute;mon is able to switch.
+`bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)` is for trapping-based move effects. AI_CanBattlerEscape() and IsBattlerTrapped() determine if the Pok&eacute;mon is able to switch.
 
->`ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)` and `ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 fieldStatus)`
-Overarching handlers for whether a weather effect or a terrain effect are beneficial to a pokemon and its partner. Called primarily in Check Viability.
+`ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)` and `ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 fieldStatus)` are handlers for whether a weather effect or a terrain effect are beneficial to a pokemon and its partner (if applicable). Called primarily in Check Viability.
 
 `bool32 ShouldTryOHKO(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move)`
 
