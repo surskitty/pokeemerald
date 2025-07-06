@@ -1777,9 +1777,10 @@ bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather)
         return (weather & B_WEATHER_SANDSTORM);
     case ABILITY_ICE_BODY:
     case ABILITY_ICE_FACE:
-    case ABILITY_SLUSH_RUSH:
     case ABILITY_SNOW_CLOAK:
         return (weather & B_WEATHER_ICY_ANY);
+    case ABILITY_SLUSH_RUSH:
+        return (weather & B_WEATHER_SNOW);
     case ABILITY_DRY_SKIN:
     case ABILITY_HYDRATION:
     case ABILITY_RAIN_DISH:
@@ -3096,10 +3097,7 @@ static u32 GetPoisonDamage(u32 battlerId)
 static bool32 BattlerAffectedBySandstorm(u32 battlerId, u32 ability)
 {
     if (!IS_BATTLER_ANY_TYPE(battlerId, TYPE_ROCK, TYPE_GROUND, TYPE_STEEL)
-      && ability != ABILITY_SAND_VEIL
-      && ability != ABILITY_SAND_FORCE
-      && ability != ABILITY_SAND_RUSH
-      && ability != ABILITY_OVERCOAT)
+      && !(DoesAbilityBenefitFromWeather(ability, B_WEATHER_SANDSTORM)))
         return TRUE;
     return FALSE;
 }
@@ -3107,9 +3105,7 @@ static bool32 BattlerAffectedBySandstorm(u32 battlerId, u32 ability)
 static bool32 BattlerAffectedByHail(u32 battlerId, u32 ability)
 {
     if (!IS_BATTLER_OF_TYPE(battlerId, TYPE_ICE)
-      && ability != ABILITY_SNOW_CLOAK
-      && ability != ABILITY_OVERCOAT
-      && ability != ABILITY_ICE_BODY)
+      && !(DoesAbilityBenefitFromWeather(ability, B_WEATHER_HAIL)))
         return TRUE;
     return FALSE;
 }
