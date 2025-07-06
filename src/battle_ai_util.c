@@ -1859,8 +1859,7 @@ static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEff
 
 bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)
 {
-    bool32 userBenefits = FALSE;
-    bool32 allyBenefits = FALSE;
+    bool32 shouldSet = FALSE;
 
     if (IsWeatherActive(weather | B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
         return FALSE;
@@ -1869,15 +1868,15 @@ bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect
         return TRUE;
 
     if (weather & B_WEATHER_RAIN)
-        userBenefits = ShouldSetRain(battler, ability, holdEffect);
+        shouldSet = ShouldSetRain(battler, ability, holdEffect);
     else if (weather & B_WEATHER_SUN)
-        userBenefits = ShouldSetSun(battler, ability, holdEffect);
+        shouldSet = ShouldSetSun(battler, ability, holdEffect);
     else if (weather & B_WEATHER_SANDSTORM)
-        userBenefits = ShouldSetSandstorm(battler, ability, holdEffect);
+        shouldSet = ShouldSetSandstorm(battler, ability, holdEffect);
     else if (weather & B_WEATHER_ICY_ANY)
-        userBenefits = ShouldSetHailOrSnow(battler, ability, holdEffect, weather);
+        shouldSet = ShouldSetHailOrSnow(battler, ability, holdEffect, weather);
 
-    if (userBenefits)
+    if (shouldSet)
         return TRUE;
 
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
@@ -1887,18 +1886,18 @@ bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect
         holdEffect = gAiLogicData->holdEffects[battler];
 
         if (weather & B_WEATHER_RAIN)
-            allyBenefits = ShouldSetRain(battler, ability, holdEffect);
+            shouldSet = ShouldSetRain(battler, ability, holdEffect);
         else if (weather & B_WEATHER_SUN)
-            allyBenefits = ShouldSetSun(battler, ability, holdEffect);
+            shouldSet = ShouldSetSun(battler, ability, holdEffect);
         else if (weather & B_WEATHER_SANDSTORM)
-            allyBenefits = ShouldSetSandstorm(battler, ability, holdEffect);
+            shouldSet = ShouldSetSandstorm(battler, ability, holdEffect);
         else if (weather & B_WEATHER_ICY_ANY)
-            allyBenefits = ShouldSetHailOrSnow(battler, ability, holdEffect, weather);
+            shouldSet = ShouldSetHailOrSnow(battler, ability, holdEffect, weather);
     }
-    return allyBenefits;
+    return shouldSet;
 }
 
-bool32 DoesAbilityBenefitFromTerrain(u32 ability, u32 fieldStatus)
+bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)
 {
     switch (ability)
     {
@@ -1918,8 +1917,14 @@ bool32 DoesAbilityBenefitFromTerrain(u32 ability, u32 fieldStatus)
     return FALSE;
 }
 
-static bool32 ShouldSetElectricTerrain(u32 battler, u32 ability, bool32 holdingSeed)
+static bool32 ShouldSetElectricTerrain(u32 battler, bool32 holdingSeed)
 {
+    if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_ELECTRIC_TERRAIN))
+        return TRUE;
+
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_RISING_VOLTAGE))
+        return TRUE;
+
     bool32 grounded = IsBattlerGrounded(battler);
     bool32 allyGrounded = FALSE;
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
@@ -1928,17 +1933,7 @@ static bool32 ShouldSetElectricTerrain(u32 battler, u32 ability, bool32 holdingS
     if (HasMoveWithEffect(FOE(battler), EFFECT_REST) && IsBattlerGrounded(FOE(battler)))
         return TRUE;
 
-    if ((grounded || allyGrounded) && (HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP)
-    || HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_YAWN)))
-        return TRUE;
-
-    if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_ELECTRIC_TERRAIN))
-        return TRUE;
-
-    if (HasBattlerSideMoveWithEffect(battler, EFFECT_RISING_VOLTAGE))
-        return TRUE;
-
-    if (DoesAbilityBenefitFromTerrain(ability, STATUS_FIELD_ELECTRIC_TERRAIN))
+    if ((grounded || allyGrounded) && HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP))
         return TRUE;
 
     if (grounded && ((gBattleMons[battler].status1 & STATUS1_SLEEP) 
@@ -1949,6 +1944,93 @@ static bool32 ShouldSetElectricTerrain(u32 battler, u32 ability, bool32 holdingS
     return FALSE;
 }
 
+static bool32 ShouldSetGrassyTerrain(u32 battler, bool32 holdingSeed)
+{
+    if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_GRASSY_TERRAIN))
+        return TRUE;
+
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_GRASSY_GLIDE))
+        return TRUE;
+    if (HasBattlerSideUsedMoveWithAdditionalEffect(battler, MOVE_EFFECT_FLORAL_HEALING))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    bool32 allyGrounded = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        allyGrounded = IsBattlerGrounded(BATTLE_PARTNER(battler));
+
+// Weaken spamming Earthquake, Magnitude, and Bulldoze.
+    if ((grounded || allyGrounded) && (HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_EARTHQUAKE)
+    || HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_MAGNITUDE)))
+        return TRUE;
+
+    if (grounded && HasMoveWithType(battler, TYPE_GRASS))
+        return TRUE;
+
+    return FALSE;
+}
+
+static bool32 ShouldSetMistyTerrain(u32 battler, bool32 holdingSeed)
+{
+    if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_MISTY_TERRAIN))
+        return TRUE;
+
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_MISTY_EXPLOSION))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    bool32 allyGrounded = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        allyGrounded = IsBattlerGrounded(BATTLE_PARTNER(battler));
+
+    if (HasMoveWithEffect(FOE(battler), EFFECT_REST) && IsBattlerGrounded(FOE(battler)))
+        return TRUE;
+
+    // harass dragons
+    if ((grounded || allyGrounded) 
+        && (HasMoveWithType(FOE(battler), TYPE_DRAGON) || HasMoveWithType(BATTLE_PARTNER(FOE(battler)), TYPE_DRAGON)))
+        return TRUE;
+
+    if ((grounded || allyGrounded) && HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP))
+        return TRUE;
+
+    if (grounded && ((gBattleMons[battler].status1 & STATUS1_SLEEP) 
+    || (gStatuses3[battler] & STATUS3_YAWN)))
+        return TRUE;
+
+    return FALSE;
+}
+
+static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 holdingSeed)
+{
+    if (holdingSeed && (GetBattlerHoldEffectParam(battler) == HOLD_EFFECT_PARAM_PSYCHIC_TERRAIN))
+        return TRUE;
+
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_EXPANDING_FORCE))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    bool32 allyGrounded = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        allyGrounded = IsBattlerGrounded(BATTLE_PARTNER(battler));
+
+    // don't bother if we're not grounded
+    if (!(grounded || allyGrounded))
+        return FALSE;
+
+    // harass priority
+    if (HasBattlerSideAbility(FOE(battler), ABILITY_GALE_WINGS, gAiLogicData) 
+     || HasBattlerSideAbility(FOE(battler), ABILITY_TRIAGE, gAiLogicData)
+     || HasBattlerSideAbility(FOE(battler), ABILITY_PRANKSTER, gAiLogicData))
+        return TRUE;
+
+    if (grounded && (HasMoveWithType(battler, TYPE_PSYCHIC)))
+        return TRUE;
+
+    return FALSE;
+}
+
+
 bool32 ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 fieldStatus)
 {
     if (gFieldStatuses & fieldStatus)
@@ -1957,12 +2039,22 @@ bool32 ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEf
     if (holdEffect == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battler, EFFECT_TERRAIN_PULSE))
         return TRUE;
 
+    bool32 shouldSet = FALSE;
 
-    bool32 userBenefits = FALSE;
-    bool32 allyBenefits = FALSE;
+    if (DoesAbilityBenefitFromFieldStatus(ability, fieldStatus))
+        return TRUE;
 
     if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
-        userBenefits = ShouldSetElectricTerrain(battler, ability, (holdEffect == HOLD_EFFECT_SEEDS));
+        shouldSet = ShouldSetElectricTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+    if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
+        shouldSet = ShouldSetGrassyTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+    if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
+        shouldSet = ShouldSetMistyTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+    if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
+        shouldSet = ShouldSetPsychicTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+
+    if (shouldSet)
+        return TRUE;
 
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
     {
@@ -1971,10 +2063,15 @@ bool32 ShouldSetFieldStatus(u32 battler, u32 ability, enum ItemHoldEffect holdEf
         holdEffect = gAiLogicData->holdEffects[battler];
 
         if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
-            allyBenefits = ShouldSetElectricTerrain(battler, ability, (holdEffect == HOLD_EFFECT_SEEDS));
-
+            shouldSet = ShouldSetElectricTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+        if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
+            shouldSet = ShouldSetGrassyTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+        if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
+            shouldSet = ShouldSetMistyTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
+        if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
+            shouldSet = ShouldSetPsychicTerrain(battler, (holdEffect == HOLD_EFFECT_SEEDS));
     }
-    return userBenefits || allyBenefits;
+    return shouldSet;
 }
 
 bool32 IsBattlerDamagedByStatus(u32 battler)

@@ -209,6 +209,7 @@ bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
 
 // ability logic
 bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather);
+bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus);
 bool32 IsMoxieTypeAbility(u32 ability);
 bool32 DoesAbilityRaiseStatsWhenLowered(u32 ability);
 bool32 ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability);
