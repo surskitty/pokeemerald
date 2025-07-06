@@ -32,18 +32,20 @@ BattlerSide functions check both the battler and its ally for the effect. If you
 `HasBattlerSideMoveWithAdditionalEffect` is the Omniscient version of `HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`.
 
 Checking the side or party.
-- `PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)`
-- `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)`
-- PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)
+``` `PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)`
+    `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)`
+    `PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)`
+```
 
 Checking a specific Pok&eacute;mon.
-- `HasMove(u32 battlerId, u32 move)`
-- `HasDamagingMove(u32 battlerId)`
-- `HasDamagingMoveOfType(u32 battlerId, u32 type)`
-- `HasOnlyMovesWithCategory(u32 battlerId, enum DamageCategory category, bool32 onlyOffensive)` -- The boolean is to decide if it counts status moves or not.
-- `HasMoveWithCategory(u32 battler, enum DamageCategory category)`
-- `HasMoveWithType(u32 battler, u32 type)`
-- `HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects moveEffect)`
+``` `HasMove(u32 battlerId, u32 move)`
+    `HasDamagingMove(u32 battlerId)`
+    `HasDamagingMoveOfType(u32 battlerId, u32 type)`
+    `HasOnlyMovesWithCategory(u32 battlerId, enum DamageCategory category, bool32 onlyOffensive)` -- The boolean is to decide if it counts status moves or not.
+    `HasMoveWithCategory(u32 battler, enum DamageCategory category)`
+    `HasMoveWithType(u32 battler, u32 type)`
+    `HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects moveEffect)`
+```
 
 - `HasNonVolatileMoveEffect(u32 battlerId, u32 effect)`
 - `HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect)`
@@ -87,7 +89,6 @@ Ability ratings as in `src/data/abilities.c` are for the AI to determine the lik
 - `ShouldTriggerAbility(u32 battlerAtk, u32 battlerDef, u32 ability)` -- Under what circumstances do you attack into an Ability that buffs the Pokemon hit?
 
 
-<-- 
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk)
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext)
@@ -231,4 +232,4 @@ bool32 IsBattlerPredictedToSwitch(u32 battler)
 u32 GetIncomingMove(u32 battler, u32 opposingBattler, struct AiLogicData *aiData)
 bool32 HasBattlerSideAbility(u32 battlerDef, u32 ability, struct AiLogicData *aiData)
 u32 GetThinkingBattler(u32 battler)
--->
+
