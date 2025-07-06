@@ -15,36 +15,32 @@ These battler is the pokemon considering acting. All move prediction also involv
 This currently only looks at positioning. If you want an AI that gladly kills its ally, this is where you edit.
 
 ### Speed Awareness
-> `bool32 AI_IsFaster(u32 battlerAi, u32 battlerDef, u32 move)`
-> `bool32 AI_IsSlower(u32 battlerAi, u32 battlerDef, u32 move)`
+> `AI_IsFaster(u32 battlerAi, u32 battlerDef, u32 move)` and `AI_IsSlower(u32 battlerAi, u32 battlerDef, u32 move)`
 
 These determine what order the AI expects the turn to go in, assuming it uses that move. It already takes into account Trick Room and priority brackets for you.
 
 The functions to edit to both teach the AI about other effects and directly implement them are:
-- `src/battle_ai_util.c`  `s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler, u32 moveConsidered)`
-- `src/battle_main.c` `s32 GetBattleMovePriority(u32 battler, u32 ability, u32 move)`
+- In `src/battle_ai_util.c`, find `s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler, u32 moveConsidered)`
+- In `src/battle_main.c`, find `s32 GetBattleMovePriority(u32 battler, u32 ability, u32 move)`
 
 ## What moves does a Pok&eacute;mon have?
 These are almost all named in the format HasMoveWith, HasMoveThat, or Has[x]Move. They universally return a boolean.
 
 Under most circumstances, you want to use these two:
-> `bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)`
-> `bool32 HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`
+> `HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)` or `HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`
 
 If you are checking more than two move effects or additional effects, please consider making more of these little functions. `bool32 HasTrappingMoveEffect(u32 battler)` is a good model to follow.
 
 ### `src/battle_ai_util.c`
-BattlerSide functions check both the battler and its ally for the effect. If you are not certain you do not want a functionality to apply to Double battles, preferentially use those.
+BattlerSide functions check both the battler and its ally for the effect.
 
 `HasBattlerSideMoveWithEffect(u32 battler, u32 effect)` is the Omniscient version of `HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)`
 
 `HasBattlerSideMoveWithAdditionalEffect` is the Omniscient version of `HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)`.
 
-Checking the side or party.
-``` `PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)`
-    `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)`
-    `PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)`
-```
+`PartyHasMoveCategory(u32 battlerId, enum DamageCategory category)` and `SideHasMoveCategory(u32 battlerId, enum DamageCategory category)` are to see if there is a `DAMAGE_CATEGORY_PHYSICAL` or `DAMAGE_CATEGORY_SPECIAL` move either somewhere in the party or active on the field.  `SideHasMoveCategory()` is the more doubles friendly version of `HasMoveWithCategory()`, which is used primarily to determine if a Pokemon should boost its Attack or Special Attack.
+
+ `PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove)`
 
 Checking a specific Pok&eacute;mon.
 ``` `HasMove(u32 battlerId, u32 move)`
