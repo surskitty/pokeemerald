@@ -2277,7 +2277,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             break;
         case EFFECT_DEFOG:
             if (gSideStatuses[GetBattlerSide(battlerDef)]
-             & (SIDE_STATUS_SCREEN_ANY | SIDE_STATUS_SAFEGUARD | SIDE_STATUS_MIST)
+             & (SIDE_STATUS_GOOD_FOG)
               || gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_HAZARDS_ANY)
             {
                 if (PartnerHasSameMoveEffectWithoutTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove))
@@ -2412,7 +2412,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_SPEED_SWAP:
             if (IsTargetingPartner(battlerAtk, battlerDef))
             {
-                ADJUST_SCORE(-10);
+                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && (gBattleMons[battlerAtk].speed >= gBattleMons[battlerDef].speed))
+                    ADJUST_SCORE(-10);
+                if (gBattleMons[battlerAtk].speed <= gBattleMons[battlerDef].speed)
+                    ADJUST_SCORE(-10);
             }
             else
             {
@@ -2440,11 +2443,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_POWER_SPLIT:
-            if (IsTargetingPartner(battlerAtk, battlerDef))
-            {
-                ADJUST_SCORE(-10);
-            }
-            else
+            if (!IsTargetingPartner(battlerAtk, battlerDef))
             {
                 u32 atkAttack = gBattleMons[battlerAtk].attack;
                 u32 defAttack = gBattleMons[battlerDef].attack;
@@ -2457,11 +2456,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_GUARD_SPLIT:
-            if (IsTargetingPartner(battlerAtk, battlerDef))
-            {
-                ADJUST_SCORE(-10);
-            }
-            else
+            if (!IsTargetingPartner(battlerAtk, battlerDef))
             {
                 u32 atkDefense = gBattleMons[battlerAtk].defense;
                 u32 defDefense = gBattleMons[battlerDef].defense;
@@ -4723,29 +4718,136 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SPEED_SWAP:
-        if (gBattleMons[battlerDef].speed > gBattleMons[battlerAtk].speed)
-            ADJUST_SCORE(DECENT_EFFECT);
+        if (IsTargetingPartner(battlerAtk, battlerDef))
+        {
+            // Tackle is used as a proxy for an arbitrary 0 priority move.
+            // If the user is faster than the partner, speed up the partner.
+            if (AI_IsFaster(battlerAtk, battlerDef, MOVE_TACKLE))
+            {
+                if (AI_IsFaster(battlerAtk, FOE(battlerAtk), MOVE_TACKLE) && AI_IsFaster(FOE(battlerAtk), battlerDef, MOVE_TACKLE))
+                    ADJUST_SCORE(DECENT_EFFECT);
+                if (AI_IsFaster(battlerAtk, FOE(battlerDef), MOVE_TACKLE) && AI_IsFaster(FOE(battlerDef), battlerDef, MOVE_TACKLE))
+                    ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
+        else
+        {
+            if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM)
+            {
+                if (gBattleMons[battlerDef].speed < gBattleMons[battlerAtk].speed)
+                    ADJUST_SCORE(DECENT_EFFECT);
+            }
+            else
+            {
+                if (gBattleMons[battlerDef].speed > gBattleMons[battlerAtk].speed)
+                    ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
         break;
     case EFFECT_GUARD_SPLIT:
-        {
-            u32 newDefense = (gBattleMons[battlerAtk].defense + gBattleMons[battlerDef].defense) / 2;
-            u32 newSpDef = (gBattleMons[battlerAtk].spDefense + gBattleMons[battlerDef].spDefense) / 2;
+    {
+        u32 newDefense = (gBattleMons[battlerAtk].defense + gBattleMons[battlerDef].defense) / 2;
+        u32 newSpDef = (gBattleMons[battlerAtk].spDefense + gBattleMons[battlerDef].spDefense) / 2;
+        bool32 goodChange = FALSE;
 
-            if ((newDefense > gBattleMons[battlerAtk].defense && newSpDef >= gBattleMons[battlerAtk].spDefense)
-            || (newSpDef > gBattleMons[battlerAtk].spDefense && newDefense >= gBattleMons[battlerAtk].defense))
-                ADJUST_SCORE(DECENT_EFFECT);
+        if (IsTargetingPartner(battlerAtk, battlerDef))
+        {
+            // If the new stat is twice that of the old for one pokemon, it's worth using.
+
+            if (newDefense > (gBattleMons[battlerAtk].defense * 2))
+                goodChange = TRUE;
+            if (newDefense > (gBattleMons[battlerDef].defense * 2))
+                goodChange = TRUE;
+            if (newSpDef > (gBattleMons[battlerAtk].spDefense * 2))
+                goodChange = TRUE;
+            if (newSpDef > (gBattleMons[battlerDef].spDefense * 2))
+                goodChange = TRUE;
+
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(WORST_EFFECT);
+        }
+        else {
+            // We want to double our defense.
+            if (newDefense > (gBattleMons[battlerAtk].defense * 2))
+                goodChange = TRUE;
+            if (newSpDef > (gBattleMons[battlerAtk].spDefense * 2))
+                goodChange = TRUE;
+
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(BAD_EFFECT);
+
+            goodChange = FALSE;
+
+            // We could also halve theirs that we can attack into.
+            if (((newDefense * 2) < gBattleMons[battlerDef].defense) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)))
+                goodChange = TRUE;
+            if (((newSpDef * 2) < gBattleMons[battlerDef].spDefense) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)))
+                goodChange = TRUE;
+
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(BAD_EFFECT);
         }
         break;
+    }
     case EFFECT_POWER_SPLIT:
-        {
-            u32 newAttack = (gBattleMons[battlerAtk].attack + gBattleMons[battlerDef].attack) / 2;
-            u32 newSpAtk = (gBattleMons[battlerAtk].spAttack + gBattleMons[battlerDef].spAttack) / 2;
+    {
+        u32 newAttack = (gBattleMons[battlerAtk].attack + gBattleMons[battlerDef].attack) / 2;
+        u32 newSpAtk = (gBattleMons[battlerAtk].spAttack + gBattleMons[battlerDef].spAttack) / 2;
 
-            if ((newAttack > gBattleMons[battlerAtk].attack && newSpAtk >= gBattleMons[battlerAtk].spAttack)
-            || (newSpAtk > gBattleMons[battlerAtk].spAttack && newAttack >= gBattleMons[battlerAtk].attack))
-                ADJUST_SCORE(DECENT_EFFECT);
+        bool32 goodChange = FALSE;
+        if (IsTargetingPartner(battlerAtk, battlerDef))
+        {
+            // We benefit from a 50% increase to our attacking stat.
+            // Because it is integer math, we're using 3 / 2.
+            newAttack *= 3;
+            newSpAtk *= 3;
+
+            if ((newAttack > (gBattleMons[battlerAtk].attack * 2)) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)))
+                goodChange = TRUE;
+            if ((newAttack > (gBattleMons[battlerDef].attack * 2)) && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)))
+                goodChange = TRUE;
+            if ((newSpAtk > (gBattleMons[battlerAtk].spAttack * 2)) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)))
+                goodChange = TRUE;
+            if ((newSpAtk > (gBattleMons[battlerDef].spAttack * 2)) && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)))
+                goodChange = TRUE;
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(WORST_EFFECT);
+        }
+        else {
+            // We benefit from a 50% increase to our attacking stat.
+            if (((newAttack * 3) > (gBattleMons[battlerAtk].attack * 2)) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)))
+                goodChange = TRUE;
+            if (((newSpAtk * 3) > (gBattleMons[battlerAtk].spAttack * 2)) && (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)))
+                goodChange = TRUE;
+
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(BAD_EFFECT);
+
+            goodChange = FALSE;
+
+            // We want to halve one of their attacking stats.
+            if ((newAttack > (gBattleMons[battlerDef].attack * 2)) && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)))
+                goodChange = TRUE;
+            if ((newSpAtk > (gBattleMons[battlerDef].spAttack * 2)) && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)))
+                goodChange = TRUE;
+
+            if (goodChange)
+                ADJUST_SCORE(GOOD_EFFECT);
+            else
+                ADJUST_SCORE(BAD_EFFECT);
         }
         break;
+    }
     case EFFECT_ELECTRIC_TERRAIN:
     case EFFECT_MISTY_TERRAIN:
         if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
