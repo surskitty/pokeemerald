@@ -4819,21 +4819,21 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_ELECTRIC_TERRAIN:
         if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
             ADJUST_SCORE(BEST_EFFECT);
-        if (ShouldSetFieldOrTerrain(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_ELECTRIC_TERRAIN))
+        if (ShouldSetFieldStatus(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_ELECTRIC_TERRAIN))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_MISTY_TERRAIN:
         if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
             ADJUST_SCORE(BEST_EFFECT);
-        if (ShouldSetFieldOrTerrain(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_MISTY_TERRAIN))
+        if (ShouldSetFieldStatus(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_MISTY_TERRAIN))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_GRASSY_TERRAIN:
-        if (ShouldSetFieldOrTerrain(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_GRASSY_TERRAIN))
+        if (ShouldSetFieldStatus(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_GRASSY_TERRAIN))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_PSYCHIC_TERRAIN:
-        if (ShouldSetFieldOrTerrain(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_PSYCHIC_TERRAIN))
+        if (ShouldSetFieldStatus(battlerAtk, abilityAtk, aiData->holdEffects[battlerAtk], STATUS_FIELD_PSYCHIC_TERRAIN))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_PLEDGE:
