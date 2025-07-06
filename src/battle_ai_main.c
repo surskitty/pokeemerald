@@ -4384,21 +4384,24 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             //ADJUST_SCORE(8);
         break;
     case EFFECT_DEFOG:
-        if ((gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_HAZARDS_ANY && CountUsablePartyMons(battlerAtk) != 0)
-            || (gSideStatuses[GetBattlerSide(battlerDef)] & (SIDE_STATUS_SCREEN_ANY | SIDE_STATUS_SAFEGUARD | SIDE_STATUS_MIST)))
-        {
+        // Clear our own hazards if we have more pokemon.
+        if (gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_HAZARDS_ANY && CountUsablePartyMons(battlerAtk) != 0)
             ADJUST_SCORE(GOOD_EFFECT);
-        }
-        else if (!(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_SPIKES)) //Don't blow away hazards if you set them up
+        // Clear the opponent's beneficial effects.
+        if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_GOOD_FOG)
+            ADJUST_SCORE(GOOD_EFFECT);
+        // Don't blow away our own useful hazards.
+        if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_HAZARDS_ANY && CountUsablePartyMons(battlerDef) != 0)
+            ADJUST_SCORE(AWFUL_EFFECT);
+        if (gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_GOOD_FOG)
+            ADJUST_SCORE(AWFUL_EFFECT);
+        if (isDoubleBattle)
         {
-            if (isDoubleBattle)
-            {
-                if (IsHazardMove(aiData->partnerMove) // Partner is going to set up hazards
-                    && AI_IsSlower(battlerAtk, BATTLE_PARTNER(battlerAtk), move)) // Partner going first
-                    break; // Don't use Defog if partner is going to set up hazards
-            }
-            ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, STAT_EVASION));
+            if (IsHazardMove(aiData->partnerMove) // Partner is going to set up hazards
+                && AI_IsSlower(battlerAtk, BATTLE_PARTNER(battlerAtk), move)) // Partner going first
+                break; // Don't use Defog if partner is going to set up hazards
         }
+        ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, STAT_EVASION));
         break;
     case EFFECT_TORMENT:
         break;
