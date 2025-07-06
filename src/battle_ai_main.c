@@ -4513,7 +4513,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             {
                 if (DoesAbilityBenefitFromWeather(aiData->abilities[battlerDef], weather) && (weather & (B_WEATHER_RAIN | B_WEATHER_SUN)))
                     ADJUST_SCORE(DECENT_EFFECT);
-                if (HasLightSensitiveMove(battlerDef))
+                if (HasLightSensitiveMove(battlerDef) && (weather & B_WEATHER_SUN))
                     ADJUST_SCORE(DECENT_EFFECT);
             }
             break;
