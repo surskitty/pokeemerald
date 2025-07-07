@@ -305,19 +305,45 @@ AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
 AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap outside of Trick Room.")
 {
     u64 aiFlags;
-    u32 status;
     u32 speed;
 
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; speed = 10; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM; speed = 10; }
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; speed = 150; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM; speed = 150; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; speed = 10; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; speed = 10; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; speed = 150; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; speed = 150; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; speed = 150; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; speed = 150; }
 
-    VarSet(B_VAR_STARTING_STATUS, status);
+    GIVEN {
+        AI_FLAGS(aiFlags);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(100); }
+        PLAYER(SPECIES_WOBBUFFET) { Speed(50); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(speed); Moves(MOVE_SPEED_SWAP, MOVE_MEGAHORN); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(25); }
+    } WHEN {
+        if (speed == 10)
+        {
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
+        }
+        else
+        {
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+        }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap inside Trick Room.")
+{
+    KNOWN_FAILING;
+    u64 aiFlags;
+    u32 speed;
+
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; speed = 150; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; speed = 150; }
+
+    VarSet(B_VAR_STARTING_STATUS, STARTING_STATUS_TRICK_ROOM);
     VarSet(B_VAR_STARTING_STATUS_TIMER, 0);
 
     GIVEN {
@@ -327,33 +353,18 @@ AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap outside of Trick Room.")
         OPPONENT(SPECIES_WOBBUFFET) { Speed(speed); Moves(MOVE_SPEED_SWAP, MOVE_MEGAHORN); }
         OPPONENT(SPECIES_WOBBUFFET) { Speed(25); }
     } WHEN {
-        if (status == STARTING_STATUS_NONE)
+        if (speed == 150)
         {
-            if (speed == 10)
-            {
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
-            }
-            else
-            {
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
-            }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
         }
         else
         {
-            if (speed == 150)
-            {
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
-            }
-            else
-            {
-                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
-            }
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
         }
     }
 }
+
 
 AI_DOUBLE_BATTLE_TEST("AI will only explode and kill everything on the field with Risky or Will Suicide")
 {
