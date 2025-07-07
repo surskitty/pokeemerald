@@ -3467,20 +3467,50 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     RETURN_SCORE_PLUS(WEAK_EFFECT);
                 break;
             case EFFECT_SPEED_SWAP:
-                // Tackle is used as a proxy for an arbitrary 0 priority move.
-                // If the user is faster than the partner, speed up the partner.
-                if (AI_IsFaster(battlerAtk, battlerDef, MOVE_TACKLE))
+            {
+                u32 atkSpeed = gBattleMons[battlerAtk].speed;
+                u32 partnerSpeed = gBattleMons[battlerDef].speed;
+                u32 foe1 = 0;
+                u32 foe2 = 0;
+                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM)
                 {
-                    if (AI_IsFaster(battlerAtk, FOE(battlerAtk), MOVE_TACKLE) && AI_IsSlower(battlerDef, FOE(battlerAtk), MOVE_TACKLE))
-                        ADJUST_SCORE(PERFECT_EFFECT);
-                    if (AI_IsFaster(battlerAtk, FOE(battlerDef), MOVE_TACKLE) && AI_IsSlower(battlerDef, FOE(battlerDef), MOVE_TACKLE))
-                        ADJUST_SCORE(PERFECT_EFFECT);
+                    foe1 = 999;
+                    foe2 = 999;
+                }
+                if (IsBattlerAlive(FOE(battlerAtk)))
+                    foe1 = gBattleMons[FOE(battlerAtk)].speed;
+                if (IsBattlerAlive(FOE(battlerDef)))
+                    foe2 = gBattleMons[FOE(battlerDef)].speed;
+
+                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM)
+                {
+                    if (atkSpeed < partnerSpeed)
+                    {
+                        if ((atkSpeed < foe1) && (foe1 < partnerSpeed))
+                            ADJUST_SCORE(PERFECT_EFFECT);
+                        if ((atkSpeed < foe2) && (foe2 < partnerSpeed))
+                            ADJUST_SCORE(PERFECT_EFFECT);
+                    }
+                    else
+                    {
+                        ADJUST_SCORE(-20);
+                    }
                 }
                 else
                 {
-                    ADJUST_SCORE(-20);
+                    if (atkSpeed > partnerSpeed)
+                    {
+                        if ((atkSpeed > foe1) && (foe1 > partnerSpeed))
+                            ADJUST_SCORE(PERFECT_EFFECT);
+                        if ((atkSpeed > foe2) && (foe2 > partnerSpeed))
+                            ADJUST_SCORE(PERFECT_EFFECT);
+                    }
+                    else
+                    {
+                        ADJUST_SCORE(-20);
+                    }
                 }
-                break;
+            }
             case EFFECT_GUARD_SPLIT:
             {
                 u32 newDefense = (gBattleMons[battlerAtk].defense + gBattleMons[battlerDef].defense) / 2;
@@ -4743,18 +4773,65 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SPEED_SWAP:
-        if (AI_IsSlower(battlerAtk, battlerDef, MOVE_TACKLE))
+    {
+        u32 atkSpeed = gBattleMons[battlerAtk].speed;
+        u32 defSpeed = gBattleMons[battlerDef].speed;
+        u32 foe = 0;
+        u32 partner = 999;
+        if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM)
         {
-            if (isDoubleBattle && AI_IsSlower(battlerAtk, battlerDef, MOVE_TACKLE) && AI_IsSlower(BATTLE_PARTNER(battlerAtk), battlerDef, MOVE_TACKLE))
-                ADJUST_SCORE(PERFECT_EFFECT);
+            foe = 999;
+            partner = 0;
+        }
+        if (IsBattlerAlive(BATTLE_PARTNER(battlerDef)))
+            foe = gBattleMons[BATTLE_PARTNER(battlerDef)].speed;
+        if (IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
+            partner = gBattleMons[FOE(battlerDef)].speed;
+
+        if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM)
+        {
+            if (atkSpeed > defSpeed)
+            {
+                if (foe > defSpeed)
+                {
+                    if (partner > defSpeed)
+                        ADJUST_SCORE(PERFECT_EFFECT);
+                    else
+                        ADJUST_SCORE(GOOD_EFFECT);
+                }
+                else
+                {
+                    ADJUST_SCORE(DECENT_EFFECT);
+                }
+            }
             else
-                ADJUST_SCORE(GOOD_EFFECT);
+            {
+            ADJUST_SCORE(-20);
+            }
         }
         else
         {
+            if (atkSpeed < defSpeed)
+            {
+                if (foe < defSpeed)
+                {
+                    if (partner < defSpeed)
+                        ADJUST_SCORE(PERFECT_EFFECT);
+                    else
+                        ADJUST_SCORE(GOOD_EFFECT);
+                }
+                else
+                {
+                    ADJUST_SCORE(DECENT_EFFECT);
+                }
+            }
+            else
+            {
             ADJUST_SCORE(-20);
+            }
         }
         break;
+    }
     case EFFECT_GUARD_SPLIT:
     {
         u32 newDefense = (gBattleMons[battlerAtk].defense + gBattleMons[battlerDef].defense) / 2;

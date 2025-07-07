@@ -348,10 +348,10 @@ AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap inside Trick Room.")
 
     GIVEN {
         AI_FLAGS(aiFlags);
-        PLAYER(SPECIES_WOBBUFFET) { Speed(100); }
+        PLAYER(SPECIES_WOBBUFFET) { Speed(25); }
         PLAYER(SPECIES_WOBBUFFET) { Speed(50); }
         OPPONENT(SPECIES_WOBBUFFET) { Speed(speed); Moves(MOVE_SPEED_SWAP, MOVE_MEGAHORN); }
-        OPPONENT(SPECIES_WOBBUFFET) { Speed(25); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(100); }
     } WHEN {
         if (speed == 150)
         {
