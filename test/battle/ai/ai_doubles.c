@@ -306,11 +306,16 @@ AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap outside of Trick Room.")
 {
     u64 aiFlags;
     u32 status;
+    u32 speed;
 
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM;}
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; speed = 10; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; speed = 150; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM; speed = 150; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; speed = 10; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; speed = 10; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; speed = 150; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; speed = 150; }
 
     VarSet(B_VAR_STARTING_STATUS, status);
     VarSet(B_VAR_STARTING_STATUS_TIMER, 0);
@@ -319,13 +324,34 @@ AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap outside of Trick Room.")
         AI_FLAGS(aiFlags);
         PLAYER(SPECIES_WOBBUFFET) { Speed(100); }
         PLAYER(SPECIES_WOBBUFFET) { Speed(50); }
-        OPPONENT(SPECIES_PHEROMOSA) { Speed(300); Moves(MOVE_SPEED_SWAP, MOVE_LOW_KICK); }
-        OPPONENT(SPECIES_SHUCKLE) { Speed(3); Moves(MOVE_BLIZZARD, MOVE_FUSION_FLARE, MOVE_EARTH_POWER);  }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(speed); Moves(MOVE_SPEED_SWAP, MOVE_MEGAHORN); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(25); }
     } WHEN {
         if (status == STARTING_STATUS_NONE)
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
+        {
+            if (speed == 10)
+            {
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
+            }
+            else
+            {
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+            }
+        }
         else
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+        {
+            if (speed == 150)
+            {
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_MEGAHORN); }
+            }
+            else
+            {
+                TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
+            }
+        }
     }
 }
 
