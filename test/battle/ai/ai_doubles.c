@@ -284,6 +284,19 @@ AI_DOUBLE_BATTLE_TEST("AI will trigger its ally's Weakness Policy")
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_TORNADUS) { Ability(ABILITY_PRANKSTER); Moves(MOVE_SNOWSCAPE, MOVE_BLEAKWIND_STORM, MOVE_TAUNT, MOVE_RAIN_DANCE); }
+        OPPONENT(SPECIES_KYUREM_WHITE) { Moves(MOVE_BLIZZARD, MOVE_FUSION_FLARE, MOVE_EARTH_POWER);  }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponentLeft, MOVE_SNOWSCAPE); }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI will only explode and kill everything on the field with Risky or Will Suicide")
 {
     ASSUME(GetMoveTarget(MOVE_EXPLOSION) == MOVE_TARGET_FOES_AND_ALLY);
