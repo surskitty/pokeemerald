@@ -39,6 +39,7 @@ enum AIScore
     DECENT_EFFECT = 2,
     GOOD_EFFECT = 3,
     BEST_EFFECT = 4,
+    PERFECT_EFFECT = 10,
     BAD_EFFECT = -1,
     AWFUL_EFFECT = -3,
     WORST_EFFECT = -10

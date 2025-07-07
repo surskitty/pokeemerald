@@ -1,4 +1,5 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 #include "battle_ai_util.h"
 
@@ -407,6 +408,31 @@ AI_DOUBLE_BATTLE_TEST("AI prioritizes Skill Swapping Contrary to allied mons tha
         OPPONENT(SPECIES_ARCANINE) { Ability(ABILITY_INTIMIDATE); Speed(4); Moves (MOVE_OVERHEAT); }
     } WHEN {
         TURN { EXPECT_MOVE(opponentLeft, MOVE_SKILL_SWAP, target:opponentRight); EXPECT_MOVE(opponentRight, MOVE_OVERHEAT); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI replaces Triage under Psychic Terrain")
+{
+    KNOWN_FAILING;
+    u32 ability;
+
+    VarSet(B_VAR_STARTING_STATUS, STARTING_STATUS_PSYCHIC_TERRAIN);
+    VarSet(B_VAR_STARTING_STATUS_TIMER, 0);
+
+    PARAMETRIZE { ability = ABILITY_NATURAL_CURE; }
+    PARAMETRIZE { ability = ABILITY_TRIAGE; }
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_SKILL_SWAP) == EFFECT_SKILL_SWAP);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_DOUBLE_BATTLE | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_PIDGEY) { Speed(3); }
+        PLAYER(SPECIES_PIDGEY) { Speed(3); }
+        OPPONENT(SPECIES_GRAFAIAI) { Speed(5); Moves(MOVE_SKILL_SWAP, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_COMFEY) { Ability(ability); Speed(4); Moves(MOVE_DRAINING_KISS, MOVE_GRASS_KNOT); }
+    } WHEN {
+        if (ability == ABILITY_TRIAGE)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SKILL_SWAP, target:opponentRight); }
+        else
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_PSYCHIC); }
     }
 }
 

@@ -5406,11 +5406,14 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
     u32 partnerAbility = ABILITY_NONE;
     bool32 attackerHasBadAbility = (gAbilitiesInfo[abilityAtk].aiRating < 0);
     s32 currentAbilityScore, transferredAbilityScore = 0;
+    s32 partnerAbilityScore = 0;
+    s32 scoreDelta = 0;
 
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battlerAtk)))
     {
         partnerAbility = aiData->abilities[BATTLE_PARTNER(battlerAtk)];
-        if (!(gAbilitiesInfo[partnerAbility].cantBeSuppressed) && (gAbilitiesInfo[partnerAbility].aiRating < 0))
+        partnerAbilityScore = BattlerBenefitsFromAbilityScore(BATTLE_PARTNER(battlerAtk), partnerAbility, aiData);
+        if (!(gAbilitiesInfo[partnerAbility].cantBeSuppressed) && (partnerAbilityScore < 0))
             partnerHasBadAbility = TRUE;
     }
 
@@ -5424,30 +5427,30 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
     if (effect == EFFECT_DOODLE || effect == EFFECT_ROLE_PLAY || effect == EFFECT_SKILL_SWAP)
     {
         if (partnerHasBadAbility && effect == EFFECT_DOODLE)
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(PERFECT_EFFECT);
 
         if (attackerHasBadAbility)
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(PERFECT_EFFECT);
 
         currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityAtk, aiData);
         transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerAtk, abilityDef, aiData);
-        ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
+        scoreDelta = transferredAbilityScore - currentAbilityScore;
     }
 
     if (isTargetingPartner)
     {
         if (DoesEffectReplaceTargetAbility(effect))
         {
-            if (partnerHasBadAbility)
-                ADJUST_SCORE_PTR(BEST_EFFECT);
+            if (partnerHasBadAbility && !attackerHasBadAbility)
+                ADJUST_SCORE_PTR(PERFECT_EFFECT);
 
-            currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
             transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
-            ADJUST_SCORE_PTR(transferredAbilityScore - currentAbilityScore);
+            scoreDelta += transferredAbilityScore - partnerAbilityScore;
         }
         else // This is only Role Play as Doodle can't target the partner
         {
-            ADJUST_SCORE_PTR(-20);
+            if (partnerHasBadAbility)
+                ADJUST_SCORE_PTR(WORST_EFFECT);
         }
         
         // Trigger Plus or Minus in modern gens. This is not in the overarching function because Skill Swap is rarely beneficial here.
@@ -5466,8 +5469,16 @@ void AbilityChangeScore(u32 battlerAtk, u32 battlerDef, u32 effect, s32 *score, 
         {
             currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
             transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
-            ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
+            scoreDelta += currentAbilityScore - transferredAbilityScore;
+            if (transferredAbilityScore < 0)
+                ADJUST_SCORE_PTR(BEST_EFFECT);
         }
+    }
+    
+    while (scoreDelta > 1)
+    {
+        ADJUST_SCORE_PTR(DECENT_EFFECT);
+        scoreDelta -= 2;
     }
 }
 
@@ -5524,7 +5535,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_VITAL_SPIRIT:
         if (HasMoveWithEffect(battler, EFFECT_REST))
             return WORST_EFFECT;
-        return NO_INCREASE;
+        break;
     case ABILITY_INTIMIDATE:
     {
         u32 abilityDef = aiData->abilities[FOE(battler)];
@@ -5563,7 +5574,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
         if (gBattleMons[battler].status1 & (STATUS1_POISON))
             return WEAK_EFFECT;
         if (gBattleMons[battler].status1 & (STATUS1_TOXIC_POISON))
-            return BEST_EFFECT;
+            return PERFECT_EFFECT;
         break;
     // Also used to Simple Beam SIMPLE_BEAM.
     case ABILITY_SIMPLE:
@@ -5572,15 +5583,14 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
             return GOOD_EFFECT;
         return NO_INCREASE;
     case ABILITY_TRIAGE:
-        if ((gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) 
-         && (IsBattlerGrounded(FOE(battler)) || IsBattlerGrounded(BATTLE_PARTNER(FOE(battler)))))
+        if (gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN)
         {
-            return AWFUL_EFFECT;
+            return WORST_EFFECT;
         }
         else
         {
             if (HasHealingEffect(battler))
-                return GOOD_EFFECT;
+                return BEST_EFFECT;
             else
                 return NO_INCREASE;
         }
