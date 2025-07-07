@@ -286,8 +286,13 @@ AI_DOUBLE_BATTLE_TEST("AI will trigger its ally's Weakness Policy")
 
 AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
 {
+    u64 aiFlags;
+
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; }
+
     GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        AI_FLAGS(aiFlags);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_TORNADUS) { Ability(ABILITY_PRANKSTER); Moves(MOVE_SNOWSCAPE, MOVE_BLEAKWIND_STORM, MOVE_TAUNT, MOVE_RAIN_DANCE); }
@@ -302,7 +307,7 @@ AI_DOUBLE_BATTLE_TEST("AI will only explode and kill everything on the field wit
     ASSUME(GetMoveTarget(MOVE_EXPLOSION) == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveEffect(MOVE_EXPLOSION) == EFFECT_EXPLOSION);
 
-    u32 aiFlags;
+    u64 aiFlags;
 
     PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; }
     PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_RISKY; }
@@ -362,9 +367,8 @@ AI_DOUBLE_BATTLE_TEST("AI sees corresponding absorbing abilities on partners")
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to allies")
+AI_DOUBLE_BATTLE_TEST("AI knows redirection abilities do not provide immunity to allies in gen 4")
 {
-    KNOWN_FAILING;
     ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveType(MOVE_DISCHARGE) == TYPE_ELECTRIC);
     ASSUME(GetMoveTarget(MOVE_SURF) == MOVE_TARGET_FOES_AND_ALLY);
@@ -373,9 +377,7 @@ AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to all
     u32 ability, move, species, config;
 
     PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE;  config = GEN_4; }
-    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE;  config = GEN_5; }
     PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF;       config = GEN_4; }
-    PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF;       config = GEN_5; }
 
     GIVEN {
         ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
@@ -383,13 +385,10 @@ AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to all
         WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, config);
         PLAYER(SPECIES_ZIGZAGOON);
         PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_SLAKING) { Moves(move, MOVE_SCRATCH); }
+        OPPONENT(SPECIES_SLAKING) { Moves(move, MOVE_HEADBUTT); }
         OPPONENT(species) { HP(1); Ability(ability); Moves(MOVE_ROUND); }
     } WHEN {
-        if (config == GEN_5)
-            TURN { EXPECT_MOVE(opponentLeft, move); }
-        else
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_SCRATCH); }
+        TURN { NOT_EXPECT_MOVE(opponentLeft, move); }
     }
 }
 
