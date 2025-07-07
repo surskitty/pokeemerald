@@ -302,6 +302,33 @@ AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI understands Speed Swap outside of Trick Room.")
+{
+    u64 aiFlags;
+    u32 status;
+
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_NONE; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; status = STARTING_STATUS_TRICK_ROOM;}
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_NONE; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; status = STARTING_STATUS_TRICK_ROOM; }
+
+    VarSet(B_VAR_STARTING_STATUS, status);
+    VarSet(B_VAR_STARTING_STATUS_TIMER, 0);
+
+    GIVEN {
+        AI_FLAGS(aiFlags);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(100); }
+        PLAYER(SPECIES_WOBBUFFET) { Speed(50); }
+        OPPONENT(SPECIES_PHEROMOSA) { Speed(300); Moves(MOVE_SPEED_SWAP, MOVE_LOW_KICK); }
+        OPPONENT(SPECIES_SHUCKLE) { Speed(3); Moves(MOVE_BLIZZARD, MOVE_FUSION_FLARE, MOVE_EARTH_POWER);  }
+    } WHEN {
+        if (status == STARTING_STATUS_NONE)
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:opponentRight); }
+        else
+            TURN { EXPECT_MOVE(opponentLeft, MOVE_SPEED_SWAP, target:playerLeft); }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI will only explode and kill everything on the field with Risky or Will Suicide")
 {
     ASSUME(GetMoveTarget(MOVE_EXPLOSION) == MOVE_TARGET_FOES_AND_ALLY);
