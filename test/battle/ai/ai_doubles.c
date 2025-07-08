@@ -348,7 +348,7 @@ AI_DOUBLE_BATTLE_TEST("AI sees corresponding absorbing abilities on partners")
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to allies")
+AI_DOUBLE_BATTLE_TEST("AI treats an ally's redirection ability appropriately (gen 4)")
 {
     KNOWN_FAILING;
     ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
@@ -356,26 +356,44 @@ AI_DOUBLE_BATTLE_TEST("AI knows if redirection abilities provide immunity to all
     ASSUME(GetMoveTarget(MOVE_SURF) == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveType(MOVE_SURF) == TYPE_WATER);
 
-    u32 ability, move, species, config;
+    u32 ability, move, species;
 
-    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE;  config = GEN_4; }
-    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE;  config = GEN_5; }
-    PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF;       config = GEN_4; }
-    PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF;       config = GEN_5; }
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF; }
 
     GIVEN {
-        ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_HP_AWARE);
-        WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, config);
-        PLAYER(SPECIES_ZIGZAGOON);
-        PLAYER(SPECIES_ZIGZAGOON);
-        OPPONENT(SPECIES_SLAKING) { Moves(move, MOVE_SCRATCH); }
+        WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, GEN_4);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_HEADBUTT); }
         OPPONENT(species) { HP(1); Ability(ability); Moves(MOVE_ROUND); }
     } WHEN {
-        if (config == GEN_5)
-            TURN { EXPECT_MOVE(opponentLeft, move); }
-        else
-            TURN { EXPECT_MOVE(opponentLeft, MOVE_SCRATCH); }
+        TURN { EXPECT_MOVE(opponentLeft, MOVE_HEADBUTT); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI treats an ally's redirection ability appropriately (gen 5)")
+{
+    ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
+    ASSUME(GetMoveType(MOVE_DISCHARGE) == TYPE_ELECTRIC);
+    ASSUME(GetMoveTarget(MOVE_SURF) == MOVE_TARGET_FOES_AND_ALLY);
+    ASSUME(GetMoveType(MOVE_SURF) == TYPE_WATER);
+
+    u32 ability, move, species;
+
+    PARAMETRIZE { species = SPECIES_SEAKING;    ability = ABILITY_LIGHTNING_ROD;    move = MOVE_DISCHARGE; }
+    PARAMETRIZE { species = SPECIES_SHELLOS;    ability = ABILITY_STORM_DRAIN;      move = MOVE_SURF; }
+
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_HP_AWARE);
+        WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, GEN_5);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_HEADBUTT); }
+        OPPONENT(species) { HP(1); Ability(ability); Moves(MOVE_ROUND); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponentLeft, move); }
     }
 }
 
@@ -410,3 +428,39 @@ AI_DOUBLE_BATTLE_TEST("AI prioritizes Skill Swapping Contrary to allied mons tha
     }
 }
 
+// Sandstorm is omitted on purpose.
+AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
+{
+    u64 aiFlags, goodWeather, badWeather, weatherTrigger;
+
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+                  goodWeather = MOVE_SUNNY_DAY; badWeather = MOVE_RAIN_DANCE; weatherTrigger = MOVE_SOLAR_BEAM; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+                  goodWeather = MOVE_RAIN_DANCE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_THUNDER; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+                  goodWeather = MOVE_HAIL; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+                  goodWeather = MOVE_SNOWSCAPE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+//                  goodWeather = MOVE_SANDSTORM; badWeather = MOVE_CELEBRATE; weatherTrigger = MOVE_WEATHER_BALL; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
+                  goodWeather = MOVE_SUNNY_DAY; badWeather = MOVE_RAIN_DANCE; weatherTrigger = MOVE_SOLAR_BEAM; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
+                  goodWeather = MOVE_RAIN_DANCE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_THUNDER; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
+                  goodWeather = MOVE_HAIL; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
+                  goodWeather = MOVE_SNOWSCAPE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
+//                  goodWeather = MOVE_SANDSTORM; badWeather = MOVE_CELEBRATE; weatherTrigger = MOVE_WEATHER_BALL; }
+
+    GIVEN {
+        AI_FLAGS(aiFlags);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_TORNADUS) { Ability(ABILITY_PRANKSTER); Moves(goodWeather, badWeather, MOVE_RETURN, MOVE_TAUNT); }
+        OPPONENT(SPECIES_KYUREM_WHITE) { Moves(weatherTrigger, MOVE_EARTH_POWER);  }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponentLeft, goodWeather); }
+    }
+}
