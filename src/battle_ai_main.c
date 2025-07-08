@@ -3522,24 +3522,21 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 u32 atkSpDefense = gBattleMons[battlerAtk].spDefense;
                 u32 defSpDefense = gBattleMons[battlerDef].spDefense;
 
-                u32 newDefense = (atkDefense + defDefense) / 2;
-                u32 newSpDefense = (atkSpDefense + defSpDefense) / 2;
-                bool32 goodChange = FALSE;
+                // It's actually * 100 and / 2
+                u32 newDefense = (atkDefense + defDefense) * 50;
+                u32 newSpDefense = (atkSpDefense + defSpDefense) * 50;
 
                 // We want to massively raise our defense.
-                if (newDefense > (atkDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-                    goodChange = TRUE;
-                if (newSpDefense > (atkSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-                    goodChange = TRUE;
-                if (newDefense > (defDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-                    goodChange = TRUE;
-                if (newSpDefense > (defSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-                    goodChange = TRUE;
+                if (newDefense > atkDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (newSpDefense > atkSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (newDefense > defDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (newSpDefense > defSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
 
-                if (goodChange)
-                    ADJUST_SCORE(GOOD_EFFECT);
-                else
-                    ADJUST_SCORE(BAD_EFFECT);
+                ADJUST_SCORE(WORST_EFFECT);
                 break;
             }
             case EFFECT_POWER_SPLIT:
@@ -3549,24 +3546,21 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 u32 atkSpAttack = gBattleMons[battlerAtk].spAttack;
                 u32 defSpAttack = gBattleMons[battlerDef].spAttack;
 
-                u32 newAttack = (atkAttack + defAttack) / 2;
-                u32 newSpAtk = (atkSpAttack + defSpAttack) / 2;
+                // * 100 and / 2
+                u32 newAttack = (atkAttack + defAttack) * 50;
+                u32 newSpAtk = (atkSpAttack + defSpAttack) * 50;
 
-                bool32 goodChange = FALSE;
+                if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && newAttack > atkAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) && newAttack > defAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > atkSpAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > defSpAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+                    ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
 
-                if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && newAttack > (atkAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-                    goodChange = TRUE;
-                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) && newAttack > (defAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-                    goodChange = TRUE;
-                if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > (atkSpAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-                    goodChange = TRUE;
-                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > (defSpAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-                    goodChange = TRUE;
-
-                if (goodChange)
-                    ADJUST_SCORE(GOOD_EFFECT);
-                else
-                    ADJUST_SCORE(WORST_EFFECT);
+                ADJUST_SCORE(WORST_EFFECT);
+                break;
             }
             default:
                 break;
@@ -4766,26 +4760,23 @@ case EFFECT_GUARD_SPLIT:
         u32 atkSpDefense = gBattleMons[battlerAtk].spDefense;
         u32 defSpDefense = gBattleMons[battlerDef].spDefense;
 
-        u32 newDefense = (atkDefense + defDefense) / 2;
-        u32 newSpDefense = (atkSpDefense + defSpDefense) / 2;
-        bool32 goodChange = FALSE;
+        // It's actually * 100 and / 2; 
+        u32 newDefense = (atkDefense + defDefense) * 50;
+        u32 newSpDefense = (atkSpDefense + defSpDefense) * 50;
 
         // We want to massively raise our defense.
-        if (newDefense > (atkDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-            goodChange = TRUE;
-        if (newSpDefense > (atkSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE) / 100)
-            goodChange = TRUE;
+        if (newDefense > atkDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+        if (newSpDefense > atkSpDefense * GUARD_SPLIT_ALLY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
 
         // We also want to massively lower theirs.
-        if (newDefense < (defDefense * GUARD_SPLIT_ENEMY_PERCENTAGE) / 100)
-            goodChange = TRUE;
-        if (newSpDefense < (defSpDefense * GUARD_SPLIT_ENEMY_PERCENTAGE) / 100)
-            goodChange = TRUE;
+        if (newDefense < defDefense * GUARD_SPLIT_ENEMY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+        if (newSpDefense < defSpDefense * GUARD_SPLIT_ENEMY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
 
-        if (goodChange)
-            ADJUST_SCORE(GOOD_EFFECT);
-        else
-            ADJUST_SCORE(BAD_EFFECT);
+        ADJUST_SCORE(WORST_EFFECT);
         break;
     }
     case EFFECT_POWER_SPLIT:
@@ -4795,25 +4786,20 @@ case EFFECT_GUARD_SPLIT:
         u32 atkSpAttack = gBattleMons[battlerAtk].spAttack;
         u32 defSpAttack = gBattleMons[battlerDef].spAttack;
 
-        u32 newAttack = (atkAttack + defAttack) / 2;
-        u32 newSpAtk = (atkSpAttack + defSpAttack) / 2;
+        // It's actually * 100 and / 2
+        u32 newAttack = (atkAttack + defAttack) * 50;
+        u32 newSpAtk = (atkSpAttack + defSpAttack) * 50;
 
-        bool32 goodChange = FALSE;
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && newAttack > atkAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > atkSpAttack * POWER_SPLIT_ALLY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+        if (newAttack < defAttack * POWER_SPLIT_ENEMY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
+        if (newSpAtk < defSpAttack * POWER_SPLIT_ENEMY_PERCENTAGE)
+            ADJUST_AND_RETURN_SCORE(GOOD_EFFECT);
 
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && newAttack > (atkAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-            goodChange = TRUE;
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && newSpAtk > (atkSpAttack * POWER_SPLIT_ALLY_PERCENTAGE / 100))
-            goodChange = TRUE;
-        if (newAttack < (defAttack * POWER_SPLIT_ENEMY_PERCENTAGE / 100))
-            goodChange = TRUE;
-        if (newSpAtk < (defSpAttack * POWER_SPLIT_ENEMY_PERCENTAGE / 100))
-            goodChange = TRUE;
-
-        if (goodChange)
-            ADJUST_SCORE(GOOD_EFFECT);
-        else
-            ADJUST_SCORE(BAD_EFFECT);
-        break;
+        ADJUST_SCORE(WORST_EFFECT);
     }
     case EFFECT_ELECTRIC_TERRAIN:
     case EFFECT_MISTY_TERRAIN:
