@@ -5270,7 +5270,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_POWER_SPOT:
     case ABILITY_VICTORY_STAR:
         if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)) && aiData->abilities[BATTLE_PARTNER(battler)] != ability)
-            return GOOD_EFFECT;
+            return BEST_EFFECT;
         break;
     case ABILITY_GUTS:
         if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL) && gBattleMons[battler].status1 & (STATUS1_CAN_MOVE))
@@ -5326,6 +5326,8 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
             return WEAK_EFFECT;
         if (gBattleMons[battler].status1 & (STATUS1_TOXIC_POISON))
             return BEST_EFFECT;
+        if (gBattleMons[battler].status1 != STATUS1_NONE)
+            return NO_INCREASE;
         break;
     // Also used to Simple Beam SIMPLE_BEAM.
     case ABILITY_SIMPLE:
@@ -5345,8 +5347,10 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
                 return NO_INCREASE;
         }
         return GOOD_EFFECT;
+    case ABILITY_NONE:
+        return NO_INCREASE;
     default:
-        break;
+        return WEAK_EFFECT;
     }
 
     return NO_INCREASE;
