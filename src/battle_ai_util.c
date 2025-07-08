@@ -5286,7 +5286,6 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_VITAL_SPIRIT:
         if (HasMoveWithEffect(battler, EFFECT_REST))
             return WORST_EFFECT;
-        return NO_INCREASE;
     case ABILITY_INTIMIDATE:
     {
         u32 abilityDef = aiData->abilities[FOE(battler)];
@@ -5350,10 +5349,10 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_NONE:
         return NO_INCREASE;
     default:
-        return WEAK_EFFECT;
+        break;
     }
 
-    return NO_INCREASE;
+    return WEAK_EFFECT;
 }
 
 u32 GetThinkingBattler(u32 battler)
