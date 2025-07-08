@@ -5352,6 +5352,86 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     return NO_INCREASE;
 }
 
+u32 GetSpeedSwapScore(u32 battlerAtk, u32 battlerDef)
+{
+    bool32 isTrickRoom = gFieldStatuses & STATUS_FIELD_TRICK_ROOM;
+    u32 atkSpeed = gBattleMons[battlerAtk].speed;
+    u32 atkEffectiveSpeed = GetBattlerTotalSpeedStatArgs(battlerAtk, gAiLogicData->abilities[battlerAtk], gAiLogicData->holdEffects[battlerAtk]);
+    u32 defSpeed = gBattleMons[battlerDef].speed;
+    u32 defEffectiveSpeed = GetBattlerTotalSpeedStatArgs(battlerDef, gAiLogicData->abilities[battlerDef], gAiLogicData->holdEffects[battlerDef]);
+    s32 score = NO_INCREASE;
+
+    bool32 isAtkSpeedChanged = (atkSpeed == atkEffectiveSpeed);
+    bool32 isDefSpeedChanged = (defSpeed == defEffectiveSpeed);
+
+    // Estimated and in percentage.
+    u32 atkModifier = (atkEffectiveSpeed * 100) / atkSpeed;
+    u32 defModifier = (defEffectiveSpeed * 100) / defSpeed;
+
+
+    bool32 isTargetingTopThreat = !IsDoubleBattle(); // 1v1 you're always targeting the threat
+    bool32 isTargetingPartner = IsTargetingPartner(battlerAtk, battlerDef);
+
+    u32 foeSpeed, foeEffectiveSpeed;
+
+    // If we're targeting the opponent who moves second on their side, we definitely don't want to swap with them.
+    if (!isTargetingTopThreat && !isTargetingPartner)
+    {
+        foeSpeed = gBattleMons[BATTLE_PARTNER(battlerDef)].speed;
+        foeEffectiveSpeed = GetBattlerTotalSpeedStatArgs(BATTLE_PARTNER(battlerDef), gAiLogicData->abilities[BATTLE_PARTNER(battlerDef)], gAiLogicData->holdEffects[BATTLE_PARTNER(battlerDef)]);
+
+        if ((!isTrickRoom && foeEffectiveSpeed > defEffectiveSpeed && foeSpeed > defSpeed) 
+         || (isTrickRoom && foeEffectiveSpeed < defEffectiveSpeed && foeSpeed < defSpeed))
+            return BAD_EFFECT;
+
+        if ((!isTrickRoom && foeEffectiveSpeed < defEffectiveSpeed && foeSpeed < defSpeed) || (isTrickRoom && foeEffectiveSpeed > defEffectiveSpeed && foeSpeed > defSpeed))
+            isTargetingTopThreat = TRUE;
+    }
+
+    if (isTargetingPartner)
+    {
+        // We never want to slow down the partner.
+        if ((isTrickRoom && atkEffectiveSpeed < defEffectiveSpeed && atkSpeed > defSpeed) 
+        || (!isTrickRoom && atkEffectiveSpeed < defEffectiveSpeed && atkSpeed < defSpeed))
+            return BAD_EFFECT;
+    }
+    else
+    {
+        // If we can stop a choice sweep, that's really cool.
+        if (HOLD_EFFECT_CHOICE(gAiLogicData->holdEffects[battlerDef]) && IsBattlerItemEnabled(battlerDef))
+            score += WEAK_EFFECT;
+
+        if (isTargetingTopThreat)
+            score += WEAK_EFFECT;
+
+        // If we only care about raw stats, we're done here.
+        if (!(isAtkSpeedChanged || isDefSpeedChanged))
+            return score + WEAK_EFFECT;
+
+        // If our speed is buffed, the buffs will apply to the new speed, too. Maybe trading will make us go first.
+        if ((!isTrickRoom && atkEffectiveSpeed > atkSpeed) || (isTrickRoom && atkEffectiveSpeed < atkSpeed))
+        {
+            // If they aren't more buffed than us, we should go for it.
+            if ((!isTrickRoom && defModifier >= atkModifier) || (isTrickRoom && defModifier <= atkModifier))
+                return score + DECENT_EFFECT;
+            else
+                return BAD_EFFECT;
+        }
+        else
+        {
+            // Our speed is debuffed, and theirs is untouched.
+            if (!isDefSpeedChanged)
+            {
+                // They have a natural advantage.  Let's harass it.
+                if ((!isTrickRoom && GetSpeciesBaseSpeed(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpeed(gBattleMons[battlerAtk].species) + 30)
+                  || (isTrickRoom && GetSpeciesBaseSpeed(gBattleMons[battlerDef].species) + 30 >= GetSpeciesBaseSpeed(gBattleMons[battlerAtk].species)))
+                    return score + WEAK_EFFECT;
+            }
+        }
+    }
+    return score;
+}
+
 u32 GetThinkingBattler(u32 battler)
 {
     if (gAiLogicData->aiPredictionInProgress)
