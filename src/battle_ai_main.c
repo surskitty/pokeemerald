@@ -2422,9 +2422,12 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             else
             {
-                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && (gBattleMons[battlerAtk].speed <= gBattleMons[battlerDef].speed))
+                u32 atkEffectiveSpeed = GetBattlerTotalSpeedStatArgs(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk]);
+                u32 defEffectiveSpeed = GetBattlerTotalSpeedStatArgs(battlerDef, aiData->abilities[battlerDef], aiData->holdEffects[battlerDef]);
+
+                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && (atkEffectiveSpeed <= defEffectiveSpeed))
                     ADJUST_SCORE(-10);
-                else if (gBattleMons[battlerAtk].speed >= gBattleMons[battlerDef].speed)
+                else if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && atkEffectiveSpeed >= defEffectiveSpeed)
                     ADJUST_SCORE(-10);
             }
             break;
