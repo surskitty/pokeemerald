@@ -431,28 +431,24 @@ AI_DOUBLE_BATTLE_TEST("AI prioritizes Skill Swapping Contrary to allied mons tha
 // Sandstorm is omitted on purpose.
 AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
 {
-    u64 aiFlags, goodWeather, badWeather, weatherTrigger;
+    u32 goodWeather, badWeather, weatherTrigger;
+    u64 aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT;
 
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+    PARAMETRIZE { goodWeather = MOVE_SUNNY_DAY; badWeather = MOVE_RAIN_DANCE; weatherTrigger = MOVE_SOLAR_BEAM; }
+    PARAMETRIZE { goodWeather = MOVE_RAIN_DANCE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_THUNDER; }
+    PARAMETRIZE { goodWeather = MOVE_HAIL; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+    PARAMETRIZE { goodWeather = MOVE_SNOWSCAPE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
+    PARAMETRIZE { goodWeather = MOVE_SANDSTORM; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_SHORE_UP; }
+    PARAMETRIZE { aiFlags |= AI_FLAG_SMART_TRAINER; 
                   goodWeather = MOVE_SUNNY_DAY; badWeather = MOVE_RAIN_DANCE; weatherTrigger = MOVE_SOLAR_BEAM; }
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+    PARAMETRIZE { aiFlags |= AI_FLAG_SMART_TRAINER; 
                   goodWeather = MOVE_RAIN_DANCE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_THUNDER; }
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+    PARAMETRIZE { aiFlags |= AI_FLAG_SMART_TRAINER; 
                   goodWeather = MOVE_HAIL; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
-    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
+    PARAMETRIZE { aiFlags |= AI_FLAG_SMART_TRAINER; 
                   goodWeather = MOVE_SNOWSCAPE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT; 
-//                  goodWeather = MOVE_SANDSTORM; badWeather = MOVE_CELEBRATE; weatherTrigger = MOVE_WEATHER_BALL; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
-                  goodWeather = MOVE_SUNNY_DAY; badWeather = MOVE_RAIN_DANCE; weatherTrigger = MOVE_SOLAR_BEAM; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
-                  goodWeather = MOVE_RAIN_DANCE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_THUNDER; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
-                  goodWeather = MOVE_HAIL; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
-    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
-                  goodWeather = MOVE_SNOWSCAPE; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_BLIZZARD; }
-//    PARAMETRIZE { aiFlags = AI_FLAG_SMART_TRAINER; 
-//                  goodWeather = MOVE_SANDSTORM; badWeather = MOVE_CELEBRATE; weatherTrigger = MOVE_WEATHER_BALL; }
+    PARAMETRIZE { aiFlags |= AI_FLAG_SMART_TRAINER; 
+                  goodWeather = MOVE_SANDSTORM; badWeather = MOVE_SUNNY_DAY; weatherTrigger = MOVE_SHORE_UP; }
 
     GIVEN {
         AI_FLAGS(aiFlags);
