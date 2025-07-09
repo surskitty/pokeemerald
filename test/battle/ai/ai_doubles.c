@@ -373,7 +373,7 @@ AI_DOUBLE_BATTLE_TEST("AI treats an ally's redirection ability appropriately (ge
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI treats an ally's redirection ability appropriately (gen 5)")
+AI_DOUBLE_BATTLE_TEST("AI treats an ally's redirection ability appropriately (gen 5+)")
 {
     ASSUME(GetMoveTarget(MOVE_DISCHARGE) == MOVE_TARGET_FOES_AND_ALLY);
     ASSUME(GetMoveType(MOVE_DISCHARGE) == TYPE_ELECTRIC);
