@@ -1832,13 +1832,13 @@ static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEff
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA 
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SUN)
       || HasLightSensitiveMove(battler)
-      || HasMoveWithType(battler, TYPE_FIRE)))
+      || HasDamagingMoveOfType(battler, TYPE_FIRE)))
     {
         return TRUE;
     }
 
     if (loop)
-        ShouldSetSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+        return ShouldSetSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
 
     return FALSE;
 }
@@ -1854,7 +1854,7 @@ static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect h
     }
 
     if (loop)
-        ShouldSetSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+        return ShouldSetSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
 
     return FALSE;
 }
@@ -1873,7 +1873,7 @@ static bool32 ShouldSetHailOrSnow(u32 battler, u32 ability, enum ItemHoldEffect 
     }
 
     if (loop)
-        ShouldSetHailOrSnow(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], weather, FALSE);
+        return ShouldSetHailOrSnow(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], weather, FALSE);
 
     return FALSE;
 }
@@ -1883,13 +1883,13 @@ static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEf
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_RAIN)
       || HasMoveWithFlag(battler, MoveAlwaysHitsInRain)
-      || HasMoveWithType(battler, TYPE_WATER)))
+      || HasDamagingMoveOfType(battler, TYPE_WATER)))
     {
         return TRUE;
     }
 
     if (loop)
-        ShouldSetRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+        return ShouldSetRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
 
     return FALSE;
 }
@@ -1912,6 +1912,159 @@ bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect
         return ShouldSetSandstorm(battler, ability, holdEffect, loop);
     else if (weather & B_WEATHER_ICY_ANY)
         return ShouldSetHailOrSnow(battler, ability, holdEffect, weather, loop);
+
+    return FALSE;
+}
+
+bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)
+{
+    switch (ability)
+    {
+    case ABILITY_MIMICRY:
+        return (fieldStatus & STATUS_FIELD_TERRAIN_ANY);
+    case ABILITY_HADRON_ENGINE:
+    case ABILITY_QUARK_DRIVE:
+    case ABILITY_SURGE_SURFER:
+        return (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN);
+//        return (weather & STATUS_FIELD_PSYCHIC_TERRAIN);
+//        return (weather & STATUS_FIELD_MISTY_TERRAIN);
+    case ABILITY_GRASS_PELT:
+        return (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN);
+    default:
+        break;
+    }
+    return FALSE;
+}
+
+static bool32 ShouldSetElectricTerrain(u32 battler, bool32 loop)
+{
+    if (HasMoveWithEffect(battler, EFFECT_RISING_VOLTAGE))
+        return TRUE;
+
+    if (HasMoveWithEffect(FOE(battler), EFFECT_REST) && IsBattlerGrounded(FOE(battler)))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    if (grounded && HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP))
+        return TRUE;
+
+    if (grounded && ((gBattleMons[battler].status1 & STATUS1_SLEEP) 
+    || (gStatuses3[battler] & STATUS3_YAWN) 
+    || HasDamagingMoveOfType(battler, TYPE_ELECTRIC)))
+        return TRUE;
+
+    if (loop)
+        return ShouldSetElectricTerrain(BATTLE_PARTNER(battler), FALSE);
+
+    return FALSE;
+}
+
+static bool32 ShouldSetGrassyTerrain(u32 battler, bool32 loop)
+{
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_GRASSY_GLIDE))
+        return TRUE;
+    if (HasBattlerSideUsedMoveWithAdditionalEffect(battler, MOVE_EFFECT_FLORAL_HEALING))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+
+// Weaken spamming Earthquake, Magnitude, and Bulldoze.
+    if (grounded && (HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_EARTHQUAKE)
+    || HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_MAGNITUDE)))
+        return TRUE;
+
+    if (grounded && HasDamagingMoveOfType(battler, TYPE_GRASS))
+        return TRUE;
+
+    if (loop)
+        return ShouldSetGrassyTerrain(BATTLE_PARTNER(battler), FALSE);
+
+    return FALSE;
+}
+
+static bool32 ShouldSetMistyTerrain(u32 battler, bool32 loop)
+{
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_MISTY_EXPLOSION))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    bool32 allyGrounded = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        allyGrounded = IsBattlerGrounded(BATTLE_PARTNER(battler));
+
+    if (HasMoveWithEffect(FOE(battler), EFFECT_REST) && IsBattlerGrounded(FOE(battler)))
+        return TRUE;
+
+    // harass dragons
+    if ((grounded || allyGrounded) 
+        && (HasDamagingMoveOfType(FOE(battler), TYPE_DRAGON) || HasDamagingMoveOfType(BATTLE_PARTNER(FOE(battler)), TYPE_DRAGON)))
+        return TRUE;
+
+    if ((grounded || allyGrounded) && HasBattlerSideUsedMoveWithAdditionalEffect(FOE(battler), MOVE_EFFECT_SLEEP))
+        return TRUE;
+
+    if (grounded && ((gBattleMons[battler].status1 & STATUS1_SLEEP) 
+    || (gStatuses3[battler] & STATUS3_YAWN)))
+        return TRUE;
+
+    if (loop)
+        return ShouldSetMistyTerrain(BATTLE_PARTNER(battler), FALSE);
+
+    return FALSE;
+}
+
+static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 loop)
+{
+    if (HasBattlerSideMoveWithEffect(battler, EFFECT_EXPANDING_FORCE))
+        return TRUE;
+
+    bool32 grounded = IsBattlerGrounded(battler);
+    bool32 allyGrounded = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        allyGrounded = IsBattlerGrounded(BATTLE_PARTNER(battler));
+
+    // don't bother if we're not grounded
+    if (!(grounded || allyGrounded))
+        return FALSE;
+
+    // harass priority
+    if (HasBattlerSideAbility(FOE(battler), ABILITY_GALE_WINGS, gAiLogicData) 
+     || HasBattlerSideAbility(FOE(battler), ABILITY_TRIAGE, gAiLogicData)
+     || HasBattlerSideAbility(FOE(battler), ABILITY_PRANKSTER, gAiLogicData))
+        return TRUE;
+
+    if (grounded && (HasDamagingMoveOfType(battler, TYPE_PSYCHIC)))
+        return TRUE;
+
+    if (loop)
+        return ShouldSetPsychicTerrain(BATTLE_PARTNER(battler), FALSE);
+
+    return FALSE;
+}
+
+bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)
+{
+    if (gFieldStatuses & fieldStatus)
+        return FALSE;
+    if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], fieldStatus))
+        return TRUE;
+
+    bool32 loop = FALSE;
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+    {
+        loop = TRUE;
+        if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[BATTLE_PARTNER(battler)], fieldStatus))
+            return TRUE;
+    }
+
+    if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
+        return ShouldSetElectricTerrain(battler, loop);
+    if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
+        return ShouldSetGrassyTerrain(battler, loop);
+    if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
+        return ShouldSetMistyTerrain(battler, loop);
+    if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
+        return ShouldSetPsychicTerrain(battler, loop);
 
     return FALSE;
 }
