@@ -81,6 +81,7 @@
 
 // AI chances for certain double battle mind games.
 #define DOUBLE_TRICK_ROOM_ON_LAST_TURN_CHANCE    35 // Chance for both pokemon to use trick room on final turn of Trick Room.
+#define TAILWIND_IN_TRICK_ROOM_CHANCE            35 // Chance for both pokemon to use Tailwind on final turn of Trick Room.
 
 // AI's desired stat changes for Guard Split and Power Split, treated as %
 #define GUARD_SPLIT_ALLY_PERCENTAGE     200
