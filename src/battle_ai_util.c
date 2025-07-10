@@ -5295,6 +5295,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
     case ABILITY_VITAL_SPIRIT:
         if (HasMoveWithEffect(battler, EFFECT_REST))
             return WORST_EFFECT;
+        break;
     case ABILITY_INTIMIDATE:
     {
         u32 abilityDef = aiData->abilities[FOE(battler)];
@@ -5334,7 +5335,7 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
             return WEAK_EFFECT;
         if (gBattleMons[battler].status1 & (STATUS1_TOXIC_POISON))
             return BEST_EFFECT;
-        if (gBattleMons[battler].status1 != STATUS1_NONE)
+        if (gBattleMons[battler].status1 & STATUS1_ANY)
             return NO_INCREASE;
         break;
     // Also used to Simple Beam SIMPLE_BEAM.
