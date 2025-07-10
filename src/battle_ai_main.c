@@ -2541,16 +2541,12 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             else if (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_POWERFUL_STATUS))
             {
-                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM) // Trick Room Up
-                {
-                    if (GetBattlerSideSpeedAverage(battlerAtk) < GetBattlerSideSpeedAverage(battlerDef)) // Attacker side slower than target side
-                        ADJUST_SCORE(-10); // Keep the Trick Room up
-                }
-                else
-                {
-                    if (GetBattlerSideSpeedAverage(battlerAtk) >= GetBattlerSideSpeedAverage(battlerDef)) // Attacker side faster than target side
-                        ADJUST_SCORE(-10); // Keep the Trick Room down
-                }
+                // Don't set a trick room you don't benefit from.
+                if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && !ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM))
+                        ADJUST_SCORE(-10);
+                // Don't unset a trick room you benefit from unless it's about to expire.
+                else if ((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && gFieldTimers.trickRoomTimer != gBattleTurnCounter && ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM))
+                        ADJUST_SCORE(-10);
             }
             break;
         case EFFECT_MAGIC_ROOM:
@@ -4865,14 +4861,40 @@ case EFFECT_GUARD_SPLIT:
         ADJUST_SCORE(WORST_EFFECT);
     }
     case EFFECT_ELECTRIC_TERRAIN:
-    case EFFECT_MISTY_TERRAIN:
-        if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
-            ADJUST_SCORE(BEST_EFFECT);
-    case EFFECT_GRASSY_TERRAIN:
-    case EFFECT_PSYCHIC_TERRAIN:
-        ADJUST_SCORE(GOOD_EFFECT);
-        if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_TERRAIN_PULSE))
+        if (ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_ELECTRIC_TERRAIN))
+        {
             ADJUST_SCORE(GOOD_EFFECT);
+            if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
+                ADJUST_SCORE(BEST_EFFECT);
+            if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_TERRAIN_PULSE))
+                ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
+    case EFFECT_MISTY_TERRAIN:
+        if (ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_MISTY_TERRAIN))
+        {
+            ADJUST_SCORE(GOOD_EFFECT);
+            if (gStatuses3[battlerAtk] & STATUS3_YAWN && IsBattlerGrounded(battlerAtk))
+                ADJUST_SCORE(BEST_EFFECT);
+            if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_TERRAIN_PULSE))
+                ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
+    case EFFECT_GRASSY_TERRAIN:
+        if (ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_GRASSY_TERRAIN))
+        {
+            ADJUST_SCORE(GOOD_EFFECT);
+            if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_TERRAIN_PULSE))
+                ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
+    case EFFECT_PSYCHIC_TERRAIN:
+        if (ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_PSYCHIC_TERRAIN))
+        {
+            ADJUST_SCORE(GOOD_EFFECT);
+            if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_TERRAIN_EXTENDER || HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_TERRAIN_PULSE))
+                ADJUST_SCORE(WEAK_EFFECT);
+        }
         break;
     case EFFECT_PLEDGE:
         if (isDoubleBattle && HasMoveWithEffect(BATTLE_PARTNER(battlerAtk), EFFECT_PLEDGE))
@@ -4881,9 +4903,10 @@ case EFFECT_GUARD_SPLIT:
     case EFFECT_TRICK_ROOM:
         if (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_POWERFUL_STATUS))
         {
-            if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battlerAtk) < GetBattlerSideSpeedAverage(battlerDef))
+            if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM))
                 ADJUST_SCORE(GOOD_EFFECT);
-            else if ((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battlerAtk) >= GetBattlerSideSpeedAverage(battlerDef))
+            // Don't unset it on last turn.
+            else if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer != gBattleTurnCounter && !(ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM)))
                 ADJUST_SCORE(GOOD_EFFECT);
         }
         break;

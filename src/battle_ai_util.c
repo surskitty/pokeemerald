@@ -2054,11 +2054,37 @@ static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 loop)
 // A FALSE means the desired state is for trick room to be not set.
 static bool32 ShouldSetTrickRoom(u32 battler, bool32 loop)
 {
+    if (!IsDoubleBattle())
+    {
+        if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battler) < GetBattlerSideSpeedAverage(FOE(battler)))
+            return TRUE;
+        else if ((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battler) >= GetBattlerSideSpeedAverage(FOE(battler)))
+            return FALSE;
+    }
+    
+    // First checking if Trick Room impacts us at all.
+    if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN))
+    {
+        u16* aiMoves = GetMovesArray(battler);
+        for (int i = 0; i < MAX_MON_MOVES; i++)
+        {
+            u16 move = aiMoves[i];
+            if (GetBattleMovePriority(battler, gAiLogicData->abilities[battler], move) > 0 && !(GetMovePriority(move) > 0 && IsBattleMoveStatus(move)))
+            {
+                if (loop)
+                    return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
+                else
+                    return TRUE;
+            }
+        }
+    }
+
+    if ((gBattleMons[battler].speed >= gBattleMons[FOE(battler)].speed) || (gBattleMons[battler].speed >= gBattleMons[BATTLE_PARTNER(FOE(battler))].speed))
+        return FALSE;
 
     if (loop)
         return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
-
-    return FALSE;
+    return TRUE;
 }
 
 bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)
