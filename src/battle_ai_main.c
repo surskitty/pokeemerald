@@ -2519,7 +2519,11 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_TRICK_ROOM:
             if (PartnerMoveEffectIs(BATTLE_PARTNER(battlerAtk), aiData->partnerMove, EFFECT_TRICK_ROOM))
             {
-                ADJUST_SCORE(-10);
+                // double trick room strats is go
+                if (gFieldTimers.trickRoomTimer == gBattleTurnCounter)
+                    ADJUST_SCORE(BEST_EFFECT);
+                else
+                    ADJUST_SCORE(-10);
             }
             else if (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_POWERFUL_STATUS))
             {
@@ -3017,6 +3021,53 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     default:
         break;
     } // our effect relative to partner
+
+
+   // consider our move effect relative to partner state
+    switch (effect)
+    {
+    case EFFECT_HELPING_HAND:
+        if (!IsBattlerAlive(battlerAtkPartner) || !HasDamagingMove(battlerAtkPartner))
+            ADJUST_SCORE(-20);
+        break;
+    case EFFECT_PERISH_SONG:
+        if (aiData->partnerMove != 0 && HasTrappingMoveEffect(battlerAtkPartner))
+            ADJUST_SCORE(WEAK_EFFECT);
+        break;
+    case EFFECT_MAGNET_RISE:
+        if (IsBattlerGrounded(battlerAtk)
+          && (HasMove(battlerAtkPartner, MOVE_EARTHQUAKE) || HasMove(battlerAtkPartner, MOVE_MAGNITUDE))
+          && (AI_GetMoveEffectiveness(MOVE_EARTHQUAKE, battlerAtk, battlerAtkPartner) != UQ_4_12(0.0))) // Doesn't resist ground move
+        {
+            RETURN_SCORE_PLUS(DECENT_EFFECT);   // partner has earthquake or magnitude -> good idea to use magnet rise
+        }
+        break;
+    case EFFECT_DRAGON_CHEER:
+        if (gBattleMons[battlerAtkPartner].status2 & STATUS2_FOCUS_ENERGY_ANY || !HasDamagingMove(battlerAtkPartner))
+            ADJUST_SCORE(-5);
+        else if (atkPartnerHoldEffect == HOLD_EFFECT_SCOPE_LENS
+              || IS_BATTLER_OF_TYPE(battlerAtkPartner, TYPE_DRAGON)
+              || GetMoveCriticalHitStage(aiData->partnerMove) > 0
+              || HasMoveWithCriticalHitChance(battlerAtkPartner))
+            ADJUST_SCORE(GOOD_EFFECT);
+        break;
+    default:
+        break;
+    } // our effect relative to partner
+
+    // consider global move effects
+    switch (effect)
+    {
+    case EFFECT_TRICK_ROOM:
+        if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer == gBattleTurnCounter 
+         && ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM)
+         && HasMoveWithEffect(battlerAtkPartner, MOVE_TRICK_ROOM)
+         && (aiData->partnerMove == 0))
+        break;
+    default:
+        break;
+    } // global move effect check
+
 
     // Specific logic for spread moves.
     if (moveTarget == MOVE_TARGET_FOES_AND_ALLY)
@@ -3525,6 +3576,8 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 break;
             } // attacker move effects
         } // check partner protecting
+
+
 
         if ((isMoveAffectedByPartnerAbility && (score <= AI_SCORE_DEFAULT)) || !isMoveAffectedByPartnerAbility)
         {

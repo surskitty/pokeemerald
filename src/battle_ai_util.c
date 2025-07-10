@@ -2042,9 +2042,19 @@ static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 loop)
     return FALSE;
 }
 
+// A FALSE means the desired state is for trick room to be not set.
+static bool32 ShouldSetTrickRoom(u32 battler, bool32 loop)
+{
+
+    if (loop)
+        return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
+
+    return FALSE;
+}
+
 bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)
 {
-    if (gFieldStatuses & fieldStatus)
+    if (gFieldStatuses & fieldStatus && fieldStatus != STATUS_FIELD_TRICK_ROOM)
         return FALSE;
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], fieldStatus))
         return TRUE;
@@ -2065,6 +2075,9 @@ bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)
         return ShouldSetMistyTerrain(battler, loop);
     if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
         return ShouldSetPsychicTerrain(battler, loop);
+
+    if (fieldStatus & STATUS_FIELD_TRICK_ROOM)
+        return ShouldSetTrickRoom(battler, loop);
 
     return FALSE;
 }
