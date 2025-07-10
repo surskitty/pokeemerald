@@ -515,6 +515,32 @@ AI_DOUBLE_BATTLE_TEST("AI uses After You to set up Trick Room")
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI uses Trick Room intelligently")
+{
+    u32 move, ability, speed;
+
+    PARAMETRIZE { move = MOVE_DRAINING_KISS; ability = ABILITY_SYNCHRONIZE; speed = 4; }
+    PARAMETRIZE { move = MOVE_DAZZLING_GLEAM; ability = ABILITY_SYNCHRONIZE; speed = 4; }
+    PARAMETRIZE { move = MOVE_DRAINING_KISS; ability = ABILITY_PSYCHIC_SURGE; speed = 4; }
+    PARAMETRIZE { move = MOVE_DRAINING_KISS; ability = ABILITY_SYNCHRONIZE; speed = 2; }
+    PARAMETRIZE { move = MOVE_DAZZLING_GLEAM; ability = ABILITY_SYNCHRONIZE; speed = 2; }
+    PARAMETRIZE { move = MOVE_DRAINING_KISS; ability = ABILITY_PSYCHIC_SURGE; speed = 2; }
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_AFTER_YOU) == EFFECT_AFTER_YOU);
+        ASSUME(GetMoveEffect(MOVE_TRICK_ROOM) == EFFECT_TRICK_ROOM);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_DOUBLE_BATTLE);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(4); }
+        PLAYER(SPECIES_WOBBUFFET) { Speed(speed); }
+        OPPONENT(SPECIES_COMFEY) { Ability(ABILITY_TRIAGE); Speed(5); Moves(move); }
+        OPPONENT(SPECIES_INDEEDEE) { Ability(ability); Speed(3); Moves(MOVE_TRICK_ROOM, MOVE_PSYCHIC); }
+    } WHEN {
+        if (move == MOVE_DRAINING_KISS && ability != ABILITY_PSYCHIC_SURGE && speed > 3)
+            TURN { EXPECT_MOVE(opponentRight, MOVE_TRICK_ROOM); }
+        else
+            TURN { NOT_EXPECT_MOVE(opponentRight, MOVE_TRICK_ROOM); }
+    }
+}
 AI_DOUBLE_BATTLE_TEST("AI uses Guard Split to improve its stats")
 {
 
