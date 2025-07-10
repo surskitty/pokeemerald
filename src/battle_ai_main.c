@@ -2535,7 +2535,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 // double trick room strats is go
                 if (gFieldTimers.trickRoomTimer == gBattleTurnCounter)
-                    ADJUST_SCORE(BEST_EFFECT);
+                    ADJUST_SCORE(PERFECT_EFFECT);
                 else
                     ADJUST_SCORE(-10);
             }
@@ -3083,7 +3083,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
          && ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM)
          && HasMoveWithEffect(battlerAtkPartner, MOVE_TRICK_ROOM)
          && (Random() % 100 < DOUBLE_TRICK_ROOM_ON_LAST_TURN_CHANCE))
-            ADJUST_SCORE(BEST_EFFECT);
+            ADJUST_SCORE(PERFECT_EFFECT);
         break;
     case EFFECT_TAILWIND:
         if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer == gBattleTurnCounter 
