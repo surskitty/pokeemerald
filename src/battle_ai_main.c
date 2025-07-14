@@ -2564,7 +2564,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_TRICK_ROOM:
             if (PartnerMoveEffectIs(BATTLE_PARTNER(battlerAtk), aiData->partnerMove, EFFECT_TRICK_ROOM))
             {
-                // double trick room strats is go
+                // This only happens if the ally already rolled on double trick room on final turn.
+                // Both Pokemon use Trick Room on the final turn of Trick Room to anticipate both opponents Protecting to stall out.
                 if (gFieldTimers.trickRoomTimer == gBattleTurnCounter)
                     ADJUST_SCORE(PERFECT_EFFECT);
                 else
@@ -3109,18 +3110,19 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     // consider global move effects
     switch (effect)
     {
-    // Trick Room benefits us, is on the final turn, and both pokemon are capable of doing Trick Room.
-    // Let's punish someone Protecting.
+    // Both Pokemon use Trick Room on the final turn of Trick Room to anticipate both opponents Protecting to stall out.
+    // This unsets Trick Room and resets it with a full timer.
     case EFFECT_TRICK_ROOM:
         if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer == gBattleTurnCounter 
          && ShouldSetFieldStatus(battlerAtk, STATUS_FIELD_TRICK_ROOM)
          && HasMoveWithEffect(battlerAtkPartner, MOVE_TRICK_ROOM)
-         && (Random() % 100 < DOUBLE_TRICK_ROOM_ON_LAST_TURN_CHANCE))
+         && RandomPercentage(RNG_AI_REFRESH_TRICK_ROOM_ON_LAST_TURN, DOUBLE_TRICK_ROOM_ON_LAST_TURN_CHANCE))
             ADJUST_SCORE(PERFECT_EFFECT);
         break;
     case EFFECT_TAILWIND:
+        // Anticipate both opponents protecting to stall out Trick Room, and apply Tailwind.
         if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer == gBattleTurnCounter 
-         && (Random() % 100 < TAILWIND_IN_TRICK_ROOM_CHANCE))
+         && RandomPercentage(RNG_AI_APPLY_TAILWIND_ON_LAST_TURN_OF_TRICK_ROOM, TAILWIND_IN_TRICK_ROOM_CHANCE))
             ADJUST_SCORE(BEST_EFFECT);
         break;
     default:
