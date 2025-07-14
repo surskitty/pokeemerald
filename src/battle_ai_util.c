@@ -1911,7 +1911,7 @@ static bool32 HasLightSensitiveMove(u32 battler)
     return FALSE;
 }
 
-static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, bool32 checkPartner)
+static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
 {
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA 
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SUN)
@@ -1921,13 +1921,13 @@ static bool32 ShouldSetSun(u32 battler, u32 ability, enum ItemHoldEffect holdEff
         return TRUE;
     }
 
-    if (checkPartner)
-        return ShouldSetSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+    if (checkPartner == CHECK_PARTNER_NEXT)
+        return ShouldSetSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
 
     return FALSE;
 }
 
-static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, bool32 checkPartner)
+static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
 {
     if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SANDSTORM)
      || holdEffect == HOLD_EFFECT_SAFETY_GOGGLES
@@ -1937,13 +1937,13 @@ static bool32 ShouldSetSandstorm(u32 battler, u32 ability, enum ItemHoldEffect h
         return TRUE;
     }
 
-    if (checkPartner)
-        return ShouldSetSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+    if (checkPartner == CHECK_PARTNER_NEXT)
+        return ShouldSetSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
 
     return FALSE;
 }
 
-static bool32 ShouldSetHailOrSnow(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather, bool32 checkPartner)
+static bool32 ShouldSetHailOrSnow(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather, enum CheckPartner checkPartner)
 {
     if ((weather & B_WEATHER_DAMAGING_ANY) && holdEffect == HOLD_EFFECT_SAFETY_GOGGLES)
         return TRUE;
@@ -1956,13 +1956,13 @@ static bool32 ShouldSetHailOrSnow(u32 battler, u32 ability, enum ItemHoldEffect 
         return TRUE;
     }
 
-    if (checkPartner)
-        return ShouldSetHailOrSnow(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], weather, FALSE);
+    if (checkPartner == CHECK_PARTNER_NEXT)
+        return ShouldSetHailOrSnow(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], weather, CHECK_SELF_ONLY);
 
     return FALSE;
 }
 
-static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, bool32 checkPartner)
+static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
 {
     if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA
       && (DoesAbilityBenefitFromWeather(ability, B_WEATHER_RAIN)
@@ -1972,8 +1972,8 @@ static bool32 ShouldSetRain(u32 battler, u32 ability, enum ItemHoldEffect holdEf
         return TRUE;
     }
 
-    if (checkPartner)
-        return ShouldSetRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], FALSE);
+    if (checkPartner == CHECK_PARTNER_NEXT)
+        return ShouldSetRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
 
     return FALSE;
 }
@@ -1983,10 +1983,14 @@ bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect
     if (IsWeatherActive(weather | B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
         return FALSE;
 
-    bool32 checkPartner = FALSE;
+    // checkPartner checks whether the ShouldSet subfunctions should recurse.
+    // Recursion is used to cleanly loop through a battler's side during double battles.
+    // Do not call the subfunctions directly so that it is not necessary to track whether or not it should recurse.
+    enum CheckPartner checkPartner = CHECK_SELF_ONLY;
 
+    // By default, it does not recurse.  Here, it checks if it ought to.
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
-        checkPartner = TRUE;
+        checkPartner = CHECK_PARTNER_NEXT;
 
     if (weather & B_WEATHER_RAIN)
         return ShouldSetRain(battler, ability, holdEffect, checkPartner);
@@ -2020,7 +2024,7 @@ bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)
     return FALSE;
 }
 
-static bool32 ShouldSetElectricTerrain(u32 battler, bool32 checkPartner)
+static bool32 ShouldSetElectricTerrain(u32 battler, enum CheckPartner checkPartner)
 {
     if (HasMoveWithEffect(battler, EFFECT_RISING_VOLTAGE))
         return TRUE;
@@ -2037,13 +2041,13 @@ static bool32 ShouldSetElectricTerrain(u32 battler, bool32 checkPartner)
     || HasDamagingMoveOfType(battler, TYPE_ELECTRIC)))
         return TRUE;
 
-    if (checkPartner)
+    if (checkPartner == CHECK_PARTNER_NEXT)
         return ShouldSetElectricTerrain(BATTLE_PARTNER(battler), FALSE);
 
     return FALSE;
 }
 
-static bool32 ShouldSetGrassyTerrain(u32 battler, bool32 checkPartner)
+static bool32 ShouldSetGrassyTerrain(u32 battler, enum CheckPartner checkPartner)
 {
     if (HasBattlerSideMoveWithEffect(battler, EFFECT_GRASSY_GLIDE))
         return TRUE;
@@ -2052,7 +2056,7 @@ static bool32 ShouldSetGrassyTerrain(u32 battler, bool32 checkPartner)
 
     bool32 grounded = IsBattlerGrounded(battler);
 
-// Weaken spamming Earthquake, Magnitude, and Bulldoze.
+    // Weaken spamming Earthquake, Magnitude, and Bulldoze.
     if (grounded && (HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_EARTHQUAKE)
     || HasBattlerSideUsedMoveWithEffect(FOE(battler), EFFECT_MAGNITUDE)))
         return TRUE;
@@ -2060,13 +2064,13 @@ static bool32 ShouldSetGrassyTerrain(u32 battler, bool32 checkPartner)
     if (grounded && HasDamagingMoveOfType(battler, TYPE_GRASS))
         return TRUE;
 
-    if (checkPartner)
+        if (checkPartner == CHECK_PARTNER_NEXT)
         return ShouldSetGrassyTerrain(BATTLE_PARTNER(battler), FALSE);
 
     return FALSE;
 }
 
-static bool32 ShouldSetMistyTerrain(u32 battler, bool32 checkPartner)
+static bool32 ShouldSetMistyTerrain(u32 battler, enum CheckPartner checkPartner)
 {
     if (HasBattlerSideMoveWithEffect(battler, EFFECT_MISTY_EXPLOSION))
         return TRUE;
@@ -2091,13 +2095,13 @@ static bool32 ShouldSetMistyTerrain(u32 battler, bool32 checkPartner)
     || (gStatuses3[battler] & STATUS3_YAWN)))
         return TRUE;
 
-    if (checkPartner)
+    if (checkPartner == CHECK_PARTNER_NEXT)
         return ShouldSetMistyTerrain(BATTLE_PARTNER(battler), FALSE);
 
     return FALSE;
 }
 
-static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 checkPartner)
+static bool32 ShouldSetPsychicTerrain(u32 battler, enum CheckPartner checkPartner)
 {
     if (HasBattlerSideMoveWithEffect(battler, EFFECT_EXPANDING_FORCE))
         return TRUE;
@@ -2120,15 +2124,15 @@ static bool32 ShouldSetPsychicTerrain(u32 battler, bool32 checkPartner)
     if (grounded && (HasDamagingMoveOfType(battler, TYPE_PSYCHIC)))
         return TRUE;
 
-    if (checkPartner)
+    if (checkPartner == CHECK_PARTNER_NEXT)
         return ShouldSetPsychicTerrain(BATTLE_PARTNER(battler), FALSE);
 
     return FALSE;
 }
 
 // A FALSE means the desired state is for trick room to be not set.
-// Trick Room desires for both pokemon on the side to benefit from Trick Room, while the others only need one yes
-static bool32 ShouldSetTrickRoom(u32 battler, bool32 checkPartner)
+// In double battles, Trick Room desires for both pokemon on the side to benefit from Trick Room, while the others only need one yes.
+static bool32 ShouldSetTrickRoom(u32 battler, enum CheckPartner checkPartner)
 {
     if (!IsDoubleBattle())
     {
@@ -2147,7 +2151,7 @@ static bool32 ShouldSetTrickRoom(u32 battler, bool32 checkPartner)
             u16 move = aiMoves[i];
             if (GetBattleMovePriority(battler, gAiLogicData->abilities[battler], move) > 0 && !(GetMovePriority(move) > 0 && IsBattleMoveStatus(move)))
             {
-                if (checkPartner)
+                if (checkPartner == CHECK_PARTNER_NEXT)
                     return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
                 else
                     return TRUE;
@@ -2158,7 +2162,7 @@ static bool32 ShouldSetTrickRoom(u32 battler, bool32 checkPartner)
     if ((gBattleMons[battler].speed >= gBattleMons[FOE(battler)].speed) || (gBattleMons[battler].speed >= gBattleMons[BATTLE_PARTNER(FOE(battler))].speed))
         return FALSE;
 
-    if (checkPartner)
+    if (checkPartner == CHECK_PARTNER_NEXT)
         return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
     return TRUE;
 }
@@ -2170,12 +2174,17 @@ bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], fieldStatus))
         return TRUE;
 
-    bool32 checkPartner = FALSE;
+    // checkPartner checks whether the ShouldSet subfunctions should recurse.
+    // Recursion is used to cleanly loop through a battler's side during double battles.
+    // Do not call the subfunctions directly so that it is not necessary to track whether or not it should recurse.
+    enum CheckPartner checkPartner = CHECK_SELF_ONLY;
+
+    // By default, it does not recurse.  Here, it checks if it ought to.
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
     {
-        checkPartner = TRUE;
         if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[BATTLE_PARTNER(battler)], fieldStatus))
             return TRUE;
+        checkPartner = CHECK_PARTNER_NEXT;
     }
 
     if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)

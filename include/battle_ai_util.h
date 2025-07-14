@@ -53,6 +53,12 @@ enum AIConsiderGimmick
     USE_GIMMICK,
 };
 
+enum CheckPartner
+{
+    CHECK_SELF_ONLY,
+    CHECK_PARTNER_NEXT,
+};
+
 static inline bool32 IsMoveUnusable(u32 moveIndex, u32 move, u32 moveLimitations)
 {
     return move == MOVE_NONE
