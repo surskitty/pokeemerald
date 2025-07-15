@@ -195,7 +195,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler, u32 abi
 bool32 WeatherChecker(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather, enum BattlerBenefitsFromFieldEffect desiredResult)
 {
     if (IsWeatherActive(B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
-        return FIELD_EFFECT_BLOCKED;
+        return FALSE;
 
     enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
 
@@ -397,7 +397,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler, en
                 if (checkPartner == CHECK_PARTNER_NEXT)
                     return BenefitsFromTrickRoom(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
                 else
-                    return FIELD_EFFECT_NEUTRAL;
+                    return FIELD_EFFECT_POSITIVE;
             }
         }
     }
