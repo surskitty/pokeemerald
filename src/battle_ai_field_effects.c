@@ -295,6 +295,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromGrassyTerrain(u32 battler
     return FIELD_EFFECT_NEUTRAL;
 }
 
+//TODO: when is misty terrain bad?
 static enum BattlerBenefitsFromFieldEffect BenefitsFromMistyTerrain(u32 battler, enum CheckPartner checkPartner)
 {
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], STATUS_FIELD_MISTY_TERRAIN))
