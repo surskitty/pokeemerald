@@ -2,6 +2,7 @@
 #define GUARD_BATTLE_AI_UTIL_H
 
 #include "battle_ai_main.h"
+#include "battle_ai_field_effects.h"
 
 #define FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
 
@@ -51,12 +52,6 @@ enum AIConsiderGimmick
 {
     NO_GIMMICK,
     USE_GIMMICK,
-};
-
-enum CheckPartner
-{
-    CHECK_SELF_ONLY,
-    CHECK_PARTNER_NEXT,
 };
 
 static inline bool32 IsMoveUnusable(u32 moveIndex, u32 move, u32 moveLimitations)
@@ -184,7 +179,9 @@ bool32 IsTwoTurnNotSemiInvulnerableMove(u32 battlerAtk, u32 move);
 bool32 IsBattlerDamagedByStatus(u32 battler);
 s32 ProtectChecks(u32 battlerAtk, u32 battlerDef, u32 move, u32 predictedMove);
 bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather);
+bool32 ShouldClearWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather);
 bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus);
+bool32 ShouldClearFieldStatus(u32 battler, u32 fieldStatus);
 bool32 HasSleepMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef);
 bool32 IsHealingMove(u32 move);
 bool32 HasHealingEffect(u32 battler);

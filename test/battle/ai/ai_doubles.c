@@ -431,7 +431,7 @@ AI_DOUBLE_BATTLE_TEST("AI prioritizes Skill Swapping Contrary to allied mons tha
 // Sandstorm is omitted on purpose.
 // Tornadus is currently not willing to set up Sandstorm for its ally, but the actual purpose of this test is to demonstrate that Tornadus or Whimsicott will perform standard VGC openers.
 // Rain Dance, Sunny Day, and Snowscape are the actually important ones; setting up a good Sandstorm test + functionality is less important and will be done in later PRs.
-AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
+AI_DOUBLE_BATTLE_TEST("AI sets up weather for its ally")
 {
     u32 goodWeather, badWeather, weatherTrigger;
     u64 aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT;
@@ -463,7 +463,7 @@ AI_DOUBLE_BATTLE_TEST("AI will set up weather for its ally")
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI will set up terrain for its ally")
+AI_DOUBLE_BATTLE_TEST("AI sets up terrain for its ally")
 {
     u32 goodTerrain, badTerrain, terrainTrigger;
     u64 aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT;
