@@ -3100,7 +3100,6 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         break;
     } // global move effect check
 
-
     // Specific logic for spread moves.
     if (moveTarget == MOVE_TARGET_FOES_AND_ALLY)
     {
@@ -3611,8 +3610,6 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 break;
             } // attacker move effects
         } // check partner protecting
-
-
 
         if ((isMoveAffectedByPartnerAbility && (score <= AI_SCORE_DEFAULT)) || !isMoveAffectedByPartnerAbility)
         {
