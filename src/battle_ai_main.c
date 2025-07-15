@@ -4344,7 +4344,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_SANDSTORM:
-        if (ShouldSetWeather(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk], B_WEATHER_SANDSTORM))
+        if (ShouldSetWeather(battlerAtk, B_WEATHER_SANDSTORM))
         {
             ADJUST_SCORE(DECENT_EFFECT);
 
@@ -4359,7 +4359,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_HAIL:
-        if (ShouldSetWeather(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk], B_WEATHER_HAIL))
+        if (ShouldSetWeather(battlerAtk, B_WEATHER_HAIL))
         {
             ADJUST_SCORE(DECENT_EFFECT);
 
@@ -4376,7 +4376,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SNOWSCAPE:
-        if (ShouldSetWeather(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk], B_WEATHER_SNOW))
+        if (ShouldSetWeather(battlerAtk, B_WEATHER_SNOW))
         {
             ADJUST_SCORE(DECENT_EFFECT);
 
@@ -4393,7 +4393,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_RAIN_DANCE:
-        if (ShouldSetWeather(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk], B_WEATHER_RAIN))
+        if (ShouldSetWeather(battlerAtk, B_WEATHER_RAIN))
         {
             ADJUST_SCORE(DECENT_EFFECT);
 
@@ -4411,7 +4411,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_SUNNY_DAY:
-        if (ShouldSetWeather(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk], B_WEATHER_SUN))
+        if (ShouldSetWeather(battlerAtk, B_WEATHER_SUN))
         {
             ADJUST_SCORE(DECENT_EFFECT);
 

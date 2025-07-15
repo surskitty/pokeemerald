@@ -1847,14 +1847,14 @@ bool32 ShouldTryOHKO(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbil
     return FALSE;
 }
 
-bool32 ShouldSetWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)
+bool32 ShouldSetWeather(u32 battler, u32 weather)
 {
-    return WeatherChecker(battler, ability, holdEffect, weather, FIELD_EFFECT_POSITIVE);
+    return WeatherChecker(battler, weather, FIELD_EFFECT_POSITIVE);
 }
 
-bool32 ShouldClearWeather(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather)
+bool32 ShouldClearWeather(u32 battler, u32 weather)
 {
-    return WeatherChecker(battler, ability, holdEffect, weather, FIELD_EFFECT_NEGATIVE);
+    return WeatherChecker(battler, weather, FIELD_EFFECT_NEGATIVE);
 }
 
 bool32 ShouldSetFieldStatus(u32 battler, u32 fieldStatus)

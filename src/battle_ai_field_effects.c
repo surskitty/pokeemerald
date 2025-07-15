@@ -111,79 +111,52 @@ static bool32 HasLightSensitiveMove(u32 battler)
 }
 
 // Sun
-static enum BattlerBenefitsFromFieldEffect BenefitsFromSun(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromSun(u32 battler)
 {
-    if (holdEffect == HOLD_EFFECT_UTILITY_UMBRELLA)
-    {
-        if (checkPartner == CHECK_PARTNER_NEXT)
-            return BenefitsFromSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
-        else
-            return FIELD_EFFECT_NEUTRAL;
-    }
-    else
-    {
-        if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SUN) || HasLightSensitiveMove(battler) || HasDamagingMoveOfType(battler, TYPE_FIRE))
-            return FIELD_EFFECT_POSITIVE;
-    }
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
+        return FIELD_EFFECT_NEUTRAL;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromSun(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
+    if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], B_WEATHER_SUN) || HasLightSensitiveMove(battler) || HasDamagingMoveOfType(battler, TYPE_FIRE))
+        return FIELD_EFFECT_POSITIVE;
 
-    if (HasMoveWithFlag(battler, MoveHas50AccuracyInSun) || HasDamagingMoveOfType(battler, TYPE_WATER) || ability == ABILITY_DRY_SKIN)
+    if (HasMoveWithFlag(battler, MoveHas50AccuracyInSun) || HasDamagingMoveOfType(battler, TYPE_WATER) || gAiLogicData->abilities[battler] == ABILITY_DRY_SKIN)
         return FIELD_EFFECT_NEGATIVE;
 
     return FIELD_EFFECT_NEUTRAL;
 }
 
 // Sandstorm is positive if at least one Pokemon on a side does not take damage from it while its foe does. 
-static enum BattlerBenefitsFromFieldEffect BenefitsFromSandstorm(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromSandstorm(u32 battler)
 {
-    if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SANDSTORM)
+    if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], B_WEATHER_SANDSTORM)
      || IS_BATTLER_OF_TYPE(battler, TYPE_ROCK)
      || HasBattlerSideMoveWithEffect(battler, EFFECT_SHORE_UP))
-    {
         return FIELD_EFFECT_POSITIVE;
-    }
 
-    if (holdEffect == HOLD_EFFECT_SAFETY_GOGGLES || IS_BATTLER_ANY_TYPE(battler, TYPE_ROCK, TYPE_GROUND, TYPE_STEEL))
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_SAFETY_GOGGLES || IS_BATTLER_ANY_TYPE(battler, TYPE_ROCK, TYPE_GROUND, TYPE_STEEL))
     {
         if (!(IS_BATTLER_ANY_TYPE(FOE(battler), TYPE_ROCK, TYPE_GROUND, TYPE_STEEL)) 
          || gAiLogicData->holdEffects[FOE(battler)] == HOLD_EFFECT_SAFETY_GOGGLES 
          || DoesAbilityBenefitFromWeather(gAiLogicData->abilities[FOE(battler)], B_WEATHER_SANDSTORM))
-        {
             return FIELD_EFFECT_POSITIVE;
-        }
         else
-        {
-            if (checkPartner == CHECK_PARTNER_NEXT)
-                return BenefitsFromSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
-            else
-                return FIELD_EFFECT_NEUTRAL;
-        }
+            return FIELD_EFFECT_NEUTRAL;
     }
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromSandstorm(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
-    else
-        return FIELD_EFFECT_NEGATIVE;
+    return FIELD_EFFECT_NEGATIVE;
 }
 
 // Hail or Snow
 // Hail is negative if a pokemon is damaged by it; Snow is only negative with light sensitive moves or against Blizzard et al
-static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u32 weather)
 {
-    if (DoesAbilityBenefitFromWeather(ability, weather)
+    if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], weather)
      || IS_BATTLER_OF_TYPE(battler, TYPE_ICE)
      || HasMoveWithFlag(battler, MoveAlwaysHitsInHailSnow)
      || HasBattlerSideMoveWithEffect(battler, EFFECT_AURORA_VEIL))
-    {
         return FIELD_EFFECT_POSITIVE;
-    }
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromHailOrSnow(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], weather, CHECK_SELF_ONLY);
-
-    if ((weather & B_WEATHER_DAMAGING_ANY) && holdEffect != HOLD_EFFECT_SAFETY_GOGGLES)
+    if ((weather & B_WEATHER_DAMAGING_ANY) && gAiLogicData->holdEffects[battler] != HOLD_EFFECT_SAFETY_GOGGLES)
         return FIELD_EFFECT_NEGATIVE;
 
     if (HasLightSensitiveMove(battler))
@@ -196,23 +169,15 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u
 }
 
 // Rain is negative if opponent has Thunder or Hurricane
-static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler)
 {
-    if (holdEffect == HOLD_EFFECT_UTILITY_UMBRELLA)
-    {
-        if (checkPartner == CHECK_PARTNER_NEXT)
-            return BenefitsFromRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
-        else
-            return FIELD_EFFECT_NEUTRAL;
-    }
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
+        return FIELD_EFFECT_NEUTRAL;
     
-    if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_RAIN)
+    if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], B_WEATHER_RAIN)
       || HasMoveWithFlag(battler, MoveAlwaysHitsInRain)
       || HasDamagingMoveOfType(battler, TYPE_WATER))
         return FIELD_EFFECT_POSITIVE;
-
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromRain(BATTLE_PARTNER(battler), gAiLogicData->abilities[BATTLE_PARTNER(battler)], gAiLogicData->holdEffects[BATTLE_PARTNER(battler)], CHECK_SELF_ONLY);
 
     if (HasLightSensitiveMove(battler) || HasDamagingMoveOfType(battler, TYPE_FIRE))
         return FIELD_EFFECT_NEGATIVE;
@@ -224,7 +189,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler, u32 abi
 }
 
 //TODO: when is electric terrain bad?
-static enum BattlerBenefitsFromFieldEffect BenefitsFromElectricTerrain(u32 battler, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromElectricTerrain(u32 battler)
 {
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], STATUS_FIELD_ELECTRIC_TERRAIN))
         return FIELD_EFFECT_POSITIVE;
@@ -244,14 +209,11 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromElectricTerrain(u32 battl
     || HasDamagingMoveOfType(battler, TYPE_ELECTRIC)))
         return FIELD_EFFECT_POSITIVE;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromElectricTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-
     return FIELD_EFFECT_NEUTRAL;
 }
 
 //TODO: when is grassy terrain bad?
-static enum BattlerBenefitsFromFieldEffect BenefitsFromGrassyTerrain(u32 battler, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromGrassyTerrain(u32 battler)
 {
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], STATUS_FIELD_GRASSY_TERRAIN))
         return FIELD_EFFECT_POSITIVE;
@@ -271,14 +233,11 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromGrassyTerrain(u32 battler
     if (grounded && HasDamagingMoveOfType(battler, TYPE_GRASS))
         return FIELD_EFFECT_POSITIVE;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromGrassyTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-
     return FIELD_EFFECT_NEUTRAL;
 }
 
 //TODO: when is misty terrain bad?
-static enum BattlerBenefitsFromFieldEffect BenefitsFromMistyTerrain(u32 battler, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromMistyTerrain(u32 battler)
 {
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], STATUS_FIELD_MISTY_TERRAIN))
         return FIELD_EFFECT_POSITIVE;
@@ -306,14 +265,11 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromMistyTerrain(u32 battler,
     || (gStatuses3[battler] & STATUS3_YAWN)))
         return FIELD_EFFECT_POSITIVE;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromMistyTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-
     return FIELD_EFFECT_NEUTRAL;
 }
 
 //TODO: when is Psychic Terrain negative?
-static enum BattlerBenefitsFromFieldEffect BenefitsFromPsychicTerrain(u32 battler, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromPsychicTerrain(u32 battler)
 {
     if (DoesAbilityBenefitFromFieldStatus(gAiLogicData->abilities[battler], STATUS_FIELD_PSYCHIC_TERRAIN))
         return FIELD_EFFECT_POSITIVE;
@@ -339,9 +295,6 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromPsychicTerrain(u32 battle
     if (grounded && (HasDamagingMoveOfType(battler, TYPE_PSYCHIC)))
         return FIELD_EFFECT_POSITIVE;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromPsychicTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-
     if (HasBattlerSideAbility(battler, ABILITY_GALE_WINGS, gAiLogicData) 
      || HasBattlerSideAbility(battler, ABILITY_TRIAGE, gAiLogicData)
      || HasBattlerSideAbility(battler, ABILITY_PRANKSTER, gAiLogicData))
@@ -350,10 +303,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromPsychicTerrain(u32 battle
     return FIELD_EFFECT_NEUTRAL;
 }
 
-// It returns FALSE if the desired state is for Trick Room to be not set.
-// In double battles, Trick Room desires for both pokemon on the side to benefit from Trick Room, while the others only need one yes.
-// This means that it recurses if there is a partner that has not yet been checked when it would otherwise return TRUE
-static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler, enum CheckPartner checkPartner)
+static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler)
 {
     // If we're in singles, we literally only care about speed.
     if (!IsDoubleBattle())
@@ -376,10 +326,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler, en
             u16 move = aiMoves[i];
             if (GetBattleMovePriority(battler, gAiLogicData->abilities[battler], move) > 0 && !(GetMovePriority(move) > 0 && IsBattleMoveStatus(move)))
             {
-                if (checkPartner == CHECK_PARTNER_NEXT)
-                    return BenefitsFromTrickRoom(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-                else
-                    return FIELD_EFFECT_POSITIVE;
+                return FIELD_EFFECT_POSITIVE;
             }
         }
     }
@@ -388,67 +335,78 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler, en
     if ((gAiLogicData->speedStats[battler] >= gAiLogicData->speedStats[FOE(battler)]) || (gAiLogicData->speedStats[battler] >= gAiLogicData->speedStats[BATTLE_PARTNER(FOE(battler))]))
         return FIELD_EFFECT_NEGATIVE;
 
-    if (checkPartner == CHECK_PARTNER_NEXT)
-        return BenefitsFromTrickRoom(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
-
     return FIELD_EFFECT_POSITIVE;
 }
 
-bool32 WeatherChecker(u32 battler, u32 ability, enum ItemHoldEffect holdEffect, u32 weather, enum BattlerBenefitsFromFieldEffect desiredResult)
+bool32 WeatherChecker(u32 battler, u32 weather, enum BattlerBenefitsFromFieldEffect desiredResult)
 {
     if (IsWeatherActive(B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
         return (FIELD_EFFECT_BLOCKED == desiredResult);
 
     enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
+    u32 i;
 
-    // checkPartner checks whether the ShouldSet subfunctions should recurse.
-    // Recursion is used to cleanly loop through a battler's side during double battles.
-    // Do not call the subfunctions directly elsewhere so that it is not necessary to track whether or not it should recurse.
-    enum CheckPartner checkPartner = CHECK_SELF_ONLY;
+    u32 battlersOnSide = 1;
 
-    // By default, it does not recurse.  Here, it checks if it ought to.
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
-        checkPartner = CHECK_PARTNER_NEXT;
+        battlersOnSide = 2;
 
-    if (weather & B_WEATHER_RAIN)
-        result = BenefitsFromRain(battler, ability, holdEffect, checkPartner);
-    else if (weather & B_WEATHER_SUN)
-        result = BenefitsFromSun(battler, ability, holdEffect, checkPartner);
-    else if (weather & B_WEATHER_SANDSTORM)
-        result = BenefitsFromSandstorm(battler, ability, holdEffect, checkPartner);
-    else if (weather & B_WEATHER_ICY_ANY)
-        result = BenefitsFromHailOrSnow(battler, ability, holdEffect, weather, checkPartner);
+    for (i = 0; i < battlersOnSide; i++)
+    {
+        if (weather & B_WEATHER_RAIN)
+            result = BenefitsFromRain(battler);
+        else if (weather & B_WEATHER_SUN)
+            result = BenefitsFromSun(battler);
+        else if (weather & B_WEATHER_SANDSTORM)
+            result = BenefitsFromSandstorm(battler);
+        else if (weather & B_WEATHER_ICY_ANY)
+            result = BenefitsFromHailOrSnow(battler, weather);
 
+        battler = BATTLE_PARTNER(battler);
+        if (result != FIELD_EFFECT_NEUTRAL)
+            return (result == desiredResult);
+    }
     return (result == desiredResult);
 }
 
 bool32 FieldStatusChecker(u32 battler, u32 fieldStatus, enum BattlerBenefitsFromFieldEffect desiredResult)
 {
     enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
+    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
+    u32 i;
 
-    // checkPartner checks whether the ShouldSet subfunctions should recurse.
-    // Recursion is used to cleanly loop through a battler's side during double battles.
-    // Do not call the subfunctions directly elsewhere so that it is not necessary to track whether or not it should recurse.
-    enum CheckPartner checkPartner = CHECK_SELF_ONLY;
+    u32 battlersOnSide = 1;
 
-    // By default, it does not recurse.  Here, it checks if it ought to.
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
-        checkPartner = CHECK_PARTNER_NEXT;
+        battlersOnSide = 2;
 
-    // terrains
-    if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
-        result = BenefitsFromElectricTerrain(battler, checkPartner);
-    if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
-        result = BenefitsFromGrassyTerrain(battler, checkPartner);
-    if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
-        result = BenefitsFromMistyTerrain(battler, checkPartner);
-    if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
-        result = BenefitsFromPsychicTerrain(battler, checkPartner);
+    for (i = 0; i < battlersOnSide; i++)
+    {
+        // terrains
+        if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
+            result = BenefitsFromElectricTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
+            result = BenefitsFromGrassyTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
+            result = BenefitsFromMistyTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
+            result = BenefitsFromPsychicTerrain(battler);
 
-    // other field statuses
-    if (fieldStatus & STATUS_FIELD_TRICK_ROOM)
-        result = BenefitsFromTrickRoom(battler, checkPartner);
+        // other field statuses
+        if (fieldStatus & STATUS_FIELD_TRICK_ROOM)
+            result = BenefitsFromTrickRoom(battler);
 
+        battler = BATTLE_PARTNER(battler);
+
+        if (result != FIELD_EFFECT_NEUTRAL)
+        {
+            // Trick room wants both pokemon to agree, not just one
+            if (fieldStatus & STATUS_FIELD_TRICK_ROOM && i == 0 && battlersOnSide == 2)
+                firstResult = result;
+        }
+    }
+    if (firstResult != FIELD_EFFECT_NEUTRAL)
+        return (firstResult == result) && (result == desiredResult);
     return (result == desiredResult);
 }
 
