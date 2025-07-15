@@ -2014,10 +2014,11 @@ bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)
     case ABILITY_QUARK_DRIVE:
     case ABILITY_SURGE_SURFER:
         return (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN);
-//        return (weather & STATUS_FIELD_PSYCHIC_TERRAIN);
-//        return (weather & STATUS_FIELD_MISTY_TERRAIN);
     case ABILITY_GRASS_PELT:
         return (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN);
+    // no abilities inherently benefit from Misty or Psychic Terrains
+    // return (weather & STATUS_FIELD_MISTY_TERRAIN);
+    // return (weather & STATUS_FIELD_PSYCHIC_TERRAIN);
     default:
         break;
     }
@@ -2042,7 +2043,7 @@ static bool32 ShouldSetElectricTerrain(u32 battler, enum CheckPartner checkPartn
         return TRUE;
 
     if (checkPartner == CHECK_PARTNER_NEXT)
-        return ShouldSetElectricTerrain(BATTLE_PARTNER(battler), FALSE);
+        return ShouldSetElectricTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
 
     return FALSE;
 }
@@ -2064,8 +2065,8 @@ static bool32 ShouldSetGrassyTerrain(u32 battler, enum CheckPartner checkPartner
     if (grounded && HasDamagingMoveOfType(battler, TYPE_GRASS))
         return TRUE;
 
-        if (checkPartner == CHECK_PARTNER_NEXT)
-        return ShouldSetGrassyTerrain(BATTLE_PARTNER(battler), FALSE);
+    if (checkPartner == CHECK_PARTNER_NEXT)
+        return ShouldSetGrassyTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
 
     return FALSE;
 }
@@ -2096,7 +2097,7 @@ static bool32 ShouldSetMistyTerrain(u32 battler, enum CheckPartner checkPartner)
         return TRUE;
 
     if (checkPartner == CHECK_PARTNER_NEXT)
-        return ShouldSetMistyTerrain(BATTLE_PARTNER(battler), FALSE);
+        return ShouldSetMistyTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
 
     return FALSE;
 }
@@ -2125,20 +2126,25 @@ static bool32 ShouldSetPsychicTerrain(u32 battler, enum CheckPartner checkPartne
         return TRUE;
 
     if (checkPartner == CHECK_PARTNER_NEXT)
-        return ShouldSetPsychicTerrain(BATTLE_PARTNER(battler), FALSE);
+        return ShouldSetPsychicTerrain(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
 
     return FALSE;
 }
 
-// A FALSE means the desired state is for trick room to be not set.
+// It returns FALSE if the desired state is for Trick Room to be not set.
 // In double battles, Trick Room desires for both pokemon on the side to benefit from Trick Room, while the others only need one yes.
+// This means that it recurses if there is a partner that has not yet been checked when it would otherwise return TRUE
 static bool32 ShouldSetTrickRoom(u32 battler, enum CheckPartner checkPartner)
 {
+    // If we're in singles, we literally only care about speed.
     if (!IsDoubleBattle())
     {
-        if (!(gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battler) < GetBattlerSideSpeedAverage(FOE(battler)))
+        if (GetBattlerSideSpeedAverage(battler) < GetBattlerSideSpeedAverage(FOE(battler)))
             return TRUE;
-        else if ((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && GetBattlerSideSpeedAverage(battler) >= GetBattlerSideSpeedAverage(FOE(battler)))
+        // If we tie, we shouldn't change trick room state.
+        else if (GetBattlerSideSpeedAverage(battler) == GetBattlerSideSpeedAverage(FOE(battler)))
+            return (gFieldStatuses & STATUS_FIELD_TRICK_ROOM); 
+        else
             return FALSE;
     }
     
@@ -2152,18 +2158,18 @@ static bool32 ShouldSetTrickRoom(u32 battler, enum CheckPartner checkPartner)
             if (GetBattleMovePriority(battler, gAiLogicData->abilities[battler], move) > 0 && !(GetMovePriority(move) > 0 && IsBattleMoveStatus(move)))
             {
                 if (checkPartner == CHECK_PARTNER_NEXT)
-                    return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
+                    return ShouldSetTrickRoom(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
                 else
                     return TRUE;
             }
         }
     }
 
-    if ((gBattleMons[battler].speed >= gBattleMons[FOE(battler)].speed) || (gBattleMons[battler].speed >= gBattleMons[BATTLE_PARTNER(FOE(battler))].speed))
+    if ((gAiLogicData->speedStats[battler] >= gAiLogicData->speedStats[FOE(battler)]) || (gAiLogicData->speedStats[battler] >= gAiLogicData->speedStats[BATTLE_PARTNER(FOE(battler))]))
         return FALSE;
 
     if (checkPartner == CHECK_PARTNER_NEXT)
-        return ShouldSetTrickRoom(BATTLE_PARTNER(battler), FALSE);
+        return ShouldSetTrickRoom(BATTLE_PARTNER(battler), CHECK_SELF_ONLY);
     return TRUE;
 }
 
