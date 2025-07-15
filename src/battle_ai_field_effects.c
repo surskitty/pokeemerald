@@ -125,7 +125,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromSun(u32 battler)
     return FIELD_EFFECT_NEUTRAL;
 }
 
-// Sandstorm is positive if at least one Pokemon on a side does not take damage from it while its foe does. 
+// Sandstorm
 static enum BattlerBenefitsFromFieldEffect BenefitsFromSandstorm(u32 battler)
 {
     if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], B_WEATHER_SANDSTORM)
@@ -147,7 +147,6 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromSandstorm(u32 battler)
 }
 
 // Hail or Snow
-// Hail is negative if a pokemon is damaged by it; Snow is only negative with light sensitive moves or against Blizzard et al
 static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u32 weather)
 {
     if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], weather)
@@ -168,7 +167,7 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u
     return FIELD_EFFECT_NEUTRAL;
 }
 
-// Rain is negative if opponent has Thunder or Hurricane
+// Rain
 static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler)
 {
     if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
