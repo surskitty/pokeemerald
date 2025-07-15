@@ -344,8 +344,9 @@ bool32 WeatherChecker(u32 battler, u32 weather, enum BattlerBenefitsFromFieldEff
         return (FIELD_EFFECT_BLOCKED == desiredResult);
 
     enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
-    u32 i;
+    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
 
+    u32 i;
     u32 battlersOnSide = 1;
 
     if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
@@ -363,9 +364,15 @@ bool32 WeatherChecker(u32 battler, u32 weather, enum BattlerBenefitsFromFieldEff
             result = BenefitsFromHailOrSnow(battler, weather);
 
         battler = BATTLE_PARTNER(battler);
+
         if (result != FIELD_EFFECT_NEUTRAL)
-            return (result == desiredResult);
+        {
+            if (weather & B_WEATHER_DAMAGING_ANY && i == 0 && battlersOnSide == 2)
+                firstResult = result;
+        }
     }
+    if (firstResult != FIELD_EFFECT_NEUTRAL)
+        return (firstResult == result) && (result == desiredResult);
     return (result == desiredResult);
 }
 
