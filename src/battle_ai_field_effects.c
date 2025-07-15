@@ -1,3 +1,5 @@
+// In BenefitsFromX functions, positive effects should always go before negative.
+
 #include "global.h"
 #include "battle_z_move.h"
 #include "malloc.h"
@@ -56,6 +58,8 @@ static bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather)
     case ABILITY_PROTOSYNTHESIS:
     case ABILITY_SOLAR_POWER:
         return (weather & B_WEATHER_SUN);
+    default:
+        break;
     }
     return FALSE;
 }
@@ -73,8 +77,8 @@ static bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus)
     case ABILITY_GRASS_PELT:
         return (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN);
     // no abilities inherently benefit from Misty or Psychic Terrains
-    // return (weather & STATUS_FIELD_MISTY_TERRAIN);
-    // return (weather & STATUS_FIELD_PSYCHIC_TERRAIN);
+    // return (fieldStatus & STATUS_FIELD_MISTY_TERRAIN);
+    // return (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN);
     default:
         break;
     }
@@ -111,12 +115,23 @@ static bool32 HasLightSensitiveMove(u32 battler)
 }
 
 // Sun
+// Utility Umbrella does NOT block Ancient Pokemon from their stat boosts.
 static enum BattlerBenefitsFromFieldEffect BenefitsFromSun(u32 battler)
 {
-    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
-        return FIELD_EFFECT_NEUTRAL;
+    u32 ability = gAiLogicData->abilities[battler];
 
-    if (DoesAbilityBenefitFromWeather(gAiLogicData->abilities[battler], B_WEATHER_SUN) || HasLightSensitiveMove(battler) || HasDamagingMoveOfType(battler, TYPE_FIRE))
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
+    {
+        if (ability == ABILITY_ORICHALCUM_PULSE || ability == ABILITY_PROTOSYNTHESIS)
+            return FIELD_EFFECT_POSITIVE;
+        else
+            return FIELD_EFFECT_NEUTRAL;
+    }
+
+    if (DoesAbilityBenefitFromWeather(ability, B_WEATHER_SUN) 
+    || HasLightSensitiveMove(battler) 
+    || HasDamagingMoveOfType(battler, TYPE_FIRE) 
+    || HasBattlerSideMoveWithEffect(battler, EFFECT_HYDRO_STEAM))
         return FIELD_EFFECT_POSITIVE;
 
     if (HasMoveWithFlag(battler, MoveHas50AccuracyInSun) || HasDamagingMoveOfType(battler, TYPE_WATER) || gAiLogicData->abilities[battler] == ABILITY_DRY_SKIN)
