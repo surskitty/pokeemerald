@@ -1,5 +1,3 @@
-// In BenefitsFromX functions, positive effects should always go before negative.
-
 #include "global.h"
 #include "battle_z_move.h"
 #include "malloc.h"
@@ -25,6 +23,107 @@
 #include "constants/hold_effects.h"
 #include "constants/moves.h"
 #include "constants/items.h"
+
+static bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather);
+static bool32 DoesAbilityBenefitFromFieldStatus(u32 ability, u32 fieldStatus);
+// A move is light sensitive if it is boosted by Sunny Day and weakened by low light weathers.
+static bool32 IsLightSensitiveMove(u32 move);
+static bool32 HasLightSensitiveMove(u32 battler);
+// The following functions all feed into WeatherChecker, which is then called by ShouldSetWeather and ShouldClearWeather.
+// BenefitsFrom functions all return FIELD_EFFECT_POSITIVE if the weather or field effect is good to have in place from the perspective of the battler, FIELD_EFFECT_NEUTRAL if it is neither good nor bad, and FIELD_EFFECT_NEGATIVE if it is bad.
+// The purpose of WeatherChecker and FieldStatusChecker is to cleanly homogenize the logic that's the same with all of them, and to more easily apply single battle logic to double battles.
+// ShouldSetWeather and ShouldClearWeather are looking for a positive or negative result respectively, and check the entire side.
+// If one pokemon has a positive result and the other has a negative result, it defaults to the opinion of the battler that may change the weather or field status.
+static enum BattlerBenefitsFromFieldEffect BenefitsFromSun(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromSandstorm(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromHailOrSnow(u32 battler, u32 weather);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromRain(u32 battler);
+// The following functions all feed into FieldStatusChecker, which is then called by ShouldSetFieldStatus and ShouldClearFieldStatus.
+// They work approximately the same as the weather functions.
+static enum BattlerBenefitsFromFieldEffect BenefitsFromElectricTerrain(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromGrassyTerrain(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromMistyTerrain(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromPsychicTerrain(u32 battler);
+static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler);
+
+bool32 WeatherChecker(u32 battler, u32 weather, enum BattlerBenefitsFromFieldEffect desiredResult)
+{
+    if (IsWeatherActive(B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
+        return (FIELD_EFFECT_BLOCKED == desiredResult);
+
+    enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
+    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
+
+    u32 i;
+    u32 battlersOnSide = 1;
+
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        battlersOnSide = 2;
+
+    for (i = 0; i < battlersOnSide; i++)
+    {
+        if (weather & B_WEATHER_RAIN)
+            result = BenefitsFromRain(battler);
+        else if (weather & B_WEATHER_SUN)
+            result = BenefitsFromSun(battler);
+        else if (weather & B_WEATHER_SANDSTORM)
+            result = BenefitsFromSandstorm(battler);
+        else if (weather & B_WEATHER_ICY_ANY)
+            result = BenefitsFromHailOrSnow(battler, weather);
+
+        battler = BATTLE_PARTNER(battler);
+
+        if (result != FIELD_EFFECT_NEUTRAL)
+        {
+            if (weather & B_WEATHER_DAMAGING_ANY && i == 0 && battlersOnSide == 2)
+                firstResult = result;
+        }
+    }
+    if (firstResult != FIELD_EFFECT_NEUTRAL)
+        return (firstResult == result) && (result == desiredResult);
+    return (result == desiredResult);
+}
+
+bool32 FieldStatusChecker(u32 battler, u32 fieldStatus, enum BattlerBenefitsFromFieldEffect desiredResult)
+{
+    enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
+    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
+    u32 i;
+
+    u32 battlersOnSide = 1;
+
+    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
+        battlersOnSide = 2;
+
+    for (i = 0; i < battlersOnSide; i++)
+    {
+        // terrains
+        if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
+            result = BenefitsFromElectricTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
+            result = BenefitsFromGrassyTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
+            result = BenefitsFromMistyTerrain(battler);
+        if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
+            result = BenefitsFromPsychicTerrain(battler);
+
+        // other field statuses
+        if (fieldStatus & STATUS_FIELD_TRICK_ROOM)
+            result = BenefitsFromTrickRoom(battler);
+
+        battler = BATTLE_PARTNER(battler);
+
+        if (result != FIELD_EFFECT_NEUTRAL)
+        {
+            // Trick room wants both pokemon to agree, not just one
+            if (fieldStatus & STATUS_FIELD_TRICK_ROOM && i == 0 && battlersOnSide == 2)
+                firstResult = result;
+        }
+    }
+    if (firstResult != FIELD_EFFECT_NEUTRAL)
+        return (firstResult == result) && (result == desiredResult);
+    return (result == desiredResult);
+}
 
 static bool32 DoesAbilityBenefitFromWeather(u32 ability, u32 weather)
 {
@@ -352,82 +451,4 @@ static enum BattlerBenefitsFromFieldEffect BenefitsFromTrickRoom(u32 battler)
     return FIELD_EFFECT_POSITIVE;
 }
 
-bool32 WeatherChecker(u32 battler, u32 weather, enum BattlerBenefitsFromFieldEffect desiredResult)
-{
-    if (IsWeatherActive(B_WEATHER_PRIMAL_ANY) != WEATHER_INACTIVE)
-        return (FIELD_EFFECT_BLOCKED == desiredResult);
-
-    enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
-    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
-
-    u32 i;
-    u32 battlersOnSide = 1;
-
-    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
-        battlersOnSide = 2;
-
-    for (i = 0; i < battlersOnSide; i++)
-    {
-        if (weather & B_WEATHER_RAIN)
-            result = BenefitsFromRain(battler);
-        else if (weather & B_WEATHER_SUN)
-            result = BenefitsFromSun(battler);
-        else if (weather & B_WEATHER_SANDSTORM)
-            result = BenefitsFromSandstorm(battler);
-        else if (weather & B_WEATHER_ICY_ANY)
-            result = BenefitsFromHailOrSnow(battler, weather);
-
-        battler = BATTLE_PARTNER(battler);
-
-        if (result != FIELD_EFFECT_NEUTRAL)
-        {
-            if (weather & B_WEATHER_DAMAGING_ANY && i == 0 && battlersOnSide == 2)
-                firstResult = result;
-        }
-    }
-    if (firstResult != FIELD_EFFECT_NEUTRAL)
-        return (firstResult == result) && (result == desiredResult);
-    return (result == desiredResult);
-}
-
-bool32 FieldStatusChecker(u32 battler, u32 fieldStatus, enum BattlerBenefitsFromFieldEffect desiredResult)
-{
-    enum BattlerBenefitsFromFieldEffect result = FIELD_EFFECT_NEUTRAL;
-    enum BattlerBenefitsFromFieldEffect firstResult = FIELD_EFFECT_NEUTRAL;
-    u32 i;
-
-    u32 battlersOnSide = 1;
-
-    if (IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler)))
-        battlersOnSide = 2;
-
-    for (i = 0; i < battlersOnSide; i++)
-    {
-        // terrains
-        if (fieldStatus & STATUS_FIELD_ELECTRIC_TERRAIN)
-            result = BenefitsFromElectricTerrain(battler);
-        if (fieldStatus & STATUS_FIELD_GRASSY_TERRAIN)
-            result = BenefitsFromGrassyTerrain(battler);
-        if (fieldStatus & STATUS_FIELD_MISTY_TERRAIN)
-            result = BenefitsFromMistyTerrain(battler);
-        if (fieldStatus & STATUS_FIELD_PSYCHIC_TERRAIN)
-            result = BenefitsFromPsychicTerrain(battler);
-
-        // other field statuses
-        if (fieldStatus & STATUS_FIELD_TRICK_ROOM)
-            result = BenefitsFromTrickRoom(battler);
-
-        battler = BATTLE_PARTNER(battler);
-
-        if (result != FIELD_EFFECT_NEUTRAL)
-        {
-            // Trick room wants both pokemon to agree, not just one
-            if (fieldStatus & STATUS_FIELD_TRICK_ROOM && i == 0 && battlersOnSide == 2)
-                firstResult = result;
-        }
-    }
-    if (firstResult != FIELD_EFFECT_NEUTRAL)
-        return (firstResult == result) && (result == desiredResult);
-    return (result == desiredResult);
-}
 
