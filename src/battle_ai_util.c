@@ -3,7 +3,7 @@
 #include "malloc.h"
 #include "battle.h"
 #include "battle_anim.h"
-#include "battle_ai_field_effects.h"
+#include "battle_ai_field_statuses.h"
 #include "battle_ai_util.h"
 #include "battle_ai_main.h"
 #include "battle_ai_switch_items.h"

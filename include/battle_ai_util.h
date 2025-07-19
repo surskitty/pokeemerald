@@ -2,7 +2,7 @@
 #define GUARD_BATTLE_AI_UTIL_H
 
 #include "battle_ai_main.h"
-#include "battle_ai_field_effects.h"
+#include "battle_ai_field_statuses.h"
 
 #define FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
 
