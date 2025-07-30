@@ -1269,7 +1269,7 @@
 	.byte 0xed
 	.endm
 
-	.macro removelightscreenreflect
+	.macro removescreens
 	.byte 0xee
 	.endm
 
@@ -1612,6 +1612,11 @@
 	.macro jumpiftargetdynamaxed, ptr:req
 	callnative BS_JumpIfDynamaxed
 	.4byte \ptr
+	.endm
+
+	.macro undodynamax battler:req
+	callnative BS_UndoDynamax
+	.byte \battler
 	.endm
 
 	.macro trytrainerslidezmovemsg
@@ -2375,6 +2380,10 @@
 	.macro swapstats stat:req
 	callnative BS_SwapStats
 	.byte \stat
+	.endm
+
+	.macro restoresavedmove
+	callnative BS_RestoreSavedMove
 	.endm
 
 @ helpful macros
