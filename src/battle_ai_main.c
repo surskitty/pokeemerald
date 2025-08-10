@@ -1812,10 +1812,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     if (gLastMoves[battlerDef] == MOVE_NONE || gLastMoves[battlerDef] == 0xFFFF)
                         ADJUST_SCORE(-10);    // no anticipated move to encore
                 }
-                else if (predictedMove == MOVE_NONE)
-                {
-                    ADJUST_SCORE(-10);
-                }
             }
             else
             {
@@ -4297,16 +4293,13 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     {
         if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
             break;
+        bool32 encourage = FALSE;
 
-        bool32 encourage = gBattleMoveEffects[GetMoveEffect(gLastMoves[battlerDef])].encourageEncore;
+        if (AI_IsFaster(battlerAtk, battlerDef, move, predictedMove, CONSIDER_PRIORITY)) // Attacker should go first
+            encourage = gBattleMoveEffects[GetMoveEffect(gLastMoves[battlerDef])].encourageEncore;
+        else
+            encourage = HasMoveWithAIEffect(battlerDef, AI_EFFECT_SUPPORT_BIT);
 
-        switch(GetMoveNonVolatileStatus(gLastMoves[battlerDef]))
-        {
-        case MOVE_EFFECT_POISON:
-        case MOVE_EFFECT_PARALYSIS:
-            encourage = TRUE;
-            break;
-        }
         if (gDisableStructs[battlerDef].encoreTimer == 0
         && (B_MENTAL_HERB < GEN_5 || aiData->holdEffects[battlerDef] != HOLD_EFFECT_MENTAL_HERB)
         && (encourage))
