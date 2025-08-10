@@ -24,8 +24,9 @@
 #include "constants/moves.h"
 #include "constants/items.h"
 
-static u32 GetAIEffectGroup(enum BattleMoveEffects effect);
-static u32 GetAIEffectGroupFromMove(u32 battler, u32 move);
+static u32 GetAIEffectGroup(enum BattleMoveEffects effect, enum AIEffects useHelperBits);
+static u32 GetAIEffectGroupFromMove(u32 battler, u32 move, enum AIEffects useHelperBits);
+static u32 CheckRemoveHelperBits(u32 aiEffect, enum AIEffects useHelperBits);
 
 // Functions
 static bool32 AI_IsDoubleSpreadMove(u32 battlerAtk, u32 move)
@@ -2248,7 +2249,7 @@ bool32 HasMoveWithAIEffect(u32 battler, u32 aiEffect)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE)
         {
-            if (GetAIEffectGroupFromMove(battler, moves[i]) & aiEffect)
+            if (GetAIEffectGroupFromMove(battler, moves[i], USE_HELPER_BITS) & aiEffect)
                 return TRUE;
         }
     }
@@ -2279,7 +2280,7 @@ bool32 HasBattlerSideMoveWithAIEffect(u32 battler, u32 aiEffect)
 // It matches both on move effect and on AI move effect; eg, EFFECT_HAZE will also bring up Freezy Frost or Clear Smog, anything with AI_EFFECT_RESET_STATS.
 bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)
 {
-    u32 aiEffect = GetAIEffectGroup(effect);
+    u32 aiEffect = GetAIEffectGroup(effect, IGNORE_HELPER_BITS);
     u32 i;
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
@@ -2288,7 +2289,7 @@ bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)
 
         if (aiEffect != AI_EFFECT_NONE)
         {
-            if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[battler][i]) & aiEffect)
+            if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[battler][i], IGNORE_HELPER_BITS) & aiEffect)
                 return TRUE;
         }
 
@@ -2299,7 +2300,7 @@ bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)
 
             if (aiEffect != AI_EFFECT_NONE)
             {
-                if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[BATTLE_PARTNER(battler)][i]) & aiEffect)
+                if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[BATTLE_PARTNER(battler)][i], IGNORE_HELPER_BITS) & aiEffect)
                     return TRUE;
             }
         }
@@ -2656,10 +2657,10 @@ bool32 IsStatLoweringEffect(enum BattleMoveEffects effect)
     case EFFECT_SPECIAL_DEFENSE_DOWN_2:
     case EFFECT_ACCURACY_DOWN_2:
     case EFFECT_EVASION_DOWN_2:
-    case EFFECT_TICKLE:
     case EFFECT_CAPTIVATE:
-    case EFFECT_NOBLE_ROAR:
     case EFFECT_MEMENTO:
+    case EFFECT_NOBLE_ROAR:
+    case EFFECT_TICKLE:
         return TRUE;
     default:
         return FALSE;
@@ -2757,6 +2758,20 @@ bool32 IsChaseEffect(enum BattleMoveEffects effect)
     switch (effect)
     {
     case EFFECT_PURSUIT:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+bool32 IsUselessEffect(enum BattleMoveEffects effect)
+{
+    switch (effect)
+    {
+    case EFFECT_CELEBRATE:
+    case EFFECT_DO_NOTHING:
+    case EFFECT_HAPPY_HOUR:
+    case EFFECT_HOLD_HANDS:
         return TRUE;
     default:
         return FALSE;
@@ -3860,8 +3875,8 @@ bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 p
     if (GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move)
         return FALSE;
 
-    u32 atkEffect = GetAIEffectGroupFromMove(battlerAtk, move);
-    u32 partnerEffect = GetAIEffectGroupFromMove(battlerAtkPartner, partnerMove);
+    u32 atkEffect = GetAIEffectGroupFromMove(battlerAtk, move, IGNORE_HELPER_BITS);
+    u32 partnerEffect = GetAIEffectGroupFromMove(battlerAtkPartner, partnerMove, IGNORE_HELPER_BITS);
 
     // shared bits indicate they're meaningfully the same in some way
     if (atkEffect & partnerEffect)
@@ -3878,7 +3893,7 @@ bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 p
     return FALSE;
 }
 
-static u32 GetAIEffectGroup(enum BattleMoveEffects effect)
+static u32 GetAIEffectGroup(enum BattleMoveEffects effect, enum AIEffects useHelperBits)
 {
     u32 aiEffect = AI_EFFECT_NONE;
 
@@ -3948,12 +3963,14 @@ static u32 GetAIEffectGroup(enum BattleMoveEffects effect)
     default:
         break;
     }
-    return aiEffect;
+
+    return CheckRemoveHelperBits(aiEffect, useHelperBits);
 }
 
-static u32 GetAIEffectGroupFromMove(u32 battler, u32 move)
+static u32 GetAIEffectGroupFromMove(u32 battler, u32 move, enum AIEffects useHelperBits)
 {
-    u32 aiEffect = GetAIEffectGroup(GetMoveEffect(move));
+    enum BattleMoveEffects effect = GetMoveEffect(move);
+    u32 aiEffect = GetAIEffectGroup(effect, useHelperBits);
 
     u32 i;
     u32 additionalEffectCount = GetMoveAdditionalEffectCount(move);
@@ -4000,8 +4017,37 @@ static u32 GetAIEffectGroupFromMove(u32 battler, u32 move)
         }
     }
 
+    // Applying helper bits based on move flags.
+    // The support bit only belongs on nondamaging moves.
+    if (useHelperBits == USE_HELPER_BITS)
+    {
+        if (IsBattleMoveStatus(move))
+        {
+            if (!(IsStatLoweringEffect(effect) || IsStatRaisingEffect(effect) || IsUselessEffect(effect)))
+                aiEffect |= AI_EFFECT_SUPPORT_BIT;
+
+            if (aiEffect & AI_EFFECT_STRONG_SUPPORT)
+                aiEffect |= AI_EFFECT_SUPPORT_BIT;
+            else if (IsHealingMove(move))
+                aiEffect |= AI_EFFECT_SUPPORT_BIT;
+        }
+        else
+        {
+            aiEffect &= ~AI_EFFECT_SUPPORT_BIT;
+        }
+    }
+
+    return CheckRemoveHelperBits(aiEffect, useHelperBits);
+}
+
+static u32 CheckRemoveHelperBits(u32 aiEffect, enum AIEffects useHelperBits)
+{
+    if (useHelperBits == IGNORE_HELPER_BITS)
+        return aiEffect & ~AI_EFFECT_HELPER_BITS;
+
     return aiEffect;
 }
+
 
 // It matches both on move effect and on AI move effect; eg, EFFECT_HAZE will also bring up Freezy Frost or Clear Smog, anything with AI_EFFECT_RESET_STATS.
 bool32 DoesPartnerHaveSameMoveEffect(u32 battlerAtkPartner, u32 battlerDef, u32 move, u32 partnerMove)

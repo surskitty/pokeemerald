@@ -4649,10 +4649,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
         break;
     case EFFECT_TAUNT:
-        if (IsBattleMoveStatus(predictedMove))
+        if (HasMoveWithAIEffect(battlerDef, AI_EFFECT_SUPPORT_BIT))
             ADJUST_SCORE(GOOD_EFFECT);
         else if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS))
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
         break;
     case EFFECT_TRICK:
     case EFFECT_BESTOW:

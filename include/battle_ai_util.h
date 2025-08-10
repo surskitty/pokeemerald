@@ -300,8 +300,15 @@ bool32 HasBattlerSideAbility(u32 battlerDef, u32 ability, struct AiLogicData *ai
 u32 GetThinkingBattler(u32 battler);
 bool32 IsNaturalEnemy(u32 speciesAttacker, u32 speciesTarget);
 
-// These are for the purpose of not doubling up on moves during double battles.
-// Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects
+
+enum AIEffects
+{
+    IGNORE_HELPER_BITS,
+    USE_HELPER_BITS,
+};
+
+// AI effects are a way to categorize moves.  All except the helper bits are used to group similar move effects.
+// Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects.
 #define AI_EFFECT_NONE                        0
 #define AI_EFFECT_WEATHER              (1 <<  0)
 #define AI_EFFECT_TERRAIN              (1 <<  1)
@@ -317,5 +324,14 @@ bool32 IsNaturalEnemy(u32 speciesAttacker, u32 speciesTarget);
 
 // As Aurora Veil should almost never be used alongside the other screens, we save the bit.
 #define AI_EFFECT_AURORA_VEIL          (AI_EFFECT_LIGHT_SCREEN | AI_EFFECT_REFLECT)
+
+// Support bits are used for determining approximate threats.
+// They are IGNORED by AreMovesEquivalent, DoesPartnerHaveSameMoveEffect, and HasBattlerSideUsedMoveWithEffect.
+#define AI_EFFECT_SUPPORT_BIT          (1 << 31)
+#define AI_EFFECT_HELPER_BITS          (AI_EFFECT_SUPPORT_BIT)
+
+// These are used for determining what effects to apply helper bits to.
+#define AI_EFFECT_STRONG_SUPPORT       (AI_EFFECT_WEATHER | AI_EFFECT_TERRAIN | AI_EFFECT_CHANGE_ABILITY)
+
 
 #endif //GUARD_BATTLE_AI_UTIL_H
