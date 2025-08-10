@@ -3803,6 +3803,10 @@ bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 p
     // Doubling up on Spikes effects is OK.
     atkEffect &= ~AI_EFFECT_CAN_STACK;
 
+    // treat one status as any status
+    if (atkEffect | AI_EFFECT_NONVOLATILE)
+        atkEffect |= AI_EFFECT_NONVOLATILE;
+
     // shared bits indicate they're meaningfully the same in some way
     if (atkEffect & partnerEffect)
     {
@@ -3824,6 +3828,9 @@ static u32 GetAIEffectGroup(enum BattleMoveEffects effect, enum AIEffects useHel
 
     switch (effect)
     {
+    case EFFECT_TOXIC_THREAD:
+        aiEffect |= AI_EFFECT_POISON;
+        break;
     case EFFECT_SUNNY_DAY:
     case EFFECT_RAIN_DANCE:
     case EFFECT_SANDSTORM:
