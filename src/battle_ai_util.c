@@ -4096,16 +4096,9 @@ bool32 PartnerMoveEffectIsStatusSameTarget(u32 battlerAtkPartner, u32 battlerDef
     if (!HasPartner(battlerAtkPartner))
         return FALSE;
 
-    enum BattleMoveEffects partnerEffect = GetMoveEffect(partnerMove);
-    u32 nonVolatileStatus = GetMoveNonVolatileStatus(partnerMove);
     if (partnerMove != MOVE_NONE
      && gBattleStruct->moveTarget[battlerAtkPartner] == battlerDef
-     && (nonVolatileStatus == MOVE_EFFECT_POISON
-       || nonVolatileStatus == MOVE_EFFECT_TOXIC
-       || nonVolatileStatus == MOVE_EFFECT_SLEEP
-       || nonVolatileStatus == MOVE_EFFECT_PARALYSIS
-       || nonVolatileStatus == MOVE_EFFECT_BURN
-       || partnerEffect == EFFECT_YAWN))
+     && (GetAIEffectGroupFromBattlerMove(battlerAtkPartner, partnerMove, IGNORE_HELPER_BITS) & AI_EFFECT_NONVOLATILE))
         return TRUE;
     return FALSE;
 }
