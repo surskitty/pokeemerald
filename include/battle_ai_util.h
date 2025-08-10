@@ -69,6 +69,12 @@ static inline bool32 IsMoveUnusable(u32 moveIndex, u32 move, u32 moveLimitations
         || moveLimitations & 1u << moveIndex;
 }
 
+enum AIEffects
+{
+    IGNORE_HELPER_BITS,
+    USE_HELPER_BITS,
+};
+
 typedef bool32 (*MoveFlag)(u32 move);
 
 bool32 AI_IsFaster(u32 battlerAi, u32 battlerDef, u32 aiMove, u32 playerMove, enum ConsiderPriority considerPriority);
@@ -151,6 +157,7 @@ u32 CountPositiveStatStages(u32 battlerId);
 u32 CountNegativeStatStages(u32 battlerId);
 
 // move checks
+u32 GetAIEffectGroupFromMove(u32 battler, u32 move, enum AIEffects useHelperBits);
 bool32 IsAffectedByPowder(u32 battler, u32 ability, enum ItemHoldEffect holdEffect);
 bool32 MovesWithCategoryUnusable(u32 attacker, u32 target, enum DamageCategory category);
 enum MoveComparisonResult AI_WhichMoveBetter(u32 move1, u32 move2, u32 battlerAtk, u32 battlerDef, s32 noOfHitsToKo);
@@ -300,30 +307,31 @@ bool32 HasBattlerSideAbility(u32 battlerDef, u32 ability, struct AiLogicData *ai
 u32 GetThinkingBattler(u32 battler);
 bool32 IsNaturalEnemy(u32 speciesAttacker, u32 speciesTarget);
 
-
-enum AIEffects
-{
-    IGNORE_HELPER_BITS,
-    USE_HELPER_BITS,
-};
-
 // AI effects are a way to categorize moves.  All except the helper bits are used to group similar move effects.
 // Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects.
 #define AI_EFFECT_NONE                        0
-#define AI_EFFECT_WEATHER              (1 <<  0)
-#define AI_EFFECT_TERRAIN              (1 <<  1)
-#define AI_EFFECT_CLEAR_HAZARDS        (1 <<  2)
-#define AI_EFFECT_BREAK_SCREENS        (1 <<  3)
-#define AI_EFFECT_RESET_STATS          (1 <<  4) 
-#define AI_EFFECT_FORCE_SWITCH         (1 <<  5)
-#define AI_EFFECT_TORMENT              (1 <<  6)
-#define AI_EFFECT_LIGHT_SCREEN         (1 <<  7)
-#define AI_EFFECT_REFLECT              (1 <<  8)
-#define AI_EFFECT_GRAVITY              (1 <<  9)
-#define AI_EFFECT_CHANGE_ABILITY       (1 << 10)
+#define AI_EFFECT_SLEEP                (1 <<  0)
+#define AI_EFFECT_POISON               (1 <<  1)
+#define AI_EFFECT_BURN                 (1 <<  2)
+#define AI_EFFECT_FREEZE               (1 <<  3)
+#define AI_EFFECT_PARALYSIS            (1 <<  4)
+#define AI_EFFECT_FROSTBITE            (1 <<  5)
+#define AI_EFFECT_WEATHER              (1 <<  6)
+#define AI_EFFECT_TERRAIN              (1 <<  7)
+#define AI_EFFECT_CLEAR_HAZARDS        (1 <<  8)
+#define AI_EFFECT_BREAK_SCREENS        (1 <<  9)
+#define AI_EFFECT_RESET_STATS          (1 << 10) 
+#define AI_EFFECT_FORCE_SWITCH         (1 << 11)
+#define AI_EFFECT_TORMENT              (1 << 12)
+#define AI_EFFECT_LIGHT_SCREEN         (1 << 13)
+#define AI_EFFECT_REFLECT              (1 << 14)
+#define AI_EFFECT_GRAVITY              (1 << 15)
+#define AI_EFFECT_CHANGE_ABILITY       (1 << 16)
 
 // As Aurora Veil should almost never be used alongside the other screens, we save the bit.
 #define AI_EFFECT_AURORA_VEIL          (AI_EFFECT_LIGHT_SCREEN | AI_EFFECT_REFLECT)
+#define AI_EFFECT_EFFECT_SPORE         (AI_EFFECT_SLEEP | AI_EFFECT_POISON | AI_EFFECT_PARALYSIS)
+#define AI_EFFECT_NONVOLATILE          (AI_EFFECT_SLEEP | AI_EFFECT_POISON | AI_EFFECT_BURN | AI_EFFECT_FREEZE | AI_EFFECT_PARALYSIS | AI_EFFECT_FROSTBITE)
 
 // Support bits are used for determining approximate threats.
 // They are IGNORED by AreMovesEquivalent, DoesPartnerHaveSameMoveEffect, and HasBattlerSideUsedMoveWithEffect.
