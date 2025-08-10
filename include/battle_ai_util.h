@@ -157,7 +157,8 @@ u32 CountPositiveStatStages(u32 battlerId);
 u32 CountNegativeStatStages(u32 battlerId);
 
 // move checks
-u32 GetAIEffectGroupFromMove(u32 battler, u32 move, enum AIEffects useHelperBits);
+bool32 DoesMoveHaveAIEffect(u32 move, u32 checkedEffect);
+u32 GetAIEffectGroupFromBattlerMove(u32 battler, u32 move, enum AIEffects useHelperBits);
 bool32 IsAffectedByPowder(u32 battler, u32 ability, enum ItemHoldEffect holdEffect);
 bool32 MovesWithCategoryUnusable(u32 attacker, u32 target, enum DamageCategory category);
 enum MoveComparisonResult AI_WhichMoveBetter(u32 move1, u32 move2, u32 battlerAtk, u32 battlerDef, s32 noOfHitsToKo);
@@ -217,7 +218,6 @@ bool32 IsChaseEffect(enum BattleMoveEffects effect);
 bool32 IsAttackBoostMoveEffect(enum BattleMoveEffects effect);
 bool32 IsUngroundingEffect(enum BattleMoveEffects effect);
 bool32 HasMoveWithFlag(u32 battler, MoveFlag getFlag);
-bool32 IsHazardClearingMove(u32 move);
 bool32 IsSubstituteEffect(enum BattleMoveEffects effect);
 
 // status checks
@@ -308,7 +308,7 @@ u32 GetThinkingBattler(u32 battler);
 bool32 IsNaturalEnemy(u32 speciesAttacker, u32 speciesTarget);
 
 // AI effects are a way to categorize moves.  All except the helper bits are used to group similar move effects.
-// Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects.
+// Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromBattlerMove for additional effects.
 #define AI_EFFECT_NONE                        0
 #define AI_EFFECT_SLEEP                (1 <<  0)
 #define AI_EFFECT_POISON               (1 <<  1)

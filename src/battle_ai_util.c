@@ -1780,37 +1780,6 @@ bool32 IsHazardMove(u32 move)
     return FALSE;
 }
 
-bool32 IsHazardClearingMove(u32 move)
-{
-    // Hazard clearing effects like Rapid Spin, Tidy Up, etc.
-    u32 i, moveEffect = GetMoveEffect(move);
-    switch (moveEffect)
-    {
-    case EFFECT_RAPID_SPIN:
-    case EFFECT_TIDY_UP:
-        return TRUE;
-    case EFFECT_DEFOG:
-        if (B_DEFOG_EFFECT_CLEARING >= GEN_6)
-            return TRUE;
-        break;
-    }
-
-    u32 additionalEffectCount = GetMoveAdditionalEffectCount(move);
-    for (i = 0; i < additionalEffectCount; i++)
-    {
-        const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(move, i);
-        switch (additionalEffect->moveEffect)
-        {
-        case MOVE_EFFECT_DEFOG:
-            return TRUE;
-        default:
-            break;
-        }
-    }
-
-    return FALSE;
-}
-
 bool32 IsAllyProtectingFromMove(u32 battlerAtk, u32 attackerMove, u32 allyMove)
 {
     enum BattleMoveEffects effect = GetMoveEffect(allyMove);
@@ -2247,7 +2216,7 @@ bool32 HasMoveWithAIEffect(u32 battler, u32 aiEffect)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE)
         {
-            if (GetAIEffectGroupFromMove(battler, moves[i], USE_HELPER_BITS) & aiEffect)
+            if (GetAIEffectGroupFromBattlerMove(battler, moves[i], USE_HELPER_BITS) & aiEffect)
                 return TRUE;
         }
     }
@@ -2287,7 +2256,7 @@ bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)
 
         if (aiEffect != AI_EFFECT_NONE)
         {
-            if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[battler][i], IGNORE_HELPER_BITS) & aiEffect)
+            if (GetAIEffectGroupFromBattlerMove(battler, gBattleHistory->usedMoves[battler][i], IGNORE_HELPER_BITS) & aiEffect)
                 return TRUE;
         }
 
@@ -2298,7 +2267,7 @@ bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect)
 
             if (aiEffect != AI_EFFECT_NONE)
             {
-                if (GetAIEffectGroupFromMove(battler, gBattleHistory->usedMoves[BATTLE_PARTNER(battler)][i], IGNORE_HELPER_BITS) & aiEffect)
+                if (GetAIEffectGroupFromBattlerMove(battler, gBattleHistory->usedMoves[BATTLE_PARTNER(battler)][i], IGNORE_HELPER_BITS) & aiEffect)
                     return TRUE;
             }
         }
@@ -3859,8 +3828,8 @@ bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 p
     if (GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move)
         return FALSE;
 
-    u32 atkEffect = GetAIEffectGroupFromMove(battlerAtk, move, IGNORE_HELPER_BITS);
-    u32 partnerEffect = GetAIEffectGroupFromMove(battlerAtkPartner, partnerMove, IGNORE_HELPER_BITS);
+    u32 atkEffect = GetAIEffectGroupFromBattlerMove(battlerAtk, move, IGNORE_HELPER_BITS);
+    u32 partnerEffect = GetAIEffectGroupFromBattlerMove(battlerAtkPartner, partnerMove, IGNORE_HELPER_BITS);
 
     // shared bits indicate they're meaningfully the same in some way
     if (atkEffect & partnerEffect)
@@ -4023,7 +3992,23 @@ static u32 AdditionalEffectToAIEffect(u32 moveEffect)
     return aiEffect;
 }
 
-u32 GetAIEffectGroupFromMove(u32 battler, u32 move, enum AIEffects useHelperBits)
+// Needs to not take a battler arg for switching purposes.
+bool32 DoesMoveHaveAIEffect(u32 move, u32 checkedEffect)
+{
+    u32 aiEffect = GetAIEffectGroup(GetMoveEffect(move), USE_HELPER_BITS);
+
+    u32 i;
+    u32 additionalEffectCount = GetMoveAdditionalEffectCount(move);
+    for (i = 0; i < additionalEffectCount; i++)
+    {
+        const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(move, i);
+        aiEffect |= AdditionalEffectToAIEffect(additionalEffect->moveEffect);
+    }
+
+    return aiEffect & checkedEffect;
+}
+
+u32 GetAIEffectGroupFromBattlerMove(u32 battler, u32 move, enum AIEffects useHelperBits)
 {
     enum BattleMoveEffects effect = GetMoveEffect(move);
     u32 aiEffect = GetAIEffectGroup(effect, useHelperBits);
