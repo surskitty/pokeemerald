@@ -1749,37 +1749,6 @@ bool32 IsConfusionMoveEffect(enum BattleMoveEffects moveEffect)
     }
 }
 
-bool32 IsHazardMove(u32 move)
-{
-    // Hazard setting moves like Stealth Rock, Spikes, etc.
-    u32 i, moveEffect = GetMoveEffect(move);
-    switch (moveEffect)
-    {
-    case EFFECT_CEASELESS_EDGE:
-    case EFFECT_SPIKES:
-    case EFFECT_STEALTH_ROCK:
-    case EFFECT_STICKY_WEB:
-    case EFFECT_STONE_AXE:
-    case EFFECT_TOXIC_SPIKES:
-        return TRUE;
-    }
-
-    u32 additionalEffectCount = GetMoveAdditionalEffectCount(move);
-    for (i = 0; i < additionalEffectCount; i++)
-    {
-        const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(move, i);
-        switch (additionalEffect->moveEffect)
-        {
-        case MOVE_EFFECT_STEALTH_ROCK:
-        case MOVE_EFFECT_STEELSURGE:
-            return TRUE;
-        default:
-            break;
-        }
-    }
-    return FALSE;
-}
-
 bool32 IsAllyProtectingFromMove(u32 battlerAtk, u32 attackerMove, u32 allyMove)
 {
     enum BattleMoveEffects effect = GetMoveEffect(allyMove);
@@ -3831,6 +3800,9 @@ bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 p
     u32 atkEffect = GetAIEffectGroupFromBattlerMove(battlerAtk, move, IGNORE_HELPER_BITS);
     u32 partnerEffect = GetAIEffectGroupFromBattlerMove(battlerAtkPartner, partnerMove, IGNORE_HELPER_BITS);
 
+    // Doubling up on Spikes effects is OK.
+    atkEffect &= ~AI_EFFECT_CAN_STACK;
+
     // shared bits indicate they're meaningfully the same in some way
     if (atkEffect & partnerEffect)
     {
@@ -3913,6 +3885,20 @@ static u32 GetAIEffectGroup(enum BattleMoveEffects effect, enum AIEffects useHel
     case EFFECT_WORRY_SEED:
         aiEffect |= AI_EFFECT_CHANGE_ABILITY;
         break;
+    case EFFECT_CEASELESS_EDGE:
+    case EFFECT_SPIKES:
+        aiEffect |= AI_EFFECT_SPIKES;
+        break;
+    case EFFECT_STEALTH_ROCK:
+    case EFFECT_STONE_AXE:
+        aiEffect |= AI_EFFECT_STEALTH_ROCK;
+        break;
+    case EFFECT_STICKY_WEB:
+        aiEffect |= AI_EFFECT_STICKY_WEB;
+        break;
+    case EFFECT_TOXIC_SPIKES:
+        aiEffect |= AI_EFFECT_TOXIC_SPIKES;
+        break;
     default:
         break;
     }
@@ -3986,6 +3972,10 @@ static u32 AdditionalEffectToAIEffect(u32 moveEffect)
     case MOVE_EFFECT_GRAVITY:
         aiEffect |= AI_EFFECT_GRAVITY;
         break;
+    case MOVE_EFFECT_STEALTH_ROCK:
+        aiEffect |= AI_EFFECT_STEALTH_ROCK;
+    case MOVE_EFFECT_STEELSURGE:
+        aiEffect |= AI_EFFECT_STEELSURGE;
     default:
         break;
     }

@@ -138,6 +138,26 @@ AI_DOUBLE_BATTLE_TEST("AI won't use the same nondamaging move as its partner for
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI uses Spikes alongside its partner.")
+{
+    u32 move;
+    PARAMETRIZE { move = MOVE_SPIKES; }
+    PARAMETRIZE { move = MOVE_TOXIC_SPIKES; }
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_TACKLE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_TACKLE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_TACKLE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(move, MOVE_TACKLE); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponentLeft, move); EXPECT_MOVE(opponentRight, move); }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI will not choose Earthquake if it damages the partner without a positive effect")
 {
     ASSUME(GetMoveTarget(MOVE_EARTHQUAKE) == MOVE_TARGET_FOES_AND_ALLY);

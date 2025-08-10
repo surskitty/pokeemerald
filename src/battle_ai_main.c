@@ -1861,27 +1861,25 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_SPIKES:
             if (gSideTimers[GetBattlerSide(battlerDef)].spikesAmount >= 3)
                 ADJUST_SCORE(-10);
-            else if (PartnerMoveIsSameNoTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove)
-              && gSideTimers[GetBattlerSide(battlerDef)].spikesAmount == 2)
+            else if (gSideTimers[GetBattlerSide(battlerDef)].spikesAmount == 2
+             && GetAIEffectGroupFromBattlerMove(BATTLE_PARTNER(battlerAtk), aiData->partnerMove, IGNORE_HELPER_BITS) & AI_EFFECT_SPIKES)
                 ADJUST_SCORE(-10); // only one mon needs to set up the last layer of Spikes
             break;
         case EFFECT_STEALTH_ROCK:
-            if (IsHazardOnSide(GetBattlerSide(battlerDef), HAZARDS_STEALTH_ROCK)
-              || PartnerMoveIsSameNoTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove)) //Only one mon needs to set up Stealth Rocks
+            if (IsHazardOnSide(GetBattlerSide(battlerDef), HAZARDS_STEALTH_ROCK))
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_TOXIC_SPIKES:
             if (gSideTimers[GetBattlerSide(battlerDef)].toxicSpikesAmount >= 2)
                 ADJUST_SCORE(-10);
-            else if (PartnerMoveIsSameNoTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove) && gSideTimers[GetBattlerSide(battlerDef)].toxicSpikesAmount == 1)
+            else if (gSideTimers[GetBattlerSide(battlerDef)].toxicSpikesAmount == 1 
+             && GetAIEffectGroupFromBattlerMove(BATTLE_PARTNER(battlerAtk), aiData->partnerMove, IGNORE_HELPER_BITS) & AI_EFFECT_TOXIC_SPIKES)
                 ADJUST_SCORE(-10); // only one mon needs to set up the last layer of Toxic Spikes
             break;
         case EFFECT_STICKY_WEB:
             if (IsHazardOnSide(GetBattlerSide(battlerDef), HAZARDS_STICKY_WEB))
                 ADJUST_SCORE(-10);
-            if (DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
-                ADJUST_SCORE(-10); // only one mon needs to set up Sticky Web
-            break;
+             break;
         case EFFECT_FORESIGHT:
             if (gBattleMons[battlerDef].volatiles.foresight)
                 ADJUST_SCORE(-10);
@@ -2347,7 +2345,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
             if (hasPartner)
             {
-                if (IsHazardMove(aiData->partnerMove) // partner is going to set up hazards
+                if (DoesMoveHaveAIEffect(aiData->partnerMove, AI_EFFECT_HAZARDS) // partner is going to set up hazards
                   && AI_IsFaster(BATTLE_PARTNER(battlerAtk), battlerAtk, aiData->partnerMove, predictedMove, CONSIDER_PRIORITY)) // partner is going to set up before the potential Defog
                 {
                     ADJUST_SCORE(-10);
@@ -4621,7 +4619,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         {
             if (hasPartner)
             {
-                if (IsHazardMove(aiData->partnerMove) // Partner is going to set up hazards
+                if (DoesMoveHaveAIEffect(aiData->partnerMove, AI_EFFECT_HAZARDS) // Partner is going to set up hazards
                     && AI_IsSlower(battlerAtk, BATTLE_PARTNER(battlerAtk), move, predictedMove, CONSIDER_PRIORITY)) // Partner going first
                     break; // Don't use Defog if partner is going to set up hazards
             }

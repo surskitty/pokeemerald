@@ -327,16 +327,25 @@ bool32 IsNaturalEnemy(u32 speciesAttacker, u32 speciesTarget);
 #define AI_EFFECT_REFLECT              (1 << 14)
 #define AI_EFFECT_GRAVITY              (1 << 15)
 #define AI_EFFECT_CHANGE_ABILITY       (1 << 16)
+#define AI_EFFECT_SPIKES               (1 << 17)
+#define AI_EFFECT_STEALTH_ROCK         (1 << 18)
+#define AI_EFFECT_STEELSURGE           (1 << 19)
+#define AI_EFFECT_STICKY_WEB           (1 << 20)
+#define AI_EFFECT_TOXIC_SPIKES         (1 << 21)
 
 // As Aurora Veil should almost never be used alongside the other screens, we save the bit.
 #define AI_EFFECT_AURORA_VEIL          (AI_EFFECT_LIGHT_SCREEN | AI_EFFECT_REFLECT)
 #define AI_EFFECT_EFFECT_SPORE         (AI_EFFECT_SLEEP | AI_EFFECT_POISON | AI_EFFECT_PARALYSIS)
 #define AI_EFFECT_NONVOLATILE          (AI_EFFECT_SLEEP | AI_EFFECT_POISON | AI_EFFECT_BURN | AI_EFFECT_FREEZE | AI_EFFECT_PARALYSIS | AI_EFFECT_FROSTBITE)
+#define AI_EFFECT_HAZARDS              (AI_EFFECT_SPIKES | AI_EFFECT_STEALTH_ROCK | AI_EFFECT_STEELSURGE | AI_EFFECT_STICKY_WEB | AI_EFFECT_TOXIC_SPIKES)
 
 // Support bits are used for determining approximate threats.
-// They are IGNORED by AreMovesEquivalent, DoesPartnerHaveSameMoveEffect, and HasBattlerSideUsedMoveWithEffect.
+// They are IGNORED by DoesPartnerHaveSameMoveEffect and HasBattlerSideUsedMoveWithEffect.
 #define AI_EFFECT_SUPPORT_BIT          (1 << 31)
 #define AI_EFFECT_HELPER_BITS          (AI_EFFECT_SUPPORT_BIT)
+
+// Used by AreMovesEquivalent, the general handler for double battle move selection.
+#define AI_EFFECT_CAN_STACK            (AI_EFFECT_SPIKES | AI_EFFECT_TOXIC_SPIKES)
 
 // These are used for determining what effects to apply helper bits to.
 #define AI_EFFECT_STRONG_SUPPORT       (AI_EFFECT_WEATHER | AI_EFFECT_TERRAIN | AI_EFFECT_CHANGE_ABILITY)
