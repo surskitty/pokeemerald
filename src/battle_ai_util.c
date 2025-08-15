@@ -3367,15 +3367,43 @@ bool32 AI_CanPutToSleep(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move
     return TRUE;
 }
 
-static inline bool32 DoesBattlerBenefitFromAllVolatileStatus(u32 battler, u32 ability)
+static inline bool32 DoesBattlerBenefitFromStatus(u32 battler, u32 ability, u32 status)
 {
-    if (ability == ABILITY_MARVEL_SCALE
-     || ability == ABILITY_QUICK_FEET
-     || ability == ABILITY_MAGIC_GUARD
-     || (ability == ABILITY_GUTS && HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL))
-     || HasMoveWithEffect(battler, EFFECT_FACADE)
+    if (!(status & STATUS1_CAN_MOVE))
+        return FALSE;
+
+    if (HasMoveWithEffect(battler, EFFECT_FACADE)
      || HasMoveWithEffect(battler, EFFECT_PSYCHO_SHIFT))
         return TRUE;
+
+    switch (ability)
+    {
+    case ABILITY_MAGIC_GUARD:
+    case ABILITY_MARVEL_SCALE:
+    case ABILITY_QUICK_FEET:
+        if (status & STATUS1_BURN)
+            return !HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
+        return TRUE;
+    case ABILITY_GUTS:
+        return HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
+    case ABILITY_POISON_HEAL:
+        return (status & STATUS1_PSN_ANY);
+    case ABILITY_TOXIC_BOOST:
+        if (status & STATUS1_PSN_ANY)
+            return HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
+        break;
+    case ABILITY_HEATPROOF:
+        if (status & STATUS1_BURN)
+            return !HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
+        break;
+    case ABILITY_FLARE_BOOST:
+        if (status & STATUS1_BURN)
+            return HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL);
+        break;
+    default:
+        break;
+    }
+
     return FALSE;
 }
 
@@ -3383,10 +3411,8 @@ bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)
 {
     u32 abilityDef = gAiLogicData->abilities[battlerDef];
     // Battler can be poisoned and has move/ability that synergizes with being poisoned
-    if (CanBePoisoned(battlerAtk, battlerDef, gAiLogicData->abilities[battlerAtk], abilityDef) && (
-        DoesBattlerBenefitFromAllVolatileStatus(battlerDef, abilityDef)
-        || abilityDef == ABILITY_POISON_HEAL
-        || (abilityDef == ABILITY_TOXIC_BOOST && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))))
+    if (CanBePoisoned(battlerAtk, battlerDef, gAiLogicData->abilities[battlerAtk], abilityDef)
+     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_PSN_ANY))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
@@ -3402,10 +3428,8 @@ bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)
 bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
 {
     // Battler can be burned and has move/ability that synergizes with being burned
-    if (CanBeBurned(battlerAtk, battlerDef, abilityDef) && (
-        DoesBattlerBenefitFromAllVolatileStatus(battlerDef, abilityDef)
-        || abilityDef == ABILITY_HEATPROOF
-        || (abilityDef == ABILITY_FLARE_BOOST && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))))
+    if (CanBeBurned(battlerAtk, battlerDef, abilityDef)
+     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_BURN))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
@@ -3436,7 +3460,7 @@ bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
     {
         // Battler can be frostbitten and has move/ability that synergizes with being frostbitten
         if (CanBeFrozen(battlerAtk, battlerDef, abilityDef)
-            && DoesBattlerBenefitFromAllVolatileStatus(battlerDef, abilityDef))
+            && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_FROSTBITE))
         {
             if (battlerAtk == battlerDef) // Targeting self
                 return TRUE;
@@ -3454,8 +3478,8 @@ bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
 bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
 {
     // Battler can be paralyzed and has move/ability that synergizes with being paralyzed
-    if (CanBeParalyzed(battlerAtk, battlerDef, abilityDef) && (
-        DoesBattlerBenefitFromAllVolatileStatus(battlerDef, abilityDef)))
+    if (CanBeParalyzed(battlerAtk, battlerDef, abilityDef)
+     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_PARALYSIS))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
