@@ -3367,13 +3367,25 @@ bool32 AI_CanPutToSleep(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move
     return TRUE;
 }
 
-static inline bool32 DoesBattlerBenefitFromStatus(u32 battler, u32 ability, u32 status)
+bool32 DoesBattlerBenefitFromStatus(u32 battler, u32 ability, u32 status)
 {
-    if (!(status & STATUS1_CAN_MOVE))
-        return FALSE;
+    if (status & STATUS1_SLEEP)
+    {
+        if (HasMoveWithEffect(battler, EFFECT_SLEEP_TALK) || HasMoveWithEffect(battler, EFFECT_SNORE))
+            return TRUE;
+        else
+            return FALSE;
+    }
 
-    if (HasMoveWithEffect(battler, EFFECT_FACADE)
-     || HasMoveWithEffect(battler, EFFECT_PSYCHO_SHIFT))
+    if (status & STATUS1_FREEZE)
+    {
+        if (HasThawingMove(battler))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    if (HasMoveWithEffect(battler, EFFECT_FACADE) || HasMoveWithEffect(battler, EFFECT_PSYCHO_SHIFT))
         return TRUE;
 
     switch (ability)
@@ -3383,6 +3395,8 @@ static inline bool32 DoesBattlerBenefitFromStatus(u32 battler, u32 ability, u32 
     case ABILITY_QUICK_FEET:
         if (status & STATUS1_BURN)
             return !HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
+        if (status & STATUS1_FROSTBITE)
+            return !HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL);
         return TRUE;
     case ABILITY_GUTS:
         return HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL);
