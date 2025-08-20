@@ -2465,16 +2465,24 @@ static bool32 ShouldUseItem(u32 battler)
             shouldUse = AI_ShouldHeal(battler, healAmount);
             break;
         case EFFECT_ITEM_CURE_STATUS:
-            if (itemEffects[3] & ITEM3_SLEEP && gBattleMons[battler].status1 & STATUS1_SLEEP)
-                shouldUse = TRUE;
-            if (itemEffects[3] & ITEM3_POISON && gBattleMons[battler].status1 & STATUS1_PSN_ANY)
-                shouldUse = TRUE;
-            if (itemEffects[3] & ITEM3_BURN && gBattleMons[battler].status1 & STATUS1_BURN)
-                shouldUse = TRUE;
-            if (itemEffects[3] & ITEM3_FREEZE && gBattleMons[battler].status1 & STATUS1_ICY_ANY)
-                shouldUse = TRUE;
-            if (itemEffects[3] & ITEM3_PARALYSIS && gBattleMons[battler].status1 & STATUS1_PARALYSIS)
-                shouldUse = TRUE;
+            if (gBattleMons[battler].status1 != STATUS1_NONE)
+            {
+                // don't cure if the status is helpful
+                if (DoesBattlerBenefitFromStatus(battler, gAiLogicData->abilities[battler], gBattleMons[battler].status1))
+                    break;
+
+                // don't cure if it would be immediately reapplied
+                if ((gAiLogicData->holdEffects[battler] == HOLD_EFFECT_FLAME_ORB && gBattleMons[battler].status1 & STATUS1_BURN)
+                 || (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_TOXIC_ORB && gBattleMons[battler].status1 & STATUS1_PSN_ANY))
+                    break;
+
+                if ((itemEffects[3] & ITEM3_SLEEP && gBattleMons[battler].status1 & STATUS1_SLEEP)
+                 || (itemEffects[3] & ITEM3_POISON && gBattleMons[battler].status1 & STATUS1_PSN_ANY)
+                 || (itemEffects[3] & ITEM3_BURN && gBattleMons[battler].status1 & STATUS1_BURN)
+                 || (itemEffects[3] & ITEM3_FREEZE && gBattleMons[battler].status1 & STATUS1_ICY_ANY)
+                 || (itemEffects[3] & ITEM3_PARALYSIS && gBattleMons[battler].status1 & STATUS1_PARALYSIS))
+                    shouldUse = TRUE;
+            }
             if (itemEffects[3] & ITEM3_CONFUSION && gBattleMons[battler].volatiles.confusionTurns > 0)
                 shouldUse = TRUE;
             break;
