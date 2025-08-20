@@ -3367,7 +3367,7 @@ bool32 AI_CanPutToSleep(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move
     return TRUE;
 }
 
-bool32 DoesBattlerBenefitFromStatus(u32 battler, u32 ability, u32 status)
+bool32 DoesBattlerBenefitFromNonvolatileStatus(u32 battler, u32 ability, u32 status)
 {
     if (status & STATUS1_SLEEP)
     {
@@ -3426,7 +3426,7 @@ bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef)
     u32 abilityDef = gAiLogicData->abilities[battlerDef];
     // Battler can be poisoned and has move/ability that synergizes with being poisoned
     if (CanBePoisoned(battlerAtk, battlerDef, gAiLogicData->abilities[battlerAtk], abilityDef)
-     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_PSN_ANY))
+     && DoesBattlerBenefitFromNonvolatileStatus(battlerDef, abilityDef, STATUS1_PSN_ANY))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
@@ -3443,7 +3443,7 @@ bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
 {
     // Battler can be burned and has move/ability that synergizes with being burned
     if (CanBeBurned(battlerAtk, battlerDef, abilityDef)
-     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_BURN))
+     && DoesBattlerBenefitFromNonvolatileStatus(battlerDef, abilityDef, STATUS1_BURN))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
@@ -3474,7 +3474,7 @@ bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
     {
         // Battler can be frostbitten and has move/ability that synergizes with being frostbitten
         if (CanBeFrozen(battlerAtk, battlerDef, abilityDef)
-            && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_FROSTBITE))
+            && DoesBattlerBenefitFromNonvolatileStatus(battlerDef, abilityDef, STATUS1_FROSTBITE))
         {
             if (battlerAtk == battlerDef) // Targeting self
                 return TRUE;
@@ -3493,7 +3493,7 @@ bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef)
 {
     // Battler can be paralyzed and has move/ability that synergizes with being paralyzed
     if (CanBeParalyzed(battlerAtk, battlerDef, abilityDef)
-     && DoesBattlerBenefitFromStatus(battlerDef, abilityDef, STATUS1_PARALYSIS))
+     && DoesBattlerBenefitFromNonvolatileStatus(battlerDef, abilityDef, STATUS1_PARALYSIS))
     {
         if (battlerAtk == battlerDef) // Targeting self
             return TRUE;
