@@ -33,7 +33,7 @@ TEST("Print mons")
         DebugPrintf("        \"defense\": %u,", currSpecies->baseDefense);
         DebugPrintf("        \"spAttack\": %u,", currSpecies->baseSpAttack);
         DebugPrintf("        \"spDefense\": %u,", currSpecies->baseSpDefense);
-        DebugPrintf("        \"speed\": %u,", currSpecies->baseHP);
+        DebugPrintf("        \"speed\": %u,", currSpecies->baseSpeed);
         DebugPrintf("    },");
 
         //  Print abilities
