@@ -4655,12 +4655,13 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, enum StatChange 
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += WEAK_EFFECT;
-            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
-                tempScore += WEAK_EFFECT;
-            if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_PHYSICAL))
-                tempScore += WEAK_EFFECT;
             if (shouldSetUp)
-                tempScore += WEAK_EFFECT;
+            {
+                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+                    tempScore += WEAK_EFFECT;
+                if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_PHYSICAL))
+                    tempScore += WEAK_EFFECT;
+            }
         }
         else
         {
@@ -4716,12 +4717,13 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, enum StatChange 
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += WEAK_EFFECT;
-            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
-                tempScore += WEAK_EFFECT;
-            if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_SPECIAL))
-                tempScore += WEAK_EFFECT;
             if (shouldSetUp)
-                tempScore += WEAK_EFFECT;
+            {
+                if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
+                    tempScore += WEAK_EFFECT;
+                if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_SPECIAL))
+                    tempScore += WEAK_EFFECT;
+            }
         }
         else
         {
