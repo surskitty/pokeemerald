@@ -1526,12 +1526,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     ADJUST_SCORE(-8);
                 break;
             }
-            else if (!hasPartner)
-            {
-                ADJUST_SCORE(-10);    // no partner and our stats wont rise, so don't use
-            }
-
-            if (hasPartner)
+            else if (hasPartner)
             {
                 if (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_PLUS || aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_MINUS)
                 {
@@ -1543,6 +1538,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 {
                     ADJUST_SCORE(-10);    // nor our or our partner's ability is plus/minus
                 }
+            }
+            else
+            {
+                ADJUST_SCORE(-10);    // no partner and our stats wont rise, so don't use
             }
             break;
         case EFFECT_ACUPRESSURE:
@@ -2164,6 +2163,20 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-9); //No point in healing, but should at least do it if nothing better
             else if ((AI_GetWeather() & (B_WEATHER_LOW_LIGHT)))
                 ADJUST_SCORE(-3);
+            break;
+        case EFFECT_LIFE_DEW:
+            if (AI_BattlerAtMaxHp(battlerAtk))
+            {
+                if (hasPartner)
+                {
+                    if (AI_BattlerAtMaxHp(BATTLE_PARTNER(battlerAtk)))
+                        ADJUST_SCORE(-10);
+                }
+                else
+                {
+                    ADJUST_SCORE(-10);
+                }
+            }
             break;
         case EFFECT_PURIFY:
             if (!(gBattleMons[battlerDef].status1 & STATUS1_ANY))
@@ -4182,6 +4195,18 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(-2); // Should be either removed or turned into increasing score
     case EFFECT_ACUPRESSURE:
         break;
+    case EFFECT_GEAR_UP:
+        if (aiData->abilities[battlerAtk] == ABILITY_PLUS || aiData->abilities[battlerAtk] == ABILITY_MINUS)
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK));
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPATK));
+        }
+        if (hasPartner && (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_PLUS || aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_MINUS))
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(BATTLE_PARTNER(battlerAtk), battlerDef, STAT_CHANGE_ATK));
+            ADJUST_SCORE(IncreaseStatUpScore(BATTLE_PARTNER(battlerAtk), battlerDef, STAT_CHANGE_SPATK));
+        }
+        break;
     case EFFECT_MAGNETIC_FLUX:
         if (aiData->abilities[battlerAtk] == ABILITY_PLUS || aiData->abilities[battlerAtk] == ABILITY_MINUS)
         {
@@ -4313,6 +4338,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SYNTHESIS:
     case EFFECT_MOONLIGHT:
         if (ShouldRecover(battlerAtk, battlerDef, move, 50))
+            ADJUST_SCORE(GOOD_EFFECT);
+        break;
+    case EFFECT_LIFE_DEW:
+        if (ShouldRecover(battlerAtk, battlerDef, move, 25))
+            ADJUST_SCORE(GOOD_EFFECT);
+        if (ShouldRecover(BATTLE_PARTNER(battlerAtk), battlerDef, move, 25))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_LIGHT_SCREEN:
