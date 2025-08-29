@@ -2073,7 +2073,7 @@ bool32 CanLowerStat(u32 battlerAtk, u32 battlerDef, struct AiLogicData *aiData, 
     return TRUE;
 }
 
-u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
+u32 IncreaseStatDownScore(u32 battlerDef, u32 stat)
 {
     u32 tempScore = NO_INCREASE;
 
@@ -2103,14 +2103,32 @@ u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
             tempScore += DECENT_EFFECT;
         break;
     case STAT_DEF:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL))
+        if (HasMoveWithCategory(FOE(battlerDef), DAMAGE_CATEGORY_PHYSICAL) || HasMoveWithCategory(BATTLE_PARTNER(FOE(battlerDef)), DAMAGE_CATEGORY_PHYSICAL))
             tempScore += DECENT_EFFECT;
         break;
     case STAT_SPEED:
     {
-        u32 predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, gAiLogicData);
-        if (AI_IsSlower(battlerAtk, battlerDef, gAiThinkingStruct->moveConsidered, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY))
-            tempScore += DECENT_EFFECT;
+        if (HasDamagingMoveWithPriority(battlerDef))
+            break;
+
+        bool32 hasTwoOpponents = HasTwoOpponents(battlerDef);
+        u32 battlerAtk = FOE(battlerDef);
+        if (IsBattlerAlive(battlerAtk) && (gAiLogicData->speedStats[battlerDef] >= gAiLogicData->speedStats[battlerAtk]))
+        {
+            if (hasTwoOpponents)
+                tempScore += WEAK_EFFECT;
+            else
+                tempScore += DECENT_EFFECT;
+        }
+
+        battlerAtk = BATTLE_PARTNER(FOE(battlerDef));
+        if (IsBattlerAlive(battlerAtk) && (gAiLogicData->speedStats[battlerDef] >= gAiLogicData->speedStats[battlerAtk]))
+        {
+            if (hasTwoOpponents)
+                tempScore += WEAK_EFFECT;
+            else
+                tempScore += DECENT_EFFECT;
+        }
         break;
     }
     case STAT_SPATK:
@@ -2118,7 +2136,7 @@ u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
             tempScore += DECENT_EFFECT;
         break;
     case STAT_SPDEF:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL))
+        if (HasMoveWithCategory(FOE(battlerDef), DAMAGE_CATEGORY_SPECIAL) || HasMoveWithCategory(BATTLE_PARTNER(FOE(battlerDef)), DAMAGE_CATEGORY_SPECIAL))
             tempScore += DECENT_EFFECT;
         break;
     case STAT_ACC:
@@ -2869,6 +2887,26 @@ bool32 HasDamagingMoveOfType(u32 battlerId, u32 type)
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
           && GetMoveType(moves[i]) == type && !IsBattleMoveStatus(moves[i]))
             return TRUE;
+    }
+
+    return FALSE;
+}
+
+bool32 HasDamagingMoveWithPriority(u32 battler)
+{
+    s32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+          && !IsBattleMoveStatus(moves[i])
+          && GetBattleMovePriority(battler, gAiLogicData->abilities[battler], moves[i]) > 0)
+        {
+            // Fake Out and First Impression only count if they are usable.
+            if (GetMoveEffect(moves[i]) != EFFECT_FIRST_TURN_ONLY || gDisableStructs[battler].isFirstTurn)
+                return TRUE;
+        }
     }
 
     return FALSE;
@@ -5681,15 +5719,15 @@ s32 BattlerBenefitsFromAbilityScore(u32 battler, u32 ability, struct AiLogicData
                 }
                 else
                 {
-                    s32 score1 = IncreaseStatDownScore(battler, FOE(battler), STAT_ATK);
-                    s32 score2 = IncreaseStatDownScore(battler, BATTLE_PARTNER(FOE(battler)), STAT_ATK);
+                    s32 score1 = IncreaseStatDownScore(FOE(battler), STAT_ATK);
+                    s32 score2 = IncreaseStatDownScore(BATTLE_PARTNER(FOE(battler)), STAT_ATK);
                     if (score1 > score2)
                         return score1;
                     else
                         return score2;
                 }
             }
-            return IncreaseStatDownScore(battler, FOE(battler), STAT_ATK);
+            return IncreaseStatDownScore(FOE(battler), STAT_ATK);
         }
     }
     case ABILITY_NO_GUARD:
