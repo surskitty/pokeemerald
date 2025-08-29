@@ -3050,7 +3050,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         {
         case EFFECT_HELPING_HAND:
             if (IsBattleMoveStatus(move))
-                ADJUST_SCORE(NO_DAMAGE_OR_FAILS);
+                ADJUST_SCORE(-7);
             break;
         case EFFECT_PERISH_SONG:
             if (!(gBattleMons[battlerDef].volatiles.escapePrevention || gBattleMons[battlerDef].volatiles.wrapped))

@@ -4699,8 +4699,9 @@ u32 IncreaseStatUpScore(u32 battlerAtk, enum StatChange statChange)
         tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, TRUE);
         if (tempScore == 0)
             return NO_INCREASE;
-        else
-            score += tempScore;
+
+        if (HasTwoOpponents(battlerAtk) && tempScore > score)
+            score = tempScore;
     }
 
     return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
@@ -4724,8 +4725,9 @@ u32 IncreaseStatUpScoreContrary(u32 battlerAtk, enum StatChange statChange)
         tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, FALSE);
         if (tempScore == 0)
             return NO_INCREASE;
-        else
-            score += tempScore;
+
+        if (HasTwoOpponents(battlerAtk) && tempScore > score)
+            score = tempScore;
     }
 
     return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
