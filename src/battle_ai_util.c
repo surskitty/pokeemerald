@@ -4683,7 +4683,7 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
 
 u32 IncreaseStatUpScore(u32 battlerAtk, enum StatChange statChange)
 {
-    u32 score, tempScore = NO_INCREASE;
+    u32 score = NO_INCREASE, tempScore = NO_INCREASE;
 
     if (IsBattlerAlive(FOE(battlerAtk)))
     {
@@ -4703,12 +4703,12 @@ u32 IncreaseStatUpScore(u32 battlerAtk, enum StatChange statChange)
             score += tempScore;
     }
 
-    return score;
+    return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
 }
 
 u32 IncreaseStatUpScoreContrary(u32 battlerAtk, enum StatChange statChange)
 {
-    u32 score, tempScore = NO_INCREASE;
+    u32 score = NO_INCREASE, tempScore = NO_INCREASE;
 
     if (IsBattlerAlive(FOE(battlerAtk)))
     {
@@ -4728,7 +4728,7 @@ u32 IncreaseStatUpScoreContrary(u32 battlerAtk, enum StatChange statChange)
             score += tempScore;
     }
 
-    return score;
+    return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
 }
 
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
