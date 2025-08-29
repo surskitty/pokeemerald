@@ -4530,38 +4530,36 @@ static u32 GetStagesOfStatChange(enum StatChange statChange)
     return 0;
 }
 
-static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, enum StatChange statChange, bool32 considerContrary)
+static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, enum StatChange statChange, bool32 considerContrary)
 {
+    u32 abilityAtk = gAiLogicData->abilities[battlerAtk];
     enum AIScore tempScore = NO_INCREASE;
-    u32 noOfHitsToFaint = NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk);
-    u32 predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, gAiLogicData);
-    u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, MOVE_NONE, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY); // Don't care about the priority of our setup move, care about outspeeding otherwise
-    u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
-    u32 i;
+    u32 battlerDef = FOE(battlerAtk);
+    bool32 hasTwoOpponents = HasTwoOpponents(battlerAtk);
     u32 statId = GetStatBeingChanged(statChange);
     u32 stages = GetStagesOfStatChange(statChange);
+    bool32 shouldSetUp = FALSE;
 
-    if (considerContrary && gAiLogicData->abilities[battlerAtk] == ABILITY_CONTRARY)
+    if (!IsBattlerAlive(battlerDef))
+        battlerDef = BATTLE_PARTNER(battlerDef);
+
+    if (considerContrary && abilityAtk == ABILITY_CONTRARY)
+        return NO_INCREASE;
+
+    // Correct number of stages to meet actual.
+    if (abilityAtk == ABILITY_SIMPLE)
+        stages = stages * 2;
+
+    // Don't set up if AI is dead to residual damage from weather
+    if (GetBattlerSecondaryDamage(battlerAtk) >= gBattleMons[battlerAtk].hp)
         return NO_INCREASE;
 
     // Don't increase stats if opposing battler has Unaware
     if (HasBattlerSideAbility(battlerDef, ABILITY_UNAWARE, gAiLogicData))
         return NO_INCREASE;
 
-    // Don't increase stat if AI is at +4
-    if (gBattleMons[battlerAtk].statStages[statId] >= MAX_STAT_STAGE - 2)
-        return NO_INCREASE;
-
-    // Don't increase stat if AI has less then 70% HP and number of hits isn't known
-    if (gAiLogicData->hpPercents[battlerAtk] < 70 && noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-        return NO_INCREASE;
-
-    // Don't set up if AI is dead to residual damage from weather
-    if (GetBattlerSecondaryDamage(battlerAtk) >= gBattleMons[battlerAtk].hp)
-        return NO_INCREASE;
-
     // Don't increase stats if opposing battler has Opportunist
-    if (gAiLogicData->abilities[battlerDef] == ABILITY_OPPORTUNIST)
+    if (HasBattlerSideAbility(battlerDef, ABILITY_OPPORTUNIST, gAiLogicData))
         return NO_INCREASE;
 
     // Don't increase stats if opposing battler has Encore
@@ -4579,85 +4577,164 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
         return NO_INCREASE;
 
     // Don't increase stats if AI could KO target through Sturdy effect, as otherwise it always 2HKOs
-    if (CanBattlerKOTargetIgnoringSturdy(battlerAtk, battlerDef))
+    if (CanBattlerKOTargetIgnoringSturdy(battlerAtk, battlerDef)
+     || (hasTwoOpponents && CanBattlerKOTargetIgnoringSturdy(battlerAtk, BATTLE_PARTNER(battlerDef))))
         return NO_INCREASE;
 
-    // Don't increase stats if player has a move that can change the KO threshold
-    if (HasMoveThatChangesKOThreshold(battlerDef, noOfHitsToFaint, aiIsFaster))
+    // Don't increase stat if AI is at +4
+    if (gBattleMons[battlerAtk].statStages[statId] >= MAX_STAT_STAGE - 2)
         return NO_INCREASE;
 
-    // Predicting switch
-    if (IsBattlerPredictedToSwitch(battlerDef))
+    // Logic specific for doubles.
+    if (hasTwoOpponents)
     {
-        struct Pokemon *playerParty = GetBattlerParty(battlerDef);
-        // If expected switchin outspeeds and has Encore, don't increase
-        for (i = 0; i < MAX_MON_MOVES; i++)
-        {
-            if (GetMoveEffect(GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_MOVE1 + i, NULL)) == EFFECT_ENCORE
-                && GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_PP1 + i, NULL) > 0);
-            {
-                if (GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_SPEED, NULL) > gBattleMons[battlerAtk].speed)
-                    return NO_INCREASE;
-            }
-        }
-        // Otherwise if predicting switch, stat increases are great momentum
-        tempScore += WEAK_EFFECT;
+        // both pokemon can KO, do not use a stat changing move
+        if (CanTargetFaintAi(battlerDef, battlerAtk) && CanTargetFaintAi(BATTLE_PARTNER(battlerDef), battlerAtk))
+            return NO_INCREASE;
+        // neither pokemon can KO; damage boosts are OK
+        else if (!(CanTargetFaintAi(battlerDef, battlerAtk) || CanTargetFaintAi(BATTLE_PARTNER(battlerDef), battlerAtk)))
+            shouldSetUp = TRUE;
     }
+    else
+    {
+        u32 noOfHitsToFaint = NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk);
+        u32 predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, gAiLogicData);
+        u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, MOVE_NONE, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY); // Don't care about the priority of our setup move, care about outspeeding otherwise
+        u32 i;
+        shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
 
-    // Correct number of stages to meet actual.
-    if (gAiLogicData->abilities[battlerAtk] == ABILITY_SIMPLE)
-        stages = stages * 2;
+        // don't raise speed if you're already faster
+        if (aiIsFaster && statId == STAT_SPEED)
+            return NO_INCREASE;
+
+        // Don't increase stat if AI has less then 70% HP and number of hits isn't known
+        if (gAiLogicData->hpPercents[battlerAtk] < 70 && noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
+            return NO_INCREASE;
+
+        // Don't increase stats if player has a move that can change the KO threshold
+        if (HasMoveThatChangesKOThreshold(battlerDef, noOfHitsToFaint, aiIsFaster))
+            return NO_INCREASE;
+
+        // Predicting switch
+        if (IsBattlerPredictedToSwitch(battlerDef))
+        {
+            struct Pokemon *playerParty = GetBattlerParty(battlerDef);
+            // If expected switchin outspeeds and has Encore, don't increase
+            for (i = 0; i < MAX_MON_MOVES; i++)
+            {
+                if (GetMoveEffect(GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_MOVE1 + i, NULL)) == EFFECT_ENCORE
+                    && GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_PP1 + i, NULL) > 0);
+                {
+                    if (GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_SPEED, NULL) > gBattleMons[battlerAtk].speed)
+                        return NO_INCREASE;
+                }
+            }
+            // Otherwise if predicting switch, stat increases are great momentum
+            tempScore += WEAK_EFFECT;
+        }
+    }
 
     switch (statId)
     {
     case STAT_ATK:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL))
         {
-            if (stages == 1)
+            if (!shouldSetUp)
+            {
+                if (hasTwoOpponents)
+                    tempScore += WEAK_EFFECT;
+            }
+            else if (stages == 1)
                 tempScore += DECENT_EFFECT;
             else
                 tempScore += GOOD_EFFECT;
         }
         break;
     case STAT_DEF:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
+        if (hasTwoOpponents)
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += WEAK_EFFECT;
-
-            if (stages == 1)
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
                 tempScore += WEAK_EFFECT;
-            else
-                tempScore += DECENT_EFFECT;
+            if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_PHYSICAL))
+                tempScore += WEAK_EFFECT;
+            if (shouldSetUp)
+                tempScore += WEAK_EFFECT;
+        }
+        else
+        {
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
+            {
+                if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
+                    tempScore += WEAK_EFFECT;
+
+                if (stages == 1)
+                    tempScore += WEAK_EFFECT;
+                else
+                    tempScore += DECENT_EFFECT;
+            }
         }
         break;
     case STAT_SPEED:
-        if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
+        if (shouldSetUp)
         {
-            if (stages == 1)
-                tempScore += DECENT_EFFECT;
+            if (hasTwoOpponents)
+            {
+                if (gAiLogicData->speedStats[battlerDef] >= gAiLogicData->speedStats[battlerAtk])
+                    tempScore += WEAK_EFFECT;
+                if (gAiLogicData->speedStats[BATTLE_PARTNER(battlerDef)] >= gAiLogicData->speedStats[battlerAtk])
+                    tempScore += WEAK_EFFECT;
+
+                if (tempScore > NO_INCREASE && stages > 1)
+                    tempScore += WEAK_EFFECT;
+            }
             else
-                tempScore += GOOD_EFFECT;
+            {
+                if (stages == 1)
+                    tempScore += DECENT_EFFECT;
+                else
+                    tempScore += GOOD_EFFECT;
+            }
         }
     case STAT_SPATK:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL))
         {
-            if (stages == 1)
+            if (!shouldSetUp)
+            {
+                if (hasTwoOpponents)
+                    tempScore += WEAK_EFFECT;
+            }
+            else if (stages == 1)
                 tempScore += DECENT_EFFECT;
             else
                 tempScore += GOOD_EFFECT;
         }
         break;
     case STAT_SPDEF:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+        if (hasTwoOpponents)
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += WEAK_EFFECT;
-
-            if (stages == 1)
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
                 tempScore += WEAK_EFFECT;
-            else
-                tempScore += DECENT_EFFECT;
+            if (HasMoveWithCategory(BATTLE_PARTNER(battlerDef), DAMAGE_CATEGORY_SPECIAL))
+                tempScore += WEAK_EFFECT;
+            if (shouldSetUp)
+                tempScore += WEAK_EFFECT;
+        }
+        else
+        {
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+            {
+                if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
+                    tempScore += WEAK_EFFECT;
+
+                if (stages == 1)
+                    tempScore += WEAK_EFFECT;
+                else
+                    tempScore += DECENT_EFFECT;
+            }
         }
         break;
     case STAT_ACC:
@@ -4665,7 +4742,7 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
             tempScore += DECENT_EFFECT;
         break;
     case STAT_EVASION:
-        if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
+        if (shouldSetUp)
             tempScore += GOOD_EFFECT;
         else
             tempScore += DECENT_EFFECT;
@@ -4678,59 +4755,17 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
     if (tempScore > 0 && HasMoveWithEffect(battlerAtk, EFFECT_STORED_POWER))
         tempScore += stages;
 
-    return tempScore;
+    return (tempScore > BEST_EFFECT) ? BEST_EFFECT : tempScore; // don't inflate score so only max +4
 }
 
 u32 IncreaseStatUpScore(u32 battlerAtk, enum StatChange statChange)
 {
-    u32 score = NO_INCREASE, tempScore = NO_INCREASE;
-
-    if (IsBattlerAlive(FOE(battlerAtk)))
-    {
-        tempScore = IncreaseStatUpScoreInternal(battlerAtk, FOE(battlerAtk), statChange, TRUE);
-        if (tempScore == NO_INCREASE)
-            return NO_INCREASE;
-        else
-            score += tempScore;
-    }
-
-    if (IsBattlerAlive(BATTLE_PARTNER(FOE(battlerAtk))))
-    {
-        tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, TRUE);
-        if (tempScore == 0)
-            return NO_INCREASE;
-
-        if (HasTwoOpponents(battlerAtk) && tempScore > score)
-            score = tempScore;
-    }
-
-    return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
+    return IncreaseStatUpScoreInternal(battlerAtk, statChange, TRUE);
 }
 
 u32 IncreaseStatUpScoreContrary(u32 battlerAtk, enum StatChange statChange)
 {
-    u32 score = NO_INCREASE, tempScore = NO_INCREASE;
-
-    if (IsBattlerAlive(FOE(battlerAtk)))
-    {
-        tempScore = IncreaseStatUpScoreInternal(battlerAtk, FOE(battlerAtk), statChange, FALSE);
-        if (tempScore == NO_INCREASE)
-            return NO_INCREASE;
-        else
-            score += tempScore;
-    }
-
-    if (IsBattlerAlive(BATTLE_PARTNER(FOE(battlerAtk))))
-    {
-        tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, FALSE);
-        if (tempScore == 0)
-            return NO_INCREASE;
-
-        if (HasTwoOpponents(battlerAtk) && tempScore > score)
-            score = tempScore;
-    }
-
-    return (score > BEST_EFFECT) ? BEST_EFFECT : score; // don't inflate score so only max +4
+    return IncreaseStatUpScoreInternal(battlerAtk, statChange, FALSE);
 }
 
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
