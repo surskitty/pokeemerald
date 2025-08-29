@@ -4476,18 +4476,23 @@ static u32 GetStatBeingChanged(enum StatChange statChange)
     {
         case STAT_CHANGE_ATK:
         case STAT_CHANGE_ATK_2:
+        case STAT_CHANGE_ATK_3:
             return STAT_ATK;
         case STAT_CHANGE_DEF:
         case STAT_CHANGE_DEF_2:
+        case STAT_CHANGE_DEF_3:
             return STAT_DEF;
         case STAT_CHANGE_SPEED:
         case STAT_CHANGE_SPEED_2:
+        case STAT_CHANGE_SPEED_3:
             return STAT_SPEED;
         case STAT_CHANGE_SPATK:
         case STAT_CHANGE_SPATK_2:
+        case STAT_CHANGE_SPATK_3:
             return STAT_SPATK;
         case STAT_CHANGE_SPDEF:
         case STAT_CHANGE_SPDEF_2:
+        case STAT_CHANGE_SPDEF_3:
             return STAT_SPDEF;
         case STAT_CHANGE_ACC:
             return STAT_ACC;
@@ -4495,6 +4500,34 @@ static u32 GetStatBeingChanged(enum StatChange statChange)
             return STAT_EVASION;
     }
     return 0; // STAT_HP, should never be getting changed
+}
+
+static u32 GetStagesOfStatChange(enum StatChange statChange)
+{
+    switch(statChange)
+    {
+        case STAT_CHANGE_ATK:
+        case STAT_CHANGE_DEF:
+        case STAT_CHANGE_SPEED:
+        case STAT_CHANGE_ACC:
+        case STAT_CHANGE_EVASION:
+        case STAT_CHANGE_SPATK:
+        case STAT_CHANGE_SPDEF:
+            return 1;
+        case STAT_CHANGE_ATK_2:
+        case STAT_CHANGE_DEF_2:
+        case STAT_CHANGE_SPEED_2:
+        case STAT_CHANGE_SPATK_2:
+        case STAT_CHANGE_SPDEF_2:
+            return 2;
+        case STAT_CHANGE_ATK_3:
+        case STAT_CHANGE_DEF_3:
+        case STAT_CHANGE_SPEED_3:
+        case STAT_CHANGE_SPATK_3:
+        case STAT_CHANGE_SPDEF_3:
+            return 3;
+    }
+    return 0;
 }
 
 static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, enum StatChange statChange, bool32 considerContrary)
@@ -4506,6 +4539,7 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
     u32 i;
     u32 statId = GetStatBeingChanged(statChange);
+    u32 stages = GetStagesOfStatChange(statChange);
 
     if (considerContrary && gAiLogicData->abilities[battlerAtk] == ABILITY_CONTRARY)
         return NO_INCREASE;
@@ -4570,91 +4604,131 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
         tempScore += WEAK_EFFECT;
     }
 
-    switch (statChange)
+    // Correct number of stages to meet actual.
+    if (gAiLogicData->abilities[battlerAtk] == ABILITY_SIMPLE)
+        stages = stages * 2;
+
+    switch (statId)
     {
-    case STAT_CHANGE_ATK:
+    case STAT_ATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            tempScore += DECENT_EFFECT;
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
         break;
-    case STAT_CHANGE_DEF:
+    case STAT_DEF:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                tempScore += DECENT_EFFECT;
-            else
                 tempScore += WEAK_EFFECT;
+
+            if (stages == 1)
+                tempScore += WEAK_EFFECT;
+            else
+                tempScore += DECENT_EFFECT;
         }
         break;
-    case STAT_CHANGE_SPEED:
+    case STAT_SPEED:
         if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            tempScore += DECENT_EFFECT;
-        break;
-    case STAT_CHANGE_SPATK:
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
+    case STAT_SPATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-            tempScore += DECENT_EFFECT;
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
         break;
-    case STAT_CHANGE_SPDEF:
+    case STAT_SPDEF:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
         {
             if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                tempScore += DECENT_EFFECT;
-            else
                 tempScore += WEAK_EFFECT;
-        }
-        break;
-    case STAT_CHANGE_ATK_2:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_DEF_2:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
-        {
-            if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                tempScore += GOOD_EFFECT;
+
+            if (stages == 1)
+                tempScore += WEAK_EFFECT;
             else
                 tempScore += DECENT_EFFECT;
         }
         break;
-    case STAT_CHANGE_SPEED_2:
-        if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_SPATK_2:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_SPDEF_2:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
-        {
-            if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                tempScore += GOOD_EFFECT;
-            else
-                tempScore += DECENT_EFFECT;
-        }
-        break;
-    case STAT_CHANGE_ACC:
+    case STAT_ACC:
         if (gBattleMons[battlerAtk].statStages[statId] <= 3) // Increase only if necessary
             tempScore += DECENT_EFFECT;
         break;
-    case STAT_CHANGE_EVASION:
+    case STAT_EVASION:
         if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
             tempScore += GOOD_EFFECT;
         else
             tempScore += DECENT_EFFECT;
         break;
+    default:
+        break;
     }
+
+    // further incentivize boosting when it's already good
+    if (tempScore > 0 && HasMoveWithEffect(battlerAtk, EFFECT_STORED_POWER))
+        tempScore += stages;
 
     return tempScore;
 }
 
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statChange)
+u32 IncreaseStatUpScore(u32 battlerAtk, enum StatChange statChange)
 {
-    return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, TRUE);
+    u32 score, tempScore = NO_INCREASE;
+
+    if (IsBattlerAlive(FOE(battlerAtk)))
+    {
+        tempScore = IncreaseStatUpScoreInternal(battlerAtk, FOE(battlerAtk), statChange, TRUE);
+        if (tempScore == NO_INCREASE)
+            return NO_INCREASE;
+        else
+            score += tempScore;
+    }
+
+    if (IsBattlerAlive(BATTLE_PARTNER(FOE(battlerAtk))))
+    {
+        tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, TRUE);
+        if (tempScore == 0)
+            return NO_INCREASE;
+        else
+            score += tempScore;
+    }
+
+    return score;
 }
 
-u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statChange)
+u32 IncreaseStatUpScoreContrary(u32 battlerAtk, enum StatChange statChange)
 {
-    return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
+    u32 score, tempScore = NO_INCREASE;
+
+    if (IsBattlerAlive(FOE(battlerAtk)))
+    {
+        tempScore = IncreaseStatUpScoreInternal(battlerAtk, FOE(battlerAtk), statChange, FALSE);
+        if (tempScore == NO_INCREASE)
+            return NO_INCREASE;
+        else
+            score += tempScore;
+    }
+
+    if (IsBattlerAlive(BATTLE_PARTNER(FOE(battlerAtk))))
+    {
+        tempScore = IncreaseStatUpScoreInternal(battlerAtk, BATTLE_PARTNER(FOE(battlerAtk)), statChange, FALSE);
+        if (tempScore == 0)
+            return NO_INCREASE;
+        else
+            score += tempScore;
+    }
+
+    return score;
 }
 
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
