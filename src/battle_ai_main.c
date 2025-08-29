@@ -5661,6 +5661,11 @@ case EFFECT_GUARD_SPLIT:
                 break;
             case MOVE_EFFECT_SPD_MINUS_1:
             case MOVE_EFFECT_SPD_MINUS_2:
+                if (hasPartner
+                 && GetMoveTarget(move) == MOVE_TARGET_FOES_AND_ALLY
+                 && aiData->effectiveness[battlerAtk][BATTLE_PARTNER(battlerAtk)][movesetIndex] != UQ_4_12(0.0)
+                 && !DoesAbilityRaiseStatsWhenLowered(aiData->abilities[BATTLE_PARTNER(battlerAtk)]))
+                    break;
                 ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, STAT_SPEED));
                 break;
             case MOVE_EFFECT_ATK_MINUS_1:
@@ -5669,6 +5674,26 @@ case EFFECT_GUARD_SPLIT:
             case MOVE_EFFECT_SP_DEF_MINUS_1:
             case MOVE_EFFECT_ACC_MINUS_1:
             case MOVE_EFFECT_EVS_MINUS_1:
+                if (hasPartner
+                 && GetMoveTarget(move) == MOVE_TARGET_FOES_AND_ALLY
+                 && aiData->effectiveness[battlerAtk][BATTLE_PARTNER(battlerAtk)][movesetIndex] != UQ_4_12(0.0)
+                 && !DoesAbilityRaiseStatsWhenLowered(aiData->abilities[BATTLE_PARTNER(battlerAtk)]))
+                {
+                    if (additionalEffect->moveEffect == MOVE_EFFECT_ATK_MINUS_1)
+                    {
+                        if (HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_PHYSICAL))
+                            break;
+                    }
+                    else if (additionalEffect->moveEffect == MOVE_EFFECT_SP_ATK_MINUS_1)
+                    {
+                        if (HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_SPECIAL))
+                            break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 if (aiData->abilities[battlerDef] != ABILITY_CONTRARY)
                     ADJUST_SCORE(DECENT_EFFECT);
                 break;
@@ -5678,6 +5703,26 @@ case EFFECT_GUARD_SPLIT:
             case MOVE_EFFECT_SP_DEF_MINUS_2:
             case MOVE_EFFECT_ACC_MINUS_2:
             case MOVE_EFFECT_EVS_MINUS_2:
+                if (hasPartner
+                 && GetMoveTarget(move) == MOVE_TARGET_FOES_AND_ALLY
+                 && aiData->effectiveness[battlerAtk][BATTLE_PARTNER(battlerAtk)][movesetIndex] != UQ_4_12(0.0)
+                 && !DoesAbilityRaiseStatsWhenLowered(aiData->abilities[BATTLE_PARTNER(battlerAtk)]))
+                {
+                    if (additionalEffect->moveEffect == MOVE_EFFECT_ATK_MINUS_2)
+                    {
+                        if (HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_PHYSICAL))
+                            break;
+                    }
+                    else if (additionalEffect->moveEffect == MOVE_EFFECT_SP_ATK_MINUS_2)
+                    {
+                        if (HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_SPECIAL))
+                            break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 if (aiData->abilities[battlerDef] != ABILITY_CONTRARY)
                     ADJUST_SCORE(DECENT_EFFECT);
                 break;
