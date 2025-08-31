@@ -4,6 +4,8 @@
 #include "battle_ai_main.h"
 #include "battle_ai_field_statuses.h"
 
+// Left and right are determined by how they're referred to in tests and everywhere else.
+// Left is battlers 0 and 1, right 2 and 3; if you assume the battler referencing them is south, left is to the northeast and right to the northwest.
 #define LEFT_FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
 #define RIGHT_FOE(battler) (((BATTLE_OPPOSITE(battler)) & BIT_SIDE) ^ BIT_FLANK)
 
