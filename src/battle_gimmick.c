@@ -68,7 +68,26 @@ bool32 ShouldTrainerBattlerUseGimmick(u32 battler, enum Gimmick gimmick)
     // There are no trainer party settings in battles, but the AI needs to know which gimmick to use.
     if (TESTING)
     {
-        return gimmick == TestRunner_Battle_GetChosenGimmick(GetBattlerSide(battler), gBattlerPartyIndexes[battler]);
+        if (gimmick == TestRunner_Battle_GetChosenGimmick(GetBattlerSide(battler), gBattlerPartyIndexes[battler]))
+            return TRUE;
+
+        if (gimmick == GIMMICK_DYNAMAX)
+        {
+            if (GetMonData(GetBattlerMon(battler), MON_DATA_DYNAMAX_LEVEL) > 0)
+                return TRUE;
+            if (GetMonData(GetBattlerMon(battler), MON_DATA_GIGANTAMAX_FACTOR))
+                return TRUE;
+        }
+        else if (gimmick == GIMMICK_TERA)
+        {
+            if (GetMonData(GetBattlerMon(battler), MON_DATA_TERA_TYPE) != 0)
+                return TRUE;
+        }
+        else if (gimmick == GIMMICK_Z_MOVE)
+        {
+            if (GetItemHoldEffect(GetMonData(GetBattlerMon(battler), MON_DATA_HOLD_ITEM)) == HOLD_EFFECT_Z_CRYSTAL)
+                return TRUE;
+        }
     }
     // The player can bypass these checks because they can choose through the controller.
     else if (IsOnPlayerSide(battler)
