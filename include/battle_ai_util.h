@@ -4,7 +4,8 @@
 #include "battle_ai_main.h"
 #include "battle_ai_field_statuses.h"
 
-#define FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
+#define LEFT_FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
+#define RIGHT_FOE(battler) (((BATTLE_OPPOSITE(battler)) & BIT_SIDE) ^ BIT_FLANK)
 
 // Roll boundaries used by AI when scoring. Doesn't affect actual damage dealt.
 #define MAX_ROLL_PERCENTAGE DMG_ROLL_PERCENT_HI
