@@ -2979,7 +2979,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         else if (GetBattleMoveCategory(move) == DAMAGE_CATEGORY_STATUS
             && (CountUsablePartyMons(battlerAtk) < 1
             || gAiLogicData->mostSuitableMonId[battlerAtk] == PARTY_SIZE
-            || (!AI_CanBattlerEscape(battlerAtk) && IsBattlerTrapped(battlerDef, battlerAtk))))
+            || IsBattlerTrapped(battlerDef, battlerAtk)))
             ADJUST_SCORE(-30);
     }
 
@@ -3147,8 +3147,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 if (ownHitsToKOFoe2 > partnerHitsToKOFoe2 && partnerHitsToKOFoe2 > 1)
                     ADJUST_SCORE(GOOD_EFFECT);
 
-            }
-            
+            }            
         }
         break;
     case EFFECT_PERISH_SONG:
@@ -3173,6 +3172,20 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
               || GetMoveCriticalHitStage(aiData->partnerMove) > 0
               || HasMoveWithCriticalHitChance(battlerAtkPartner))
             ADJUST_SCORE(GOOD_EFFECT);
+        break;
+    case EFFECT_COACHING:
+        if (!hasPartner 
+         || !HasMoveWithCategory(battlerAtkPartner, DAMAGE_CATEGORY_PHYSICAL))
+        {
+            ADJUST_SCORE(WORST_EFFECT);
+        }
+        else
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtkPartner, BATTLE_OPPOSITE(battlerAtk), STAT_CHANGE_ATK));
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtkPartner, BATTLE_OPPOSITE(battlerAtk), STAT_CHANGE_DEF));
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtkPartner, BATTLE_OPPOSITE(battlerAtkPartner), STAT_CHANGE_ATK));
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtkPartner, BATTLE_OPPOSITE(battlerAtkPartner), STAT_CHANGE_DEF));
+        }
         break;
     default:
         break;
@@ -4418,7 +4431,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             break;
         ADJUST_SCORE(GOOD_EFFECT);
         if (!HasDamagingMove(battlerDef)
-            || (!AI_CanBattlerEscape(battlerDef) && IsBattlerTrapped(battlerAtk, battlerDef))
+            || IsBattlerTrapped(battlerAtk, battlerDef)
             || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
@@ -4528,7 +4541,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_CURSE:
         if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GHOST))
         {
-            if (!AI_CanBattlerEscape(battlerDef) && IsBattlerTrapped(battlerAtk, battlerDef))
+            if (IsBattlerTrapped(battlerAtk, battlerDef))
                 ADJUST_SCORE(GOOD_EFFECT);
             else
                 ADJUST_SCORE(WEAK_EFFECT);
@@ -4626,7 +4639,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_PERISH_SONG:
-        if (!AI_CanBattlerEscape(battlerDef) && IsBattlerTrapped(battlerAtk, battlerDef))
+        if (IsBattlerTrapped(battlerAtk, battlerDef))
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_SANDSTORM:
@@ -4785,7 +4798,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             break; // Don't use if the attract won't have a change to activate
         if (gBattleMons[battlerDef].status1 & STATUS1_ANY
         || gBattleMons[battlerDef].volatiles.confusionTurns > 0
-        || (!AI_CanBattlerEscape(battlerDef) && IsBattlerTrapped(battlerAtk, battlerDef)))
+        || IsBattlerTrapped(battlerAtk, battlerDef))
             ADJUST_SCORE(GOOD_EFFECT);
         else
             ADJUST_SCORE(DECENT_EFFECT);
@@ -5675,11 +5688,20 @@ case EFFECT_GUARD_SPLIT:
                 if (CanLowerStat(battlerAtk, battlerDef, aiData, STAT_SPEED))
                     ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, STAT_SPEED));
                 break;
+            case MOVE_EFFECT_ACC_MINUS_1:
+            case MOVE_EFFECT_ACC_MINUS_2:
+                if (CanLowerStat(battlerAtk, battlerDef, aiData, STAT_ACC))
+                {
+                    u32 scoreIncrease = IncreaseStatDownScore(battlerAtk, battlerDef, STAT_ACC);
+                    if (scoreIncrease == WEAK_EFFECT)
+                        scoreIncrease = DECENT_EFFECT;
+                    ADJUST_SCORE(scoreIncrease);
+                }
+                break;
             case MOVE_EFFECT_ATK_MINUS_1:
             case MOVE_EFFECT_DEF_MINUS_1:
             case MOVE_EFFECT_SP_ATK_MINUS_1:
             case MOVE_EFFECT_SP_DEF_MINUS_1:
-            case MOVE_EFFECT_ACC_MINUS_1:
             case MOVE_EFFECT_EVS_MINUS_1:
             {
                 u32 statId = STAT_ATK + additionalEffect->moveEffect - MOVE_EFFECT_ATK_MINUS_1;
@@ -5691,7 +5713,6 @@ case EFFECT_GUARD_SPLIT:
             case MOVE_EFFECT_DEF_MINUS_2:
             case MOVE_EFFECT_SP_ATK_MINUS_2:
             case MOVE_EFFECT_SP_DEF_MINUS_2:
-            case MOVE_EFFECT_ACC_MINUS_2:
             case MOVE_EFFECT_EVS_MINUS_2:
             {
                 u32 statId = STAT_ATK + additionalEffect->moveEffect - MOVE_EFFECT_ATK_MINUS_2;
@@ -6111,7 +6132,7 @@ static s32 AI_PreferBatonPass(u32 battlerAtk, u32 battlerDef, u32 move, s32 scor
       || CountUsablePartyMons(battlerAtk) == 0
       || !IsBattleMoveStatus(move)
       || !HasMoveWithEffect(battlerAtk, EFFECT_BATON_PASS)
-      || (!AI_CanBattlerEscape(battlerAtk) && IsBattlerTrapped(battlerDef, battlerAtk)))
+      || IsBattlerTrapped(battlerAtk, battlerDef))
         return score;
 
     enum BattleMoveEffects effect = GetMoveEffect(move);

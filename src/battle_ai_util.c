@@ -469,6 +469,9 @@ bool32 AI_CanBattlerEscape(u32 battler)
 
 bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
 {
+    if (AI_CanBattlerEscape(battlerDef))
+        return FALSE;
+
     if (gBattleMons[battlerDef].volatiles.wrapped)
         return TRUE;
     if (gBattleMons[battlerDef].volatiles.escapePrevention)
@@ -487,6 +490,9 @@ bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
         return TRUE;
     if (AI_IsAbilityOnSide(battlerAtk, ABILITY_MAGNET_PULL)
         && IS_BATTLER_OF_TYPE(battlerAtk, TYPE_STEEL))
+        return TRUE;
+
+    if (gBattleTypeFlags & BATTLE_TYPE_TRAINER && CountUsablePartyMons(battlerDef) == 0)
         return TRUE;
 
     return FALSE;
@@ -2107,13 +2113,15 @@ u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
             tempScore += DECENT_EFFECT;
         break;
     case STAT_DEF:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL))
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)
+         || HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_PHYSICAL))
             tempScore += DECENT_EFFECT;
         break;
     case STAT_SPEED:
     {
         u32 predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, gAiLogicData);
-        if (AI_IsSlower(battlerAtk, battlerDef, gAiThinkingStruct->moveConsidered, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY))
+        if (AI_IsSlower(battlerAtk, battlerDef, MOVE_NONE, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY) 
+        || AI_IsSlower(BATTLE_PARTNER(battlerAtk), battlerDef, MOVE_NONE, predictedMoveSpeedCheck, DONT_CONSIDER_PRIORITY))
             tempScore += DECENT_EFFECT;
         break;
     }
@@ -2122,15 +2130,15 @@ u32 IncreaseStatDownScore(u32 battlerAtk, u32 battlerDef, u32 stat)
             tempScore += DECENT_EFFECT;
         break;
     case STAT_SPDEF:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL))
+        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)
+         || HasMoveWithCategory(BATTLE_PARTNER(battlerAtk), DAMAGE_CATEGORY_SPECIAL))
             tempScore += DECENT_EFFECT;
         break;
     case STAT_ACC:
-        if (gBattleMons[battlerDef].status1 & STATUS1_PSN_ANY)
-            tempScore += WEAK_EFFECT;
+        tempScore += WEAK_EFFECT;
+        if (IsBattlerTrapped(battlerAtk, battlerDef))
+            tempScore += DECENT_EFFECT;
         if (gBattleMons[battlerDef].volatiles.leechSeed)
-            tempScore += WEAK_EFFECT;
-        if (gBattleMons[battlerDef].volatiles.root)
             tempScore += WEAK_EFFECT;
         if (gBattleMons[battlerDef].volatiles.cursed)
             tempScore += WEAK_EFFECT;
