@@ -1629,8 +1629,11 @@ void ClosePokemon(u32 sourceLine)
 static void SetGimmick(u32 sourceLine, u32 side, u32 partyIndex, enum Gimmick gimmick)
 {
     enum Gimmick currentGimmick = DATA.chosenGimmick[side][partyIndex];
-    if (!(currentGimmick == GIMMICK_ULTRA_BURST && gimmick == GIMMICK_Z_MOVE))
+    if (!((currentGimmick == GIMMICK_ULTRA_BURST && gimmick == GIMMICK_Z_MOVE)
+       || (currentGimmick == GIMMICK_Z_MOVE && gimmick == GIMMICK_ULTRA_BURST)))
+    {
         INVALID_IF(currentGimmick != GIMMICK_NONE && currentGimmick != gimmick, "Cannot set %s because %s already set", sGimmickIdentifiers[gimmick], sGimmickIdentifiers[currentGimmick]);
+    }
     DATA.chosenGimmick[side][partyIndex] = gimmick;
 }
 
