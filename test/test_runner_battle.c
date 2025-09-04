@@ -765,6 +765,16 @@ static const char *const sBattleActionNames[] =
     [B_ACTION_SWITCH] = "SWITCH",
 };
 
+static const char *const sGimmickIdentifiers[GIMMICKS_COUNT] =
+{
+    [GIMMICK_NONE] = "N/A",
+    [GIMMICK_MEGA] = "Mega Evolution",
+    [GIMMICK_ULTRA_BURST] = "Ultra Burst",
+    [GIMMICK_Z_MOVE] = "Z-Move",
+    [GIMMICK_DYNAMAX] = "Dynamax",
+    [GIMMICK_TERA] = "Terastallize",
+};
+
 static u32 CountAiExpectMoves(struct ExpectedAIAction *expectedAction, u32 battlerId, bool32 printLog)
 {
     u32 i, countExpected = 0;
@@ -780,7 +790,7 @@ static u32 CountAiExpectMoves(struct ExpectedAIAction *expectedAction, u32 battl
     return countExpected;
 }
 
-void TestRunner_Battle_CheckChosenMove(u32 battlerId, u32 moveId, u32 target)
+void TestRunner_Battle_CheckChosenMove(u32 battlerId, u32 moveId, u32 target, enum Gimmick gimmick)
 {
     const char *filename = gTestRunnerState.test->filename;
     u32 id = DATA.trial.aiActionsPlayed[battlerId];
@@ -801,6 +811,9 @@ void TestRunner_Battle_CheckChosenMove(u32 battlerId, u32 moveId, u32 target)
 
         if (expectedAction->explicitTarget && expectedAction->target != target)
             Test_ExitWithResult(TEST_RESULT_FAIL, SourceLine(0), ":L%s:%d: Expected target %s, got %s", filename, expectedAction->sourceLine, BattlerIdentifier(expectedAction->target), BattlerIdentifier(target));
+
+        if (expectedAction->gimmick != GIMMICKS_COUNT && expectedAction->gimmick != gimmick)
+            Test_ExitWithResult(TEST_RESULT_FAIL, SourceLine(0), ":L%s:%d: Expected gimmick %s, got %s", filename, expectedAction->sourceLine, sGimmickIdentifiers[expectedAction->gimmick], sGimmickIdentifiers[gimmick]);
 
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
@@ -1486,16 +1499,6 @@ void Randomly(u32 sourceLine, u32 passes, u32 trials, struct RandomlyContext ctx
         DATA.recordedBattle.rngSeed = defaultSeed;
     }
 }
-
-static const char *sGimmickIdentifiers[GIMMICKS_COUNT] =
-{
-    [GIMMICK_NONE] = "N/A",
-    [GIMMICK_MEGA] = "Mega Evolution",
-    [GIMMICK_ULTRA_BURST] = "Ultra Burst",
-    [GIMMICK_Z_MOVE] = "Z-Move",
-    [GIMMICK_DYNAMAX] = "Dynamax",
-    [GIMMICK_TERA] = "Terastallize",
-};
 
 void RNGSeed_(u32 sourceLine, rng_value_t seed)
 {
@@ -2309,11 +2312,12 @@ static void TryMarkExpectMove(u32 sourceLine, struct BattlePokemon *battler, str
 
     id = DATA.expectedAiActionIndex[battlerId];
     DATA.expectedAiActions[battlerId][id].type = B_ACTION_USE_MOVE;
-    DATA.expectedAiActions[battlerId][id].moveSlots |= 1 << moveSlot;
+    DATA.expectedAiActions[battlerId][id].moveSlots |= 1 << (moveSlot & ~RET_GIMMICK);
     DATA.expectedAiActions[battlerId][id].target = target;
     DATA.expectedAiActions[battlerId][id].explicitTarget = ctx->explicitTarget;
     DATA.expectedAiActions[battlerId][id].sourceLine = sourceLine;
     DATA.expectedAiActions[battlerId][id].actionSet = TRUE;
+    DATA.expectedAiActions[battlerId][id].gimmick = ctx->explicitGimmick ? ctx->gimmick : GIMMICKS_COUNT;
     if (ctx->explicitNotExpected)
         DATA.expectedAiActions[battlerId][id].notMove = ctx->notExpected;
 

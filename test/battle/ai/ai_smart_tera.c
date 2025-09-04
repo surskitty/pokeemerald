@@ -13,7 +13,7 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_TERA: AI will tera if it enables a ko")
         OPPONENT(SPECIES_WOBBUFFET) { Speed(1); Moves(MOVE_AQUA_TAIL, MOVE_SEED_BOMB); TeraType(TYPE_GRASS); }
         OPPONENT(SPECIES_WOBBUFFET) { HP(1); Speed(100); TeraType(TYPE_FIRE); }
     } WHEN {
-        TURN { EXPECT_MOVE(opponent, MOVE_SEED_BOMB); SEND_OUT(player, 1); }
+        TURN { EXPECT_MOVE(opponent, MOVE_SEED_BOMB, gimmick: GIMMICK_TERA); SEND_OUT(player, 1); }
     } SCENE {
         MESSAGE("The opposing Wobbuffet terastallized into the Grass type!");
         MESSAGE("Wobbuffet fainted!");
