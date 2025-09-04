@@ -1626,6 +1626,14 @@ void ClosePokemon(u32 sourceLine)
     DATA.currentMon = NULL;
 }
 
+static void SetGimmick(u32 sourceLine, u32 side, u32 partyIndex, enum Gimmick gimmick)
+{
+    enum Gimmick currentGimmick = DATA.chosenGimmick[side][partyIndex];
+    if (!(currentGimmick == GIMMICK_ULTRA_BURST && gimmick == GIMMICK_Z_MOVE))
+        INVALID_IF(currentGimmick != GIMMICK_NONE && currentGimmick != gimmick, "Cannot set %s because %s already set", sGimmickIdentifiers[gimmick], sGimmickIdentifiers[currentGimmick]);
+    DATA.chosenGimmick[side][partyIndex] = gimmick;
+}
+
 void Gender_(u32 sourceLine, u32 gender)
 {
     const struct SpeciesInfo *info;
@@ -1791,12 +1799,10 @@ void Item_(u32 sourceLine, u32 item)
     switch (GetItemHoldEffect(item))
     {
     case HOLD_EFFECT_MEGA_STONE:
-        INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Mega Evolution if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
-        DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_MEGA;
+        SetGimmick(sourceLine, DATA.currentSide, DATA.currentPartyIndex, GIMMICK_MEGA);
         break;
     case HOLD_EFFECT_Z_CRYSTAL:
-        INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Z-Move if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
-        DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_Z_MOVE;
+        SetGimmick(sourceLine, DATA.currentSide, DATA.currentPartyIndex, GIMMICK_Z_MOVE);
         break;
     }
 }
@@ -1854,25 +1860,22 @@ void OTName_(u32 sourceLine, const u8 *otName)
 void DynamaxLevel_(u32 sourceLine, u32 dynamaxLevel)
 {
     INVALID_IF(!DATA.currentMon, "DynamaxLevel outside of PLAYER/OPPONENT");
-    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Dynamax if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_DYNAMAX_LEVEL, &dynamaxLevel);
-    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_DYNAMAX;
+    SetGimmick(sourceLine, DATA.currentSide, DATA.currentPartyIndex, GIMMICK_DYNAMAX);
 }
 
 void GigantamaxFactor_(u32 sourceLine, bool32 gigantamaxFactor)
 {
     INVALID_IF(!DATA.currentMon, "GigantamaxFactor outside of PLAYER/OPPONENT");
-    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Dynamax if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_GIGANTAMAX_FACTOR, &gigantamaxFactor);
-    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_DYNAMAX;
+    SetGimmick(sourceLine, DATA.currentSide, DATA.currentPartyIndex, GIMMICK_DYNAMAX);
 }
 
 void TeraType_(u32 sourceLine, u32 teraType)
 {
     INVALID_IF(!DATA.currentMon, "TeraType outside of PLAYER/OPPONENT");
-    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Terastallize if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_TERA_TYPE, &teraType);
-    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_TERA;
+    SetGimmick(sourceLine, DATA.currentSide, DATA.currentPartyIndex, GIMMICK_TERA);
 }
 
 void Shadow_(u32 sourceLine, bool32 isShadow)
@@ -2173,11 +2176,7 @@ void MoveGetIdAndSlot(s32 battlerId, struct MoveContext *ctx, u32 *moveId, u32 *
         INVALID_IF(ctx->gimmick != GIMMICK_Z_MOVE && ctx->gimmick != GIMMICK_ULTRA_BURST && holdEffect == HOLD_EFFECT_Z_CRYSTAL, "Cannot use another gimmick while holding a Z-Crystal");
 
         // Check multiple gimmick use.
-        INVALID_IF(DATA.chosenGimmick[side][DATA.currentMonIndexes[battlerId]] != GIMMICK_NONE
-                   && !(DATA.chosenGimmick[side][DATA.currentMonIndexes[battlerId]] == GIMMICK_ULTRA_BURST
-                   && ctx->gimmick == GIMMICK_Z_MOVE), "Cannot use multiple gimmicks on the same battler");
-
-        DATA.chosenGimmick[side][DATA.currentMonIndexes[battlerId]] = ctx->gimmick;
+        SetGimmick(sourceLine, side, DATA.currentMonIndexes[battlerId], ctx->gimmick);
         *moveSlot |= RET_GIMMICK;
     }
 }
