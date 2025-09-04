@@ -1487,6 +1487,16 @@ void Randomly(u32 sourceLine, u32 passes, u32 trials, struct RandomlyContext ctx
     }
 }
 
+static const char *sGimmickIdentifiers[GIMMICKS_COUNT] =
+{
+    [GIMMICK_NONE] = "N/A",
+    [GIMMICK_MEGA] = "Mega Evolution",
+    [GIMMICK_ULTRA_BURST] = "Ultra Burst",
+    [GIMMICK_Z_MOVE] = "Z-Move",
+    [GIMMICK_DYNAMAX] = "Dynamax",
+    [GIMMICK_TERA] = "Terastallize",
+};
+
 void RNGSeed_(u32 sourceLine, rng_value_t seed)
 {
     INVALID_IF(RngSeedNotDefault(&DATA.recordedBattle.rngSeed), "RNG seed already set");
@@ -1778,6 +1788,17 @@ void Item_(u32 sourceLine, u32 item)
     INVALID_IF(!DATA.currentMon, "Item outside of PLAYER/OPPONENT");
     INVALID_IF(item >= ITEMS_COUNT, "Illegal item: %d", item);
     SetMonData(DATA.currentMon, MON_DATA_HELD_ITEM, &item);
+    switch (GetItemHoldEffect(item))
+    {
+    case HOLD_EFFECT_MEGA_STONE:
+        INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Mega Evolution if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
+        DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_MEGA;
+        break;
+    case HOLD_EFFECT_Z_CRYSTAL:
+        INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Z-Move if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
+        DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_Z_MOVE;
+        break;
+    }
 }
 
 void Moves_(u32 sourceLine, u16 moves[MAX_MON_MOVES])
@@ -1833,19 +1854,25 @@ void OTName_(u32 sourceLine, const u8 *otName)
 void DynamaxLevel_(u32 sourceLine, u32 dynamaxLevel)
 {
     INVALID_IF(!DATA.currentMon, "DynamaxLevel outside of PLAYER/OPPONENT");
+    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Dynamax if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_DYNAMAX_LEVEL, &dynamaxLevel);
+    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_DYNAMAX;
 }
 
 void GigantamaxFactor_(u32 sourceLine, bool32 gigantamaxFactor)
 {
     INVALID_IF(!DATA.currentMon, "GigantamaxFactor outside of PLAYER/OPPONENT");
+    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Dynamax if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_GIGANTAMAX_FACTOR, &gigantamaxFactor);
+    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_DYNAMAX;
 }
 
 void TeraType_(u32 sourceLine, u32 teraType)
 {
     INVALID_IF(!DATA.currentMon, "TeraType outside of PLAYER/OPPONENT");
+    INVALID_IF(DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] != GIMMICK_NONE, "Cannot set Terastallize if %s already set", sGimmickIdentifiers[DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex]]);
     SetMonData(DATA.currentMon, MON_DATA_TERA_TYPE, &teraType);
+    DATA.chosenGimmick[DATA.currentSide][DATA.currentPartyIndex] = GIMMICK_TERA;
 }
 
 void Shadow_(u32 sourceLine, bool32 isShadow)
