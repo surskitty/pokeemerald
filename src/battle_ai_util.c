@@ -4777,7 +4777,7 @@ u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange 
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
 }
 
-static bool32 HasMoveDoubleDamageOnStatus(u32 battler, enum BattleMoveEffects effect, u32 argument)
+static bool32 HasMoveWithPowerBasedOnStatus(u32 battler, enum BattleMoveEffects effect, u32 argument)
 {
     s32 i;
     u16 *moves = GetMovesArray(battler);
@@ -4894,8 +4894,8 @@ static s32 IncreaseNonvolatileScoreInternal(u32 battlerAtk, u32 battlerDef, u32 
         }
     }
 
-    if (HasMoveDoubleDamageOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status)
-      || HasMoveDoubleDamageOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status))
+    if (HasMoveWithPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status)
+      || HasMoveWithPowerBasedOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status))
         score += WEAK_EFFECT;
 
     return score;
