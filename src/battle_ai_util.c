@@ -2464,22 +2464,6 @@ bool32 HasNonVolatileMoveEffect(u32 battlerId, u32 effect)
     return FALSE;
 }
 
-bool32 HasMoveWithEffectArg(u32 battler, enum BattleMoveEffects effect, u32 argument)
-{
-    s32 i;
-    u16 *moves = GetMovesArray(battler);
-
-    for (i = 0; i < MAX_MON_MOVES; i++)
-    {
-        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
-            && GetMoveEffect(moves[i]) == effect
-            && (GetMoveEffectArg_Status(moves[i]) & argument))
-            return TRUE;
-    }
-
-    return FALSE;
-}
-
 bool32 HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect)
 {
     s32 i;
@@ -4793,7 +4777,23 @@ u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange 
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
 }
 
-s32 IncreaseNonvolatileScoreInternal(u32 battlerAtk, u32 battlerDef, u32 move, u32 status)
+static bool32 HasMoveDoubleDamageOnStatus(u32 battler, enum BattleMoveEffects effect, u32 argument)
+{
+    s32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+            && GetMoveEffect(moves[i]) == effect
+            && (GetMoveEffectArg_Status(moves[i]) & argument))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+static s32 IncreaseNonvolatileScoreInternal(u32 battlerAtk, u32 battlerDef, u32 move, u32 status)
 {
     s32 score = NO_INCREASE;
 
@@ -4894,8 +4894,8 @@ s32 IncreaseNonvolatileScoreInternal(u32 battlerAtk, u32 battlerDef, u32 move, u
         }
     }
 
-    if (HasMoveWithEffectArg(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status)
-      || HasMoveWithEffectArg(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status))
+    if (HasMoveDoubleDamageOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status)
+      || HasMoveDoubleDamageOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status))
         score += WEAK_EFFECT;
 
     return score;

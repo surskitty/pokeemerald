@@ -182,7 +182,6 @@ bool32 HasBattlerSideMoveWithEffect(u32 battler, u32 effect);
 bool32 HasBattlerSideMoveWithAIEffect(u32 battler, u32 effect);
 bool32 HasBattlerSideUsedMoveWithEffect(u32 battler, u32 effect);
 bool32 HasNonVolatileMoveEffect(u32 battlerId, u32 effect);
-bool32 HasMoveWithEffectArg(u32 battler, enum BattleMoveEffects effect, u32 argument);
 bool32 HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect);
 bool32 HasBattlerSideMoveWithAdditionalEffect(u32 battler, u32 moveEffect);
 bool32 HasMoveWithCriticalHitChance(u32 battlerId);
