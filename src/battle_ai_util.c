@@ -2467,22 +2467,6 @@ bool32 HasNonVolatileMoveEffect(u32 battlerId, u32 effect)
     return FALSE;
 }
 
-bool32 IsPowerBasedOnStatus(u32 battlerId, enum BattleMoveEffects effect, u32 argument)
-{
-    s32 i;
-    u16 *moves = GetMovesArray(battlerId);
-
-    for (i = 0; i < MAX_MON_MOVES; i++)
-    {
-        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
-            && GetMoveEffect(moves[i]) == effect
-            && (GetMoveEffectArg_Status(moves[i]) & argument))
-            return TRUE;
-    }
-
-    return FALSE;
-}
-
 bool32 HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect)
 {
     s32 i;
@@ -4892,93 +4876,153 @@ u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange 
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
 }
 
-void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
+static bool32 HasMoveWithPowerBasedOnStatus(u32 battler, enum BattleMoveEffects effect, u32 argument)
 {
-    if (((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
-            || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_PSN || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
-        return;
+    s32 i;
+    u16 *moves = GetMovesArray(battler);
 
-    if (AI_CanPoison(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove) && gAiLogicData->hpPercents[battlerDef] > 20)
+    for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        if (!HasDamagingMove(battlerDef))
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
-
-        if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL && HasMoveWithEffect(battlerAtk, EFFECT_PROTECT))
-            ADJUST_SCORE_PTR(WEAK_EFFECT);    // stall tactic
-
-        if (IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_PSN_ANY)
-         || HasMoveWithEffect(battlerAtk, EFFECT_VENOM_DRENCH)
-         || gAiLogicData->abilities[battlerAtk] == ABILITY_MERCILESS)
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
-        else
-            ADJUST_SCORE_PTR(WEAK_EFFECT);
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+            && GetMoveEffect(moves[i]) == effect
+            && (GetMoveEffectArg_Status(moves[i]) & argument))
+            return TRUE;
     }
+
+    return FALSE;
 }
 
-void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
+static s32 IncreaseNonvolatileScoreInternal(u32 battlerAtk, u32 battlerDef, u32 move, u32 status)
 {
-    if (((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
-            || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_BRN || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
-        return;
+    s32 score = NO_INCREASE;
 
-    if (AI_CanBurn(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], BATTLE_PARTNER(battlerAtk), move, gAiLogicData->partnerMove))
+    if ((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
+        return score;
+
+    if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
+        return score;
+
+    if (status & STATUS1_PSN_ANY)
     {
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
-            || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects physical attacker
-                && GetSpeciesBaseAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) + 10))
+        if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_PSN)
+            return score;
+
+        if (AI_CanPoison(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove) && gAiLogicData->hpPercents[battlerDef] > 20)
         {
-            if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_PHYSICAL)
-                ADJUST_SCORE_PTR(DECENT_EFFECT);
+            if (!HasDamagingMove(battlerDef))
+                score += DECENT_EFFECT;
+
+            if (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_STALL && HasMoveWithEffect(battlerAtk, EFFECT_PROTECT))
+                score += WEAK_EFFECT;    // stall tactic
+
+            if (HasMoveWithEffect(battlerAtk, EFFECT_VENOM_DRENCH)
+             || gAiLogicData->abilities[battlerAtk] == ABILITY_MERCILESS)
+                score += DECENT_EFFECT;
             else
-                ADJUST_SCORE_PTR(WEAK_EFFECT);
+                score += WEAK_EFFECT;
         }
-
-        if (IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_BURN)
-          || IsPowerBasedOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_BURN))
-            ADJUST_SCORE_PTR(WEAK_EFFECT);
     }
-}
-
-void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-{
-    if (((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
-            || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_PAR || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
-        return;
-
-    if (AI_CanParalyze(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove))
+    else if (status & STATUS1_BURN)
     {
-        u32 atkSpeed = gAiLogicData->speedStats[battlerAtk];
-        u32 defSpeed = gAiLogicData->speedStats[battlerDef];
+        if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_BRN)
+            return score;
 
-        if ((defSpeed >= atkSpeed && defSpeed / 2 < atkSpeed) // You'll go first after paralyzing foe
-          || IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_PARALYSIS)
-          || (HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY)) // filter out Fake Out
-          || gBattleMons[battlerDef].volatiles.infatuation
-          || gBattleMons[battlerDef].volatiles.confusionTurns > 0)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
-        else
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+        if (AI_CanBurn(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], BATTLE_PARTNER(battlerAtk), move, gAiLogicData->partnerMove))
+        {
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
+                || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects physical attacker
+                    && GetSpeciesBaseAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) + 10))
+            {
+                if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_PHYSICAL)
+                    score += DECENT_EFFECT;
+                else
+                    score += WEAK_EFFECT;
+            }
+        }
     }
+    else if (status & STATUS1_PARALYSIS)
+    {
+        if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_PAR)
+            return score;
+
+        if (AI_CanParalyze(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove))
+        {
+            u32 atkSpeed = gAiLogicData->speedStats[battlerAtk];
+            u32 defSpeed = gAiLogicData->speedStats[battlerDef];
+
+            if ((defSpeed >= atkSpeed && defSpeed / 2 < atkSpeed) // You'll go first after paralyzing foe
+              || HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY) // filter out Fake Out
+              || gBattleMons[battlerDef].volatiles.infatuation
+              || gBattleMons[battlerDef].volatiles.confusionTurns > 0)
+                score += GOOD_EFFECT;
+            else
+                score += DECENT_EFFECT;
+        }
+    }
+    else if (status & STATUS1_SLEEP)
+    {
+        if ((GetMoveEffect(GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING)) != EFFECT_FOCUS_PUNCH)
+         || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_SLP)
+            return score;
+
+        if (AI_CanPutToSleep(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove))
+            score += DECENT_EFFECT;
+        else
+            return score;
+
+        if ((HasMoveWithEffect(battlerAtk, EFFECT_DREAM_EATER) || HasMoveWithEffect(battlerAtk, EFFECT_NIGHTMARE))
+          && !(HasMoveWithEffect(battlerDef, EFFECT_SNORE) || HasMoveWithEffect(battlerDef, EFFECT_SLEEP_TALK)))
+            score += WEAK_EFFECT;
+    }
+    else if (status & STATUS1_FROSTBITE)
+    {
+        if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_FRZ)
+            return score;
+
+        if (AI_CanGiveFrostbite(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], BATTLE_PARTNER(battlerAtk), move, gAiLogicData->partnerMove))
+        {
+            if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
+                || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects special attacker
+                    && GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseAttack(gBattleMons[battlerDef].species) + 10))
+            {
+                if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_SPECIAL)
+                    score += DECENT_EFFECT;
+                else
+                    score += WEAK_EFFECT;
+            }
+        }
+    }
+
+    if (HasMoveWithPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status)
+      || HasMoveWithPowerBasedOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, status))
+        score += WEAK_EFFECT;
+
+    return score;
 }
 
-void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
+s32 IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move)
 {
-    if (((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0) && GetMoveEffect(GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING)) != EFFECT_FOCUS_PUNCH)
-            || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_SLP || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
-        return;
+    return IncreaseNonvolatileScoreInternal(battlerAtk, battlerDef, move, STATUS1_PSN_ANY);
+}
 
-    if (AI_CanPutToSleep(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], move, gAiLogicData->partnerMove))
-        ADJUST_SCORE_PTR(DECENT_EFFECT);
-    else
-        return;
+s32 IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    return IncreaseNonvolatileScoreInternal(battlerAtk, battlerDef, move, STATUS1_BURN);
+}
 
-    if ((HasMoveWithEffect(battlerAtk, EFFECT_DREAM_EATER) || HasMoveWithEffect(battlerAtk, EFFECT_NIGHTMARE))
-      && !(HasMoveWithEffect(battlerDef, EFFECT_SNORE) || HasMoveWithEffect(battlerDef, EFFECT_SLEEP_TALK)))
-        ADJUST_SCORE_PTR(WEAK_EFFECT);
+s32 IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    return IncreaseNonvolatileScoreInternal(battlerAtk, battlerDef, move, STATUS1_PARALYSIS);
+}
 
-    if (IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_SLEEP)
-      || IsPowerBasedOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_SLEEP))
-        ADJUST_SCORE_PTR(WEAK_EFFECT);
+s32 IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    return IncreaseNonvolatileScoreInternal(battlerAtk, battlerDef, move, STATUS1_SLEEP);
+}
+
+s32 IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    return IncreaseNonvolatileScoreInternal(battlerAtk, battlerDef, move, STATUS1_FROSTBITE);
 }
 
 void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
@@ -4997,29 +5041,6 @@ void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score
             ADJUST_SCORE_PTR(GOOD_EFFECT);
         else
             ADJUST_SCORE_PTR(DECENT_EFFECT);
-    }
-}
-
-void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
-{
-    if ((gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
-        return;
-
-    if (AI_CanGiveFrostbite(battlerAtk, battlerDef, gAiLogicData->abilities[battlerDef], BATTLE_PARTNER(battlerAtk), move, gAiLogicData->partnerMove))
-    {
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-            || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects special attacker
-                && GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseAttack(gBattleMons[battlerDef].species) + 10))
-        {
-            if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_SPECIAL)
-                ADJUST_SCORE_PTR(DECENT_EFFECT);
-            else
-                ADJUST_SCORE_PTR(WEAK_EFFECT);
-        }
-
-        if (IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_FROSTBITE)
-          || IsPowerBasedOnStatus(BATTLE_PARTNER(battlerAtk), EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_FROSTBITE))
-            ADJUST_SCORE_PTR(WEAK_EFFECT);
     }
 }
 

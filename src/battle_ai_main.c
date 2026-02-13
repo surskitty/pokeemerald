@@ -4088,23 +4088,23 @@ static s32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move, stru
     {
     case MOVE_EFFECT_POISON:
     case MOVE_EFFECT_TOXIC:
-        IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreasePoisonScore(battlerAtk, battlerDef, move));
         break;
     case MOVE_EFFECT_SLEEP:
-        IncreaseSleepScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreaseSleepScore(battlerAtk, battlerDef, move));
         break;
     case MOVE_EFFECT_PARALYSIS:
-        IncreaseParalyzeScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreaseParalyzeScore(battlerAtk, battlerDef, move));
         break;
     case MOVE_EFFECT_BURN:
-        IncreaseBurnScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreaseBurnScore(battlerAtk, battlerDef, move));
         break;
     }
     // move effect checks
     switch (moveEffect)
     {
     case EFFECT_YAWN:
-        IncreaseSleepScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreaseSleepScore(battlerAtk, battlerDef, move));
         break;
     case EFFECT_ABSORB:
         if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT && effectiveness >= UQ_4_12(1.0))
@@ -5088,15 +5088,15 @@ static s32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move, stru
         break;
     case EFFECT_PSYCHO_SHIFT:
         if (gBattleMons[battlerAtk].status1 & STATUS1_PSN_ANY)
-            IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreasePoisonScore(battlerAtk, battlerDef, move));
         else if (gBattleMons[battlerAtk].status1 & STATUS1_BURN)
-            IncreaseBurnScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseBurnScore(battlerAtk, battlerDef, move));
         else if (gBattleMons[battlerAtk].status1 & STATUS1_PARALYSIS)
-            IncreaseParalyzeScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseParalyzeScore(battlerAtk, battlerDef, move));
         else if (gBattleMons[battlerAtk].status1 & STATUS1_SLEEP)
-            IncreaseSleepScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseSleepScore(battlerAtk, battlerDef, move));
         else if (gBattleMons[battlerAtk].status1 & STATUS1_FROSTBITE)
-            IncreaseFrostbiteScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseFrostbiteScore(battlerAtk, battlerDef, move));
         break;
     case EFFECT_GRUDGE:
         break;
@@ -5334,7 +5334,7 @@ case EFFECT_GUARD_SPLIT:
             // improve accuracy of Hypnosis
             if (HasSleepMoveWithLowAccuracy(battlerAtk, battlerDef)
              || HasSleepMoveWithLowAccuracy(BATTLE_PARTNER(battlerAtk), battlerDef))
-                IncreaseSleepScore(battlerAtk, battlerDef, move, &score);
+                ADJUST_SCORE(IncreaseSleepScore(battlerAtk, battlerDef, move));
             if (HasMoveWithLowAccuracy(battlerAtk, battlerDef, 90, TRUE)
              || HasMoveWithLowAccuracy(BATTLE_PARTNER(battlerAtk), battlerDef, 90, TRUE))
                 ADJUST_SCORE(WEAK_EFFECT);
@@ -5354,17 +5354,17 @@ case EFFECT_GUARD_SPLIT:
         switch (gFlingTable[aiData->items[battlerAtk]].effect)
         {
         case MOVE_EFFECT_BURN:
-            IncreaseBurnScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseBurnScore(battlerAtk, battlerDef, move));
             break;
         case MOVE_EFFECT_FLINCH:
             score += ShouldTryToFlinch(battlerAtk, battlerDef, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], move);
             break;
         case MOVE_EFFECT_PARALYSIS:
-            IncreaseParalyzeScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreaseParalyzeScore(battlerAtk, battlerDef, move));
             break;
         case MOVE_EFFECT_POISON:
         case MOVE_EFFECT_TOXIC:
-            IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(IncreasePoisonScore(battlerAtk, battlerDef, move));
             break;
         case MOVE_EFFECT_FREEZE:
             if (AI_CanFreeze(battlerAtk, battlerDef))
@@ -5490,7 +5490,7 @@ case EFFECT_GUARD_SPLIT:
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_TOXIC_THREAD:
-        IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreasePoisonScore(battlerAtk, battlerDef, move));
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED));
         break;
     case EFFECT_COUNTER:
@@ -5806,7 +5806,7 @@ static s32 AI_CalcAdditionalEffectScore(u32 battlerAtk, u32 battlerDef, u32 move
                 break;
             }
             case MOVE_EFFECT_POISON:
-                IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+                ADJUST_SCORE(IncreasePoisonScore(battlerAtk, battlerDef, move));
                 break;
             case MOVE_EFFECT_CLEAR_SMOG:
             {
